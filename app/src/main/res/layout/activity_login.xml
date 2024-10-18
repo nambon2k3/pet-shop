@@ -55,13 +55,13 @@
             android:id="@+id/edt_login_username"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Enter username"
-
-            android:textColorHint="#bf592b"
-            android:padding="15dp"
+            android:background="@drawable/rounded_edt"
+            android:textColor="@color/textColorHint"
             android:drawableLeft="@drawable/baseline_person_24"
             android:drawablePadding="8dp"
-            android:background="@drawable/rounded_edt"/>
+            android:hint="Enter username"
+            android:padding="15dp"
+            android:textColorHint="@color/textColorHint" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -79,13 +79,13 @@
             android:id="@+id/edt_login_password"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:textColorHint="#bf592b"
+            android:textColorHint="@color/textColorHint"
             android:hint="Enter Password"
             android:padding="15dp"
             android:drawableLeft="@drawable/baseline_lock_24"
             android:drawablePadding="8dp"
             android:inputType="textPassword"
-            android:textColor="#bf592b"
+            android:textColor="@color/textColorHint"
             android:background="@drawable/rounded_edt"
             />
 
@@ -98,7 +98,7 @@
             android:backgroundTint="#FE854F"
             android:text="Login"
             android:textSize="20sp"
-            app:backgroundTint="#fe854f" />
+            app:backgroundTint="@color/button_background" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

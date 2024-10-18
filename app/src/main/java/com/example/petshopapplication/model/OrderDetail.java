@@ -13,14 +13,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
-    private String id;
-    private String username;
-    private String password;
-    private String fullName;
-    private String phoneNumber;
-    private String address;
-    private boolean isDeleted;
-    private int roleId;
+public class OrderDetail {
+    private int orderDetailId;
+    private int orderId;
+    private int productDetailId;
+    private double price;
+    private int quantity;
     private Date createdAt;
 }

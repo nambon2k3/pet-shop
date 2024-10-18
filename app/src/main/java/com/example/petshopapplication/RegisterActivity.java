@@ -9,9 +9,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.petshopapplication.model.User;
 import com.google.firebase.database.DatabaseReference;
@@ -48,7 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             //Initializing firebase
             database = FirebaseDatabase.getInstance();
-            reference = database.getReference();
+            reference = database.getReference(getString(R.string.tbl_user_name));
 
             //Getting the values from EditText fields
             String fullName = edt_fullname.getText().toString();
@@ -61,22 +58,27 @@ public class RegisterActivity extends AppCompatActivity {
             //Checking if password and re-password match
             if(password.equals(re_password)){
 
+                // Generate a unique key using push()
+                String uniqueKey = "user-" + reference.push().getKey(); // This generates a unique ID
+
                 //Creating a new user
                 User user = User.builder()
+                            .id(uniqueKey)
                             .fullName(fullName)
                             .username(username)
                             .password(password)
                             .phoneNumber(phone)
                             .address(address)
-                            .status(true)
+                            .isDeleted(true)
                             .roleId(1)
                             .createdAt(new Date())
                             .build();
 
 
 
+
                 //Adding the user to firebase
-                reference.child("users").setValue(user);
+                reference.child(uniqueKey).setValue(user);
 
 
 
@@ -89,18 +91,10 @@ public class RegisterActivity extends AppCompatActivity {
                 edt_re_password.setText("");
 
                 //Displaying a success message
-                Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                edt_username.setText("");
-                edt_phone.setText("");
-                edt_address.setText("");
-                edt_password.setText("");
-                edt_re_password.setText("");
-
-                //Displaying a success message
-                Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, getString(R.string.msg_register_Success), Toast.LENGTH_SHORT).show();
             } else {
                 //Displaying a message if passwords don't match
-                Toast.makeText(RegisterActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, getString(R.string.msg_password_fail), Toast.LENGTH_SHORT).show();
             }
         });
 

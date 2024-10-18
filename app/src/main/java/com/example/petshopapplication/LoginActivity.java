@@ -2,15 +2,13 @@ package com.example.petshopapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,8 +16,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.Objects;
 
 import lombok.NonNull;
 
@@ -44,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         btn_login = findViewById(R.id.btn_login);
 
         database = FirebaseDatabase.getInstance();
-        reference = database.getReference("users");
+        reference = database.getReference(getString(R.string.tbl_user_name));
 
 
         //Handling login button click
@@ -69,30 +65,39 @@ public class LoginActivity extends AppCompatActivity {
         String username = edt_username.getText().toString();
         String password = edt_password.getText().toString();
 
-        Query checkUserExisted = reference.orderByChild("username").equalTo("username");
+        Query checkUserExisted = reference.orderByChild("username").equalTo(username);
+        Log.d("checkUserExisted", checkUserExisted.toString());
 
         checkUserExisted.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    //User exists, continue with login
+                    //NOTE: User exists, continue with login
                     //CONTENT: Implement login logic
                     edt_username.setError(null);
-                    String passwordFromDatabase = dataSnapshot.child(username).child("password").getValue(String.class);
+
+                    String userKey = "";
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        // Get the unique key
+                        userKey = snapshot.getKey();
+                    }
+
+                    String passwordFromDatabase = dataSnapshot.child(userKey).child("password").getValue(String.class);
                     if (password.equals(passwordFromDatabase)) {
                         edt_username.setError(null);
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                     } else {
-                        edt_password.setError("Invalid Credentials");
+                        edt_password.setError(getString(R.string.msg_invalid_credential));
                         edt_password.requestFocus();
                     }
 
 
                 } else {
-                    //User does not exist, notify user and ask to register
+                    //NOTE: User does not exist, notify user and ask to register
                     //CONTENT: Implement notify user and ask to register logic
-                    edt_username.setError("User does not exist");
+                    edt_username.setError(getString(R.string.msg_login_fail));
                     edt_password.requestFocus();
                 }
             }

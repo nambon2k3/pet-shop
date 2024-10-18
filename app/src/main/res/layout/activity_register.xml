@@ -45,8 +45,9 @@
             android:drawableLeft="@drawable/baseline_person_24"
             android:drawablePadding="8dp"
             android:hint="Fullname"
+            android:textColor="@color/textColorHint"
             android:padding="15dp"
-            android:textColorHint="#bf592b" />
+            android:textColorHint="@color/textColorHint" />
 
         <EditText
             android:id="@+id/edt_register_username"
@@ -58,7 +59,8 @@
             android:drawablePadding="8dp"
             android:hint="Username"
             android:padding="15dp"
-            android:textColorHint="#bf592b" />
+            android:textColor="@color/textColorHint"
+            android:textColorHint="@color/textColorHint" />
 
 
         <EditText
@@ -71,7 +73,8 @@
             android:drawablePadding="8dp"
             android:hint="Phone Number"
             android:padding="15dp"
-            android:textColorHint="#bf592b" />
+            android:textColor="@color/textColorHint"
+            android:textColorHint="@color/textColorHint" />
 
         <EditText
             android:id="@+id/edt_register_address"
@@ -83,7 +86,8 @@
             android:drawablePadding="8dp"
             android:hint="Address"
             android:padding="15dp"
-            android:textColorHint="#bf592b" />
+            android:textColor="@color/textColorHint"
+            android:textColorHint="@color/textColorHint" />
 
         <EditText
             android:id="@+id/edt_register_password"
@@ -96,8 +100,8 @@
             android:hint="Password"
             android:inputType="textPassword"
             android:padding="15dp"
-            android:textColor="#bf592b"
-            android:textColorHint="#bf592b" />
+            android:textColor="@color/textColorHint"
+            android:textColorHint="@color/textColorHint" />
 
         <EditText
             android:id="@+id/edt_register_re_password"
@@ -110,8 +114,8 @@
             android:hint="Re-enter password"
             android:inputType="textPassword"
             android:padding="15dp"
-            android:textColor="#bf592b"
-            android:textColorHint="#bf592b" />
+            android:textColor="@color/textColorHint"
+            android:textColorHint="@color/textColorHint" />
 
         <Button
             android:id="@+id/btn_register"
@@ -119,10 +123,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/rounded_edt"
-            android:backgroundTint="#FE854F"
             android:text="Register"
             android:textSize="20sp"
-            app:backgroundTint="#fe854f" />
+            app:backgroundTint="@color/button_background" />
 
         <LinearLayout
             android:layout_width="match_parent"
