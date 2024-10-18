@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "710642834983",
+    "firebase_url": "https://pet-shop-4a349-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "pet-shop-4a349",
+    "storage_bucket": "pet-shop-4a349.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710642834983:android:386c7624a06f397964f802",
+        "android_client_info": {
+          "package_name": "com.example.petshopapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAz0nHFnUy-jqlc6S_Aog_cR3iAwBTuNV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
