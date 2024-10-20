@@ -16,7 +16,6 @@
             android:id="@+id/imv_feedback_user_avatar"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@tools:sample/avatars"
             android:scaleType="centerCrop"
             android:layout_gravity="center"
             android:background="@drawable/circle_avatar" />

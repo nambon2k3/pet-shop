@@ -18,6 +18,5 @@
     <string name="msg_invalid_credential">Invalid Credentials</string>
 
 
-    <string name="avatar_default">https://firebasestorage.googleapis.com/v0/b/pet-shop-4a349.appspot.com/o/avatar.jpg?alt=media&token=75201f57-f8de-4573-8c9b-3b209a283f32</string>
 
 </resources>
