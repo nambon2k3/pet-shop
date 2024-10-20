@@ -14,9 +14,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class FeedBack {
-    private int id;
-    private int userId;
-    private int productId;
+    private String id;
+    private String userId;
+    private String productId;
     private int rating;
     private String content;
     private Date createdAt;

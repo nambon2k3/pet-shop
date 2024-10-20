@@ -5,4 +5,5 @@
     <color name="edtColor">#edbea4</color>
     <color name="textColorHint">#bf592b</color>
     <color name="button_background">#fe854f</color>
+    <color name="grey">#F5F5F5</color>
 </resources>

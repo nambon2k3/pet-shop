@@ -13,11 +13,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderDetail {
-    private String orderDetailId;
-    private String orderId;
-    private String productDetailId;
-    private double price;
-    private int quantity;
+public class Category {
+    private String id;
+    private String name;
     private Date createdAt;
+    private boolean isDeleted;
 }

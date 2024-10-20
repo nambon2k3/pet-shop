@@ -15,8 +15,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class ProductDetail {
-    private int productDetailId;
-    private int productId;
+    private String productDetailId;
+    private String productId;
     private double price;
     private String imageUrl;
     private int stock;

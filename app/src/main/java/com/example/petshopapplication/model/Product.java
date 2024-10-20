@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class Product {
-    private int id;
+    private String id;
     private String name;
     private String description;
     private int categoryId;
