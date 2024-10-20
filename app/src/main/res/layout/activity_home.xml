@@ -40,6 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:text="Hoai Nam"
+                    android:textStyle="bold"
                     android:fontFamily="@font/poppins_semibold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/textView"
@@ -69,14 +70,14 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="16dp"
                     android:padding="7dp"
-                    android:background="@drawable/rectangle_button"
+                    android:background="@drawable/grey_rectangle_button"
                     app:srcCompat="@drawable/baseline_filter_list_24" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/rectangle_button"
+                    android:background="@drawable/grey_rectangle_button"
                     android:orientation="horizontal">
 
                     <EditText
@@ -84,7 +85,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@drawable/rectangle_button"
+                        android:background="@drawable/grey_rectangle_button"
                         android:ems="10"
                         android:textAlignment="center"
                         android:hint="Search Product..."
@@ -109,109 +110,8 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="16dp"
                     android:padding="7dp"
-                    android:background="@drawable/rectangle_button"
+                    android:background="@drawable/grey_rectangle_button"
                     app:srcCompat="@drawable/baseline_shopping_cart_24" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.333333"
-                    android:background="@drawable/rectangle_button"
-                    android:padding="5dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        tools:srcCompat="@drawable/baseline_location_pin_24" />
-
-                    <Spinner
-                        android:id="@+id/locationSpinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:fontFamily="@font/poppins_light"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:background="@null" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="0.333333"
-                    android:background="@drawable/rectangle_button"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        tools:srcCompat="@drawable/baseline_location_pin_24" />
-
-                    <Spinner
-                        android:id="@+id/timeSpinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:background="@null" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="0.333333"
-                    android:background="@drawable/rectangle_button"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        tools:srcCompat="@drawable/baseline_attach_money_24" />
-
-                    <Spinner
-                        android:id="@+id/priceSpinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1"
-                        android:background="@null" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="24dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="Choose Category"
-                    android:textSize="18sp" />
 
             </LinearLayout>
 
@@ -219,7 +119,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_home_category"
+                    android:id="@+id/rcv_home_category"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -234,8 +134,9 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/rv_home_category"
-                    app:layout_constraintTop_toTopOf="@+id/rv_home_category" />
+                    app:layout_constraintHorizontal_bias="0.498"
+                    app:layout_constraintStart_toStartOf="@+id/rcv_home_category"
+                    app:layout_constraintTop_toTopOf="@+id/rcv_home_category" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -254,6 +155,7 @@
                     android:layout_weight="1"
                     android:textSize="18sp"
                     android:fontFamily="@font/poppins_semibold"
+                    android:textStyle="bold"
                     android:text="Try out  new Product"/>
 
                 <TextView
@@ -269,7 +171,7 @@
 
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                    android:id="@+id/rcv_new_product"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -278,14 +180,58 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ProgressBar
-                    android:id="@+id/progressBar"
+                    android:id="@+id/prg_home_new_product"
                     style="?android:attr/progressBarStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/recyclerView"
-                    app:layout_constraintTop_toTopOf="@+id/recyclerView" />
+                    app:layout_constraintStart_toStartOf="@+id/rcv_new_product"
+                    app:layout_constraintTop_toTopOf="@+id/rcv_new_product" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:textStyle="bold"
+                    android:text="What our customers say?"/>
+
+            </LinearLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rcv_feedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/prg_feedback"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/rcv_feedback"
+                    app:layout_constraintTop_toTopOf="@+id/rcv_feedback" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>

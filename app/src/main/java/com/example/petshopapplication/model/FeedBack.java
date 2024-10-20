@@ -19,6 +19,6 @@ public class FeedBack {
     private String productId;
     private int rating;
     private String content;
-    private Date createdAt;
+    private String createdAt;
     private boolean isDeleted;
 }

@@ -16,6 +16,7 @@ import lombok.Setter;
 public class Category {
     private String id;
     private String name;
-    private Date createdAt;
+    private String image;
+    private String createdAt;
     private boolean isDeleted;
 }

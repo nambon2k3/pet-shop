@@ -33,7 +33,7 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
     @Override
     public ProductHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View inflater = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_product, parent, false);
+        View inflater = LayoutInflater.from(context).inflate(R.layout.view_holder_product, parent, false);
         return new ProductHolder(inflater);
     }
 
@@ -43,10 +43,10 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
         holder.txt_product_name.setText(product.getName());
         holder.txt_price.setText("100$");
 
-        Glide.with(context)
-                .load(product.getName())
-                .transform(new CenterCrop(), new RoundedCorners(30))
-                .into(holder.imv_product_image);
+//        Glide.with(context)
+//                .load(product.getName())
+//                .transform(new CenterCrop(), new RoundedCorners(30))
+//                .into(holder.imv_product_image);
 
     }
 

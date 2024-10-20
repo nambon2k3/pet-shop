@@ -8,12 +8,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class Product {
     private String id;
     private String name;
@@ -21,6 +23,6 @@ public class Product {
     private int categoryId;
     private String status;
     private boolean isDeleted;
-    private Date createdAt;
+    private String createdAt;
     private int createdBy;
 }

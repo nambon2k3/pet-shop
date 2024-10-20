@@ -23,4 +23,5 @@ public class User {
     private boolean isDeleted;
     private int roleId;
     private Date createdAt;
+    private String avatar;
 }
