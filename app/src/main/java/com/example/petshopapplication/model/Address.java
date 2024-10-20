@@ -1,7 +1,5 @@
 package com.example.petshopapplication.model;
 
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,15 +11,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
+public class Address {
     private String id;
-    private String username;
-    private String password;
     private String fullName;
-    private String phoneNumber;
-    private String address;
-    private boolean isDeleted;
-    private int roleId;
-    private Date createdAt;
-    private String avatar;
+    private String city;
+    private String district;
+    private String houseNumber;
+    private boolean isDefault;
+    private String userId;
 }

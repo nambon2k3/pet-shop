@@ -71,6 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
                             .address(address)
                             .isDeleted(true)
                             .roleId(1)
+                            .avatar(getString(R.string.avatar_default))
                             .createdAt(new Date())
                             .build();
 
