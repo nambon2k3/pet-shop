@@ -1,23 +1,17 @@
 package com.example.petshopapplication;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.petshopapplication.Adpter.CategoryAdapter;
-import com.example.petshopapplication.Adpter.ProductAdapter;
+import com.example.petshopapplication.Adapter.CategoryAdapter;
+import com.example.petshopapplication.Adapter.ProductAdapter;
 import com.example.petshopapplication.databinding.ActivityHomeBinding;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Product;
@@ -122,6 +116,8 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 
 

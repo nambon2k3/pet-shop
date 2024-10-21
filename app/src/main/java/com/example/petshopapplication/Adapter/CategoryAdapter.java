@@ -1,4 +1,4 @@
-package com.example.petshopapplication.Adpter;
+package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

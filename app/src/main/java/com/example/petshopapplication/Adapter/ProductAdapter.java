@@ -1,7 +1,6 @@
-package com.example.petshopapplication.Adpter;
+package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +15,23 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Product;
+import com.example.petshopapplication.model.ProductDetail;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.ProductHolder>{
 
     List<Product> productItems;
     Context context;
+    FirebaseDatabase database;
+    DatabaseReference reference;
 
     public ProductAdapter(List<Product> productItems) {
         this.productItems = productItems;
@@ -41,14 +50,40 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
     public void onBindViewHolder(@NonNull ProductHolder holder, int position) {
         Product product = productItems.get(position);
         holder.txt_product_name.setText(product.getName());
-        holder.txt_price.setText("100$");
+        ProductDetail productDetail = getProductDetail(product.getId());
+        holder.txt_price.setText(String.valueOf(productDetail.getPrice()));
 
-//        Glide.with(context)
-//                .load(product.getName())
-//                .transform(new CenterCrop(), new RoundedCorners(30))
-//                .into(holder.imv_product_image);
+        Glide.with(context)
+                .load(productDetail.getImageUrl())
+                .transform(new CenterCrop(), new RoundedCorners(30))
+                .into(holder.imv_product_image);
 
     }
+
+
+    public ProductDetail getProductDetail(String productId) {
+        reference = database.getReference(context.getString(R.string.tbl_product_detail_name));
+        List<ProductDetail> productDetailItems = new ArrayList<>();
+
+        Query query = reference.orderByChild("productId").equalTo(productId);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        productDetailItems.add(dataSnapshot.getValue(ProductDetail.class));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return productDetailItems.get(0);
+    }
+
 
     @Override
     public int getItemCount() {
