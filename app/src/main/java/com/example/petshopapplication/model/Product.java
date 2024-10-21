@@ -20,7 +20,7 @@ public class Product {
     private String id;
     private String name;
     private String description;
-    private int categoryId;
+    private String categoryId;
     private String status;
     private boolean isDeleted;
     private String createdAt;

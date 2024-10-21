@@ -192,7 +192,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private void initCategory() {
-        reference = database.getReference(getString(R.string.tbl_role_category));
+        reference = database.getReference(getString(R.string.tbl_category_name));
         //Display progress bar
         binding.prgHomeCategory.setVisibility(View.VISIBLE);
 

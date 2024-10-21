@@ -8,8 +8,8 @@
     <string name="tbl_payment_name">payments</string>
     <string name="tbl_order_detail_name">order_details</string>
     <string name="tbl_role_name">roles</string>
-    <string name="tbl_role_category">categories</string>
-    <string name="tbl_role_address">addresses</string>
+    <string name="tbl_category_name">categories</string>
+    <string name="tbl_address_name">addresses</string>
 
 
     <string name="msg_register_Success">Registration successful</string>
