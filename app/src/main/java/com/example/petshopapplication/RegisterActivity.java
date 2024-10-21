@@ -71,6 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
                             .address(address)
                             .isDeleted(true)
                             .roleId(1)
+                            .avatar("https://firebasestorage.googleapis.com/v0/b/pet-shop-4a349.appspot.com/o/avatar.jpg?alt=media&token=75201f57-f8de-4573-8c9b-3b209a283f32")
                             .createdAt(new Date())
                             .build();
 

@@ -8,6 +8,8 @@
     <string name="tbl_payment_name">payments</string>
     <string name="tbl_order_detail_name">order_details</string>
     <string name="tbl_role_name">roles</string>
+    <string name="tbl_role_category">categories</string>
+    <string name="tbl_role_address">addresses</string>
 
 
 
@@ -15,5 +17,7 @@
     <string name="msg_password_fail">Passwords do not match</string>
     <string name="msg_login_fail">User does not exist</string>
     <string name="msg_invalid_credential">Invalid Credentials</string>
+
+
 
 </resources>
