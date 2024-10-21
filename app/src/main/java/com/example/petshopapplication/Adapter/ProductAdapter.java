@@ -32,12 +32,12 @@ import java.util.List;
 public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.ProductHolder>{
 
     List<Product> productItems;
+    List<ProductDetail> productDetailItems;
     Context context;
-    FirebaseDatabase database;
-    DatabaseReference reference;
 
-    public ProductAdapter(List<Product> productItems) {
+    public ProductAdapter(List<Product> productItems, List<ProductDetail> productDetailItems) {
         this.productItems = productItems;
+        this.productDetailItems = productDetailItems;
     }
 
 
@@ -52,8 +52,9 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
     @Override
     public void onBindViewHolder(@NonNull ProductHolder holder, int position) {
         Product product = productItems.get(position);
-        holder.txt_product_name.setText(product.getName());
         ProductDetail productDetail = getProductDetail(product.getId());
+        holder.txt_product_name.setText(product.getName());
+
         holder.txt_price.setText(String.valueOf(productDetail.getPrice()));
 
         Glide.with(context)
@@ -63,21 +64,18 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
 
     }
 
-
-    public ProductDetail getProductDetail(String productId) {
-        database = FirebaseDatabase.getInstance();
-        reference = database.getReference(context.getString(R.string.tbl_product_detail_name));
-        List<ProductDetail> productDetailItems = new ArrayList<>();
-
-        // Query to find the product by productId
-
-        return productDetailItems.get(0);
-    }
-
-
     @Override
     public int getItemCount() {
-        return productItems.size();
+        return productDetailItems.size();
+    }
+
+    public ProductDetail getProductDetail(String productId) {
+        for (ProductDetail productDetail : productDetailItems) {
+            if (productDetail.getProductId().equals(productId)) {
+                return productDetail;
+            }
+        }
+        return null;
     }
 
     public class ProductHolder extends RecyclerView.ViewHolder {
