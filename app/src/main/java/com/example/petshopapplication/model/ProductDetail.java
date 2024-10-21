@@ -8,12 +8,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class ProductDetail {
     private String productDetailId;
     private String productId;
@@ -25,5 +27,5 @@ public class ProductDetail {
     private int deliveringQuantity;
     private boolean isDeleted;
     private int createdBy;
-    private Date createdAt;
+    private String createdAt;
 }
