@@ -1,29 +1,28 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sdfsdfsdf"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/addproduct_bg">
-
+    android:background="@drawable/add_product_bg">
 
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="130dp"
         android:background="@drawable/rounded_corners"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="149dp"
-        android:layout_height="161dp"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="124dp"
+        android:layout_width="104dp"
+        android:layout_height="92dp"
+        android:layout_marginStart="152dp"
+        android:layout_marginTop="100dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon" />
@@ -32,7 +31,7 @@
         android:layout_width="350dp"
         android:layout_height="match_parent"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="200dp"
         android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -67,6 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/baseline_category_24"
             android:background="@drawable/rounded_edt"
             android:padding="15dp"
             android:spinnerMode="dropdown"/>
@@ -86,7 +86,7 @@
         <EditText
             android:id="@+id/edt_addproduct_description"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="100dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/rounded_edt"
             android:drawableLeft="@drawable/baseline_description_24"
@@ -96,12 +96,11 @@
             android:textColor="@color/textColorHint"
             android:textColorHint="@color/textColorHint" />
 
-
         <Button
             android:id="@+id/btn_addproduct"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/rounded_edt"
             android:text="Add Product"
             android:textSize="20sp"
