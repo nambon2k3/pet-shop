@@ -1,6 +1,7 @@
 package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.ProductDetail;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -62,25 +65,12 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
 
 
     public ProductDetail getProductDetail(String productId) {
+        database = FirebaseDatabase.getInstance();
         reference = database.getReference(context.getString(R.string.tbl_product_detail_name));
         List<ProductDetail> productDetailItems = new ArrayList<>();
 
-        Query query = reference.orderByChild("productId").equalTo(productId);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        productDetailItems.add(dataSnapshot.getValue(ProductDetail.class));
-                    }
-                }
-            }
+        // Query to find the product by productId
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
         return productDetailItems.get(0);
     }
 

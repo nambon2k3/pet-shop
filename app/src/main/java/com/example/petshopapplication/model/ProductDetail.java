@@ -25,5 +25,5 @@ public class ProductDetail {
     private int deliveringQuantity;
     private boolean isDeleted;
     private int createdBy;
-    private Date createdAt;
+    private String createdAt;
 }

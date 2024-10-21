@@ -15,6 +15,7 @@ import com.example.petshopapplication.Adapter.ProductAdapter;
 import com.example.petshopapplication.databinding.ActivityHomeBinding;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Product;
+import com.example.petshopapplication.model.ProductDetail;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,13 +45,14 @@ public class HomeActivity extends AppCompatActivity {
 
 
         database = FirebaseDatabase.getInstance();
-
-        initNewProduct();
+        List<ProductDetail> productDetailItems = new ArrayList<>();
+        initProductDetail(productDetailItems);
+        initNewProduct(productDetailItems);
         initCategory();
 
     }
 
-    private void initNewProduct() {
+    private void initNewProduct(List<ProductDetail> productDetailItems){
         reference = database.getReference(getString(R.string.tbl_product_name));
         //Display progress bar
         binding.prgHomeNewProduct.setVisibility(View.VISIBLE);
@@ -76,6 +78,28 @@ public class HomeActivity extends AppCompatActivity {
                     binding.rcvNewProduct.setAdapter(productAdapter);
                 }
                 binding.prgHomeNewProduct.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void initProductDetail(List<ProductDetail> productDetailItems) {
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference(getString(R.string.tbl_product_detail_name));
+        // Query to find the product by productId
+        Query query = reference.orderByChild("productDetailId");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        productDetailItems.add(dataSnapshot.getValue(ProductDetail.class));
+                    }
+                }
             }
 
             @Override
@@ -116,9 +140,4 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
-
 }

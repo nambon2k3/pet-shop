@@ -18,6 +18,7 @@ public class FeedBack {
     private String userId;
     private String productId;
     private int rating;
+    private String imageUrl;
     private String content;
     private String createdAt;
     private boolean isDeleted;
