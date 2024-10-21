@@ -1,6 +1,7 @@
 package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,8 +55,18 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
         Product product = productItems.get(position);
         ProductDetail productDetail = getProductDetail(product.getId());
         holder.txt_product_name.setText(product.getName());
+        //Check if product is discounted
+        if(productDetail.getDiscount() > 0) {
+            holder.tv_discount.setText(-1 * productDetail.getDiscount() + "%");
+        } else {
+            holder.tv_discount.setVisibility(View.GONE);
+        }
 
-        holder.txt_price.setText(String.valueOf(productDetail.getPrice()));
+
+        holder.tv_old_price.setText(String.valueOf(productDetail.getPrice())+"$");
+        holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+
+        holder.txt_price.setText(String.format("%.2f$",productDetail.getPrice() * ( 1- productDetail.getDiscount()/100.0)));
 
         Glide.with(context)
                 .load(productDetail.getImageUrl())
@@ -80,16 +91,18 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
 
     public class ProductHolder extends RecyclerView.ViewHolder {
 
-        TextView txt_product_name, txt_price, txt_star;
+        TextView txt_product_name, txt_price, txt_star, tv_discount, tv_old_price;
         ImageView imv_product_image;
 
 
         public ProductHolder(@NonNull View itemView) {
             super(itemView);
+            tv_discount = itemView.findViewById(R.id.tv_discount);
             txt_product_name = itemView.findViewById(R.id.txt_product_name);
             txt_price = itemView.findViewById(R.id.txt_price);
             txt_star = itemView.findViewById(R.id.txt_star);
             imv_product_image = itemView.findViewById(R.id.imv_product_image);
+            tv_old_price = itemView.findViewById(R.id.tv_old_price);
         }
     }
 }

@@ -87,7 +87,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/grey_rectangle_button"
                         android:ems="10"
-                        android:textAlignment="center"
+                        android:textAlignment="textStart"
                         android:hint="Search Product..."
                         android:textSize="16sp"
                         android:fontFamily="@font/poppins_light"
