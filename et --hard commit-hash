@@ -1,0 +1,94 @@
+[33mcommit 96189d7960a67d1d69472984e8658a07f7297dfb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnamnvh[m[33m, [m[1;31morigin/namnvh[m[33m, [m[1;32mfeature[m[33m)[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Mon Oct 21 19:59:58 2024 +0700
+
+    feat: customer feedback at homepage
+
+[33mcommit e8fb41bd48b162e9f7ee17d470b9e51c6aefd798[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Mon Oct 21 18:47:44 2024 +0700
+
+    fix bug: convert from json to productdetail
+
+[33mcommit 28caeab90f10066c867ec1e52b63e79a196aa604[m[33m ([m[1;31morigin/lyph[m[33m)[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Mon Oct 21 16:32:49 2024 +0700
+
+    feat: callback
+
+[33mcommit c6b4eb5625f0dcf983697f629ac58cfb9f9d15ce[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Mon Oct 21 12:22:25 2024 +0700
+
+    switch branch
+
+[33mcommit 55a12f99b0e6c5e41d32ff5d06da855d0eb249a4[m
+Merge: 1ef281f fed373e
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Mon Oct 21 10:38:09 2024 +0700
+
+    merge: khoakn to main
+
+[33mcommit 1ef281f886ce20bb49ca64751f6e862224a18c86[m[33m ([m[1;31morigin/khoakn[m[33m)[m
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Mon Oct 21 10:29:45 2024 +0700
+
+    feat: add product FE
+
+[33mcommit fed373ee9f5546024f835ee160cb484bf80a253e[m
+Merge: dc0942e 855035d
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Sun Oct 20 22:56:12 2024 +0700
+
+    Merge branch 'main' of https://github.com/nambon2k3/pet-shop
+
+[33mcommit dc0942e962801176a3ebf9d5d77ec8545a5aadde[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Sun Oct 20 22:55:18 2024 +0700
+
+    fix bug: remove default avatar string
+
+[33mcommit 855035dc6e9a622c4415f68fc79805d839870e3a[m
+Merge: f57eab9 8e3f62c
+Author: Nguyen Viet Hoai Nam <142764332+nambon2k3@users.noreply.github.com>
+Date:   Sun Oct 20 22:47:09 2024 +0700
+
+    Merge pull request #1 from nambon2k3/namnvh
+    
+    merge namnvh to main
+
+[33mcommit 8e3f62c96d8dab796fd2c7c07abdc398448e9b0c[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Sun Oct 20 22:35:44 2024 +0700
+
+    feat: feedback display feedback at homepage
+
+[33mcommit cdebde029577e080505816b835423672fc36d5dc[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Sun Oct 20 20:00:28 2024 +0700
+
+    feat: product adpter
+
+[33mcommit f57eab93f2b11e8e3b1373654a0a9a7d4bdedb30[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Sun Oct 20 17:57:17 2024 +0700
+
+    update: model, feat: home-FE
+
+[33mcommit 42146437dc66a4aebe818b973d60e8cf13b35df6[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Fri Oct 18 20:49:11 2024 +0700
+
+    update: string, color.xml; fig bug: login
+
+[33mcommit 54047b3af1ef353e5fe219ff09b4219e10e55a8c[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Fri Oct 18 18:20:43 2024 +0700
+
+    update: delete Account
+
+[33mcommit 03e33654d7981751055b3abdf0d054bfbd45f304[m
+Author: Hoai Nam <nvhnam.work@gmail.com>
+Date:   Fri Oct 18 18:19:07 2024 +0700
+
+    init

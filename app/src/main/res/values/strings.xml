@@ -2,22 +2,20 @@
     <string name="app_name">PetShopApplication</string>
     <string name="tbl_user_name">users</string>
     <string name="tbl_product_name">products</string>
-    <string name="tbl_product_detail_name">product_details</string>
+    <string name="tbl_product_detail_name">productdetails</string>
     <string name="tbl_feedback_name">feedbacks</string>
     <string name="tbl_order_name">orders</string>
     <string name="tbl_payment_name">payments</string>
     <string name="tbl_order_detail_name">order_details</string>
     <string name="tbl_role_name">roles</string>
-    <string name="tbl_role_category">categories</string>
-    <string name="tbl_role_address">addresses</string>
-
+    <string name="tbl_category_name">categories</string>
+    <string name="tbl_address_name">addresses</string>
 
 
     <string name="msg_register_Success">Registration successful</string>
     <string name="msg_password_fail">Passwords do not match</string>
     <string name="msg_login_fail">User does not exist</string>
     <string name="msg_invalid_credential">Invalid Credentials</string>
-
 
 
 </resources>
