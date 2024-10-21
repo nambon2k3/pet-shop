@@ -1,5 +1,6 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -51,6 +52,14 @@ public class HomeActivity extends AppCompatActivity {
         initNewProduct();
         initCategory();
         initFeedback();
+
+        binding.tvViewListProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, ListProductActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -135,15 +144,7 @@ public class HomeActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         feedbackItems.add(dataSnapshot.getValue(FeedBack.class));
                     }
-
                     fetchUserData(feedbackItems);
-//                    if(feedbackItems.size() > 0) {
-//                        feedbackAdapter = new FeedBackAdapter(feedbackItems, null);
-//                        binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(HomeActivity.this, RecyclerView.VERTICAL, true));
-//                        binding.rcvFeedback.setAdapter(feedbackAdapter);
-//                    }
-//                    binding.prgFeedback.setVisibility(View.GONE);
-
                 }
             }
 
