@@ -1,7 +1,7 @@
-package com.example.petshopapplication.Adpter;
+package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
-import android.media.Image;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +16,28 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Product;
+import com.example.petshopapplication.model.ProductDetail;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.ProductHolder>{
 
     List<Product> productItems;
+    List<ProductDetail> productDetailItems;
     Context context;
 
-    public ProductAdapter(List<Product> productItems) {
+    public ProductAdapter(List<Product> productItems, List<ProductDetail> productDetailItems) {
         this.productItems = productItems;
+        this.productDetailItems = productDetailItems;
     }
 
 
@@ -40,19 +52,30 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
     @Override
     public void onBindViewHolder(@NonNull ProductHolder holder, int position) {
         Product product = productItems.get(position);
+        ProductDetail productDetail = getProductDetail(product.getId());
         holder.txt_product_name.setText(product.getName());
-        holder.txt_price.setText("100$");
 
-//        Glide.with(context)
-//                .load(product.getName())
-//                .transform(new CenterCrop(), new RoundedCorners(30))
-//                .into(holder.imv_product_image);
+        holder.txt_price.setText(String.valueOf(productDetail.getPrice()));
+
+        Glide.with(context)
+                .load(productDetail.getImageUrl())
+                .transform(new CenterCrop(), new RoundedCorners(30))
+                .into(holder.imv_product_image);
 
     }
 
     @Override
     public int getItemCount() {
-        return productItems.size();
+        return productDetailItems.size();
+    }
+
+    public ProductDetail getProductDetail(String productId) {
+        for (ProductDetail productDetail : productDetailItems) {
+            if (productDetail.getProductId().equals(productId)) {
+                return productDetail;
+            }
+        }
+        return null;
     }
 
     public class ProductHolder extends RecyclerView.ViewHolder {

@@ -1,4 +1,4 @@
-package com.example.petshopapplication.Adpter;
+package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,8 +11,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.FeedBack;
+import com.example.petshopapplication.model.User;
 
 import java.util.List;
 
@@ -20,10 +24,12 @@ public class FeedBackAdapter extends RecyclerView.Adapter<FeedBackAdapter.Feedba
 
 
     List<FeedBack> feedBackItems;
+    List<User> userItems;
     Context context;
 
-    public FeedBackAdapter( List<FeedBack> feedBackItems) {
+    public FeedBackAdapter(List<FeedBack> feedBackItems, List<User> userItems) {
         this.feedBackItems = feedBackItems;
+        this.userItems = userItems;
     }
 
     @NonNull
@@ -37,16 +43,26 @@ public class FeedBackAdapter extends RecyclerView.Adapter<FeedBackAdapter.Feedba
     @Override
     public void onBindViewHolder(@NonNull FeedbaclHolder holder, int position) {
         FeedBack feedback = feedBackItems.get(position);
-        //holder.tv_feedback_user_name.setText(feedback.getUserName());
+        User user = getUser(feedback.getUserId());
+        holder.tv_feedback_user_name.setText(user.getFullName());
         holder.tv_feedback_content.setText(feedback.getContent());
-        holder.tv_feedback_created_at.setText(feedback.getCreatedAt());
+        holder.tv_feedback_created_at.setText(feedback.getCreatedAt().replace("T", " "));
         holder.rtb_feedback_rating.setRating(feedback.getRating());
 
-        // Load user avatar
-//              Glide.with(context)
-//                .load(product.getName())
-//                .transform(new CenterCrop(), new RoundedCorners(30))
-//                .into(holder.imv_product_image);
+        //Load user avatar
+        Glide.with(context)
+            .load(user.getAvatar())
+            .transform(new CenterCrop(), new RoundedCorners(30))
+            .into(holder.imv_feedback_user_avatar);
+    }
+
+    public User getUser(String userId) {
+        for (User user : userItems) {
+            if (user.getId().equals(userId)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     @Override

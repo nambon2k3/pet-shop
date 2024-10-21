@@ -1,26 +1,24 @@
 package com.example.petshopapplication;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.petshopapplication.Adpter.CategoryAdapter;
-import com.example.petshopapplication.Adpter.ProductAdapter;
+import com.example.petshopapplication.Adapter.CategoryAdapter;
+import com.example.petshopapplication.Adapter.FeedBackAdapter;
+import com.example.petshopapplication.Adapter.ProductAdapter;
 import com.example.petshopapplication.databinding.ActivityHomeBinding;
 import com.example.petshopapplication.model.Category;
+import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.Product;
+import com.example.petshopapplication.model.ProductDetail;
+import com.example.petshopapplication.model.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +34,7 @@ public class HomeActivity extends AppCompatActivity {
     ActivityHomeBinding binding;
     FirebaseDatabase database;
     DatabaseReference reference;
-    RecyclerView.Adapter productAdapter, categoryAdapter;
+    RecyclerView.Adapter productAdapter, categoryAdapter, feedbackAdapter;
 
 
     @Override
@@ -50,13 +48,13 @@ public class HomeActivity extends AppCompatActivity {
 
 
         database = FirebaseDatabase.getInstance();
-
         initNewProduct();
         initCategory();
+        initFeedback();
 
     }
 
-    private void initNewProduct() {
+    private void initNewProduct(){
         reference = database.getReference(getString(R.string.tbl_product_name));
         //Display progress bar
         binding.prgHomeNewProduct.setVisibility(View.VISIBLE);
@@ -73,15 +71,9 @@ public class HomeActivity extends AppCompatActivity {
                             productItems.add(product);
                         }
                     }
+                    fetchProductDetails(productItems);
                 }
 
-
-                if(productItems.size() > 0) {
-                    binding.rcvNewProduct.setLayoutManager(new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false));
-                    productAdapter = new ProductAdapter(productItems);
-                    binding.rcvNewProduct.setAdapter(productAdapter);
-                }
-                binding.prgHomeNewProduct.setVisibility(View.GONE);
             }
 
             @Override
@@ -90,6 +82,113 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
+
+    public void fetchProductDetails(List<Product> product) {
+        reference = database.getReference(getString(R.string.tbl_product_detail_name));
+        //Display progress bar
+        binding.prgHomeNewProduct.setVisibility(View.VISIBLE);
+
+        List<ProductDetail> productDetailItems = new ArrayList<>();
+
+        for(Product p : product) {
+            Query query = reference.orderByChild("productId").equalTo(p.getId());
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(snapshot.exists()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            productDetailItems.add(dataSnapshot.getValue(ProductDetail.class));
+                        }
+                        if(productDetailItems.size() > 0) {
+                            // Update product details in product adapter
+                            binding.rcvNewProduct.setLayoutManager(new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                            productAdapter = new ProductAdapter(product, productDetailItems);
+                            binding.rcvNewProduct.setAdapter(productAdapter);
+                        }
+                        binding.prgHomeNewProduct.setVisibility(View.GONE);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+
+    public void initFeedback() {
+        reference = database.getReference(getString(R.string.tbl_feedback_name));
+        //Display progress bar
+        binding.prgFeedback.setVisibility(View.VISIBLE);
+
+        List<FeedBack> feedbackItems = new ArrayList<>();
+
+        Query query = reference.orderByChild("rating");
+        query.limitToLast(4).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        feedbackItems.add(dataSnapshot.getValue(FeedBack.class));
+                    }
+
+                    fetchUserData(feedbackItems);
+//                    if(feedbackItems.size() > 0) {
+//                        feedbackAdapter = new FeedBackAdapter(feedbackItems, null);
+//                        binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(HomeActivity.this, RecyclerView.VERTICAL, true));
+//                        binding.rcvFeedback.setAdapter(feedbackAdapter);
+//                    }
+//                    binding.prgFeedback.setVisibility(View.GONE);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void fetchUserData(List<FeedBack> feedbackItems) {
+        reference = database.getReference(getString(R.string.tbl_user_name));
+        List<User> userItems = new ArrayList<>();
+        for(FeedBack feedBack : feedbackItems) {
+            //Reference to the user table
+            reference = database.getReference(getString(R.string.tbl_user_name));
+            //Get user data by user Id in feed back
+            Query query = reference.orderByChild("id").equalTo(feedBack.getUserId());
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(snapshot.exists()) {
+                        //Get user data from database
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            User user = dataSnapshot.getValue(User.class);
+                            userItems.add(user);
+                        }
+                        if(userItems.size() > 0) {
+                            feedbackAdapter = new FeedBackAdapter(feedbackItems, userItems);
+                            binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(HomeActivity.this, RecyclerView.VERTICAL, true));
+                            binding.rcvFeedback.setAdapter(feedbackAdapter);
+                        }
+                        binding.prgFeedback.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
 
     private void initCategory() {
         reference = database.getReference(getString(R.string.tbl_role_category));
@@ -122,7 +221,4 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
 }
