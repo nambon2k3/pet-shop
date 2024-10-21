@@ -2,7 +2,6 @@ package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,25 +17,16 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.ProductDetail;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.ProductHolder>{
+public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.ProductHolder>{
 
     List<Product> productItems;
     List<ProductDetail> productDetailItems;
     Context context;
 
-    public ProductAdapter(List<Product> productItems, List<ProductDetail> productDetailItems) {
+    public ListProductAdapter(List<Product> productItems, List<ProductDetail> productDetailItems) {
         this.productItems = productItems;
         this.productDetailItems = productDetailItems;
     }
@@ -46,8 +36,8 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
     @Override
     public ProductHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View inflater = LayoutInflater.from(context).inflate(R.layout.view_holder_product, parent, false);
-        return new ProductHolder(inflater);
+        View inflate = LayoutInflater.from(context).inflate(R.layout.view_holder_list_product, parent, false);
+        return new ProductHolder(inflate);
     }
 
     @Override
@@ -57,27 +47,24 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
         holder.txt_product_name.setText(product.getName());
         //Check if product is discounted
         if(productDetail.getDiscount() > 0) {
-            holder.tv_discount.setText(-1 * productDetail.getDiscount() + "%");
+            //holder.tv_discount.setText(-1 * productDetail.getDiscount() + "%");
+            holder.tv_old_price.setVisibility(View.VISIBLE);
+            holder.tv_new_price.setVisibility(View.VISIBLE);
+            holder.tv_new_price.setText(String.format("%.2f", productDetail.getPrice() - (productDetail.getPrice() * productDetail.getDiscount() / 100)));
+            holder.tv_old_price.setText(String.format("%.2f", productDetail.getPrice()));
+            holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+
         } else {
             holder.tv_discount.setVisibility(View.GONE);
+            holder.tv_old_price.setVisibility(View.VISIBLE);
+            holder.tv_new_price.setVisibility(View.GONE);
+            holder.tv_old_price.setText(String.format("%.2f", productDetail.getPrice()));
         }
-
-
-        holder.tv_old_price.setText(String.valueOf(productDetail.getPrice())+"$");
-        holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-
-        holder.txt_price.setText(String.format("%.2f$",productDetail.getPrice() * ( 1- productDetail.getDiscount()/100.0)));
-
         Glide.with(context)
                 .load(productDetail.getImageUrl())
                 .transform(new CenterCrop(), new RoundedCorners(30))
                 .into(holder.imv_product_image);
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return productDetailItems.size();
+        //holder.txt_rating.setText(product.getRating());
     }
 
     public ProductDetail getProductDetail(String productId) {
@@ -89,20 +76,27 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
         return null;
     }
 
+    @Override
+    public int getItemCount() {
+        return productItems.size();
+    }
+
+
     public class ProductHolder extends RecyclerView.ViewHolder {
-
-        TextView txt_product_name, txt_price, txt_star, tv_discount, tv_old_price;
         ImageView imv_product_image;
-
-
+        TextView txt_product_name, tv_rating, tv_discount, tv_old_price, tv_new_price;
         public ProductHolder(@NonNull View itemView) {
             super(itemView);
-            tv_discount = itemView.findViewById(R.id.tv_discount);
-            txt_product_name = itemView.findViewById(R.id.txt_product_name);
-            txt_price = itemView.findViewById(R.id.txt_price);
-            txt_star = itemView.findViewById(R.id.txt_star);
             imv_product_image = itemView.findViewById(R.id.imv_product_image);
+            txt_product_name = itemView.findViewById(R.id.txt_product_name);
+            tv_new_price = itemView.findViewById(R.id.tv_new_price);
             tv_old_price = itemView.findViewById(R.id.tv_old_price);
+            tv_rating = itemView.findViewById(R.id.tv_rating);
+
+
         }
     }
+
+
+
 }
