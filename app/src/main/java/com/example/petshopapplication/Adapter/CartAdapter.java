@@ -1,5 +1,6 @@
 package com.example.petshopapplication.Adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,13 @@ import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
     private List<Cart> cartItems;
+    private Context context;
+    private TextView totalPriceView; // Reference to total price TextView
 
-    public CartAdapter(List<Cart> cartItems) {
+    public CartAdapter(List<Cart> cartItems, Context context, TextView totalPriceView) {
         this.cartItems = cartItems;
+        this.context = context;
+        this.totalPriceView = totalPriceView;
     }
 
     @NonNull
@@ -45,7 +50,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     public List<Cart> getSelectedItems() {
         List<Cart> selectedItems = new ArrayList<>();
         for (Cart item : cartItems) {
-            if (item.isDeleted()) { // Chỉ cần kiểm tra điều kiện đã chọn
+            if (item.isDeleted()) { // Check if the item is selected
                 selectedItems.add(item);
             }
         }
@@ -65,11 +70,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvItemPrice = itemView.findViewById(R.id.tv_itemPrice);
             checkBox = itemView.findViewById(R.id.checkBox);
 
-            // Xử lý sự kiện checkbox
+            // Set up checkbox listener
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                // Cập nhật trạng thái đã chọn
                 Cart cartItem = cartItems.get(getAdapterPosition());
-                cartItem.setDeleted(isChecked);
+                cartItem.setDeleted(isChecked); // Update item status
+                updateTotalPrice(); // Recalculate total price whenever checkbox state changes
             });
         }
 
@@ -77,7 +82,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvItemName.setText(cartItem.getProductName());
             tvItemPrice.setText("₫" + cartItem.getPrice());
             Glide.with(imvItem.getContext()).load(cartItem.getImageUrl()).into(imvItem);
-            checkBox.setChecked(cartItem.isDeleted()); // Cập nhật trạng thái checkbox
+            checkBox.setChecked(cartItem.isDeleted()); // Update checkbox status
+        }
+
+        private void updateTotalPrice() {
+            double totalPrice = 0.0;
+            for (Cart item : cartItems) {
+                if (item.isDeleted()) {
+                    totalPrice += item.getPrice(); // Sum selected item prices
+                }
+            }
+            totalPriceView.setText("₫" + totalPrice); // Update total price TextView
         }
     }
 }

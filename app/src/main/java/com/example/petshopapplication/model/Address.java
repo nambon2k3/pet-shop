@@ -16,9 +16,10 @@ import lombok.ToString;
 public class Address {
     private String id;
     private String fullName;
+    private String phone;
     private String city;
     private String district;
     private String houseNumber;
-    private boolean isDefault;
+    private boolean isDefault; // Kiểu dữ liệu boolean
     private String userId;
 }

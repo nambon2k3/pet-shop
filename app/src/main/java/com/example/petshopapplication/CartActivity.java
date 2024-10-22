@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,29 +25,28 @@ import java.util.List;
 
 public class CartActivity extends AppCompatActivity {
     private FirebaseDatabase database;
-    private DatabaseReference cartRef; // Sử dụng đường dẫn cho giỏ hàng
+    private DatabaseReference cartRef;
     private RecyclerView recyclerView;
     private CartAdapter adapter;
+    private TextView totalPriceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
-        // Khởi tạo Firebase
         database = FirebaseDatabase.getInstance();
-        cartRef = database.getReference("carts"); // Đường dẫn đến giỏ hàng
+        cartRef = database.getReference("carts");
 
         recyclerView = findViewById(R.id.rec_cart);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        totalPriceView = findViewById(R.id.textView7); // Ensure this ID matches your layout
 
-        // Lấy dữ liệu từ Firebase
         cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Cart> cartItems = new ArrayList<>();
 
-                // Duyệt qua từng sản phẩm trong giỏ hàng
                 for (DataSnapshot cartSnapshot : snapshot.getChildren()) {
                     Cart cartItem = cartSnapshot.getValue(Cart.class);
                     if (cartItem != null) {
@@ -54,14 +54,8 @@ public class CartActivity extends AppCompatActivity {
                     }
                 }
 
-                // Cập nhật RecyclerView
-                adapter = new CartAdapter(cartItems);
+                adapter = new CartAdapter(cartItems, CartActivity.this, totalPriceView); // Pass totalPriceView to the adapter
                 recyclerView.setAdapter(adapter);
-
-                // Kiểm tra xem giỏ hàng có rỗng không
-                if (cartItems.isEmpty()) {
-                    Toast.makeText(CartActivity.this, "Giỏ hàng trống!", Toast.LENGTH_SHORT).show();
-                }
             }
 
             @Override
@@ -78,10 +72,10 @@ public class CartActivity extends AppCompatActivity {
                 Toast.makeText(CartActivity.this, "Vui lòng chọn ít nhất một sản phẩm!", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
-            intent.putExtra("selectedItems", new ArrayList<>(selectedItems)); // Chuyển danh sách đã chọn
+            intent.putExtra("selectedItems", new ArrayList<>(selectedItems));
             startActivity(intent);
         });
-
     }
 }
