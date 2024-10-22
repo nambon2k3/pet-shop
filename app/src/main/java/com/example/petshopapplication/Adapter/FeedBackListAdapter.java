@@ -19,9 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.petshopapplication.FeedbackListActivity;
+import com.example.petshopapplication.FeedbackListUserActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.UpdateFeedbackActivity;
 import com.example.petshopapplication.model.FeedBack;
+import com.example.petshopapplication.model.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,12 +37,12 @@ import java.util.List;
 public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapter.FeedbackHolder> {
 
     List<FeedBack> feedBackItems;
+    List<User> userItems;
     Context context;
-    private String currentUserId;
 
-    public FeedBackListAdapter(FeedbackListActivity feedbackListActivity, List<FeedBack> feedBackItems, String currentUserId) {
+    public FeedBackListAdapter(List<FeedBack> feedBackItems, List<User> userItems) {
         this.feedBackItems = feedBackItems;
-        this.currentUserId = currentUserId;
+        this.userItems = userItems;
     }
 
     @NonNull
@@ -54,15 +56,17 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
     @Override
     public void onBindViewHolder(@NonNull FeedbackHolder holder, int position) {
         FeedBack feedback = feedBackItems.get(position);
+        User user = getUser(feedback.getUserId());
 
         // Display elements of feedback
-        holder.tv_feedback_user_name.setText("troll troll");
+        holder.tv_feedback_user_name.setText(user.getUsername());
         holder.tv_feedback_content.setText(feedback.getContent());
-        holder.tv_feedback_created_at.setText(feedback.getCreatedAt());
+        holder.tv_feedback_created_at.setText(feedback.getCreatedAt().replace("T", " "));
         holder.rtb_feedback_rating.setRating(feedback.getRating());
 
         // Load image into ImageView using Glide
         if (feedback.getImageUrl() != null && !feedback.getImageUrl().isEmpty()) {
+            holder.imv_feedback_image.setVisibility(View.VISIBLE);
             Glide.with(context)
                     .load(feedback.getImageUrl())
                     .placeholder(R.drawable.icon) // Optional placeholder image
@@ -70,7 +74,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
         }
 
         // Check if the current user matches the feedback user and if feedback is not marked as deleted
-        if (feedback.getUserId().equals(currentUserId)) {
+        if (feedback.getUserId().equals(user.getId())) {
             // Add options to the spinner
             List<String> options = new ArrayList<>();
             options.add("Select Action:");
@@ -115,6 +119,15 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
             // Hide spinner if conditions are not met
             holder.sp_feedback.setVisibility(View.GONE);
         }
+    }
+
+    public User getUser(String userId) {
+        for (User user : userItems) {
+            if (user.getId().equals(userId)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     @Override

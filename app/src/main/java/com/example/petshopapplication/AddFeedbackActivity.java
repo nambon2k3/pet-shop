@@ -17,6 +17,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.petshopapplication.databinding.ActivityAddFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -27,11 +28,7 @@ import java.util.Date;
 import java.util.UUID;
 
 public class AddFeedbackActivity extends AppCompatActivity {
-    private EditText edt_feedback_comment;
-    private RatingBar rb_feedback_rating;
-    private ImageView imv_feedback_image;
-    private Button btn_feedback_pick, btn_feedback_submit;
-
+    private ActivityAddFeedbackBinding binding;
     private Uri selectedImageUri; // To store the selected image URI
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
@@ -40,27 +37,18 @@ public class AddFeedbackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add_feedback);
-
-        //edt_username = findViewById(R.id.edt_login_username);
-        edt_feedback_comment = findViewById(R.id.edt_feedback_comment);
-        rb_feedback_rating = findViewById(R.id.rb_feedback_rating);
-        imv_feedback_image = findViewById(R.id.imv_feedback_image);
-        btn_feedback_pick = findViewById(R.id.btn_feedback_pick);
-        btn_feedback_submit = findViewById(R.id.btn_feedback_submit);
+        // Initialize ViewBinding
+        binding = ActivityAddFeedbackBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         // Handle image selection
-        btn_feedback_pick.setOnClickListener(view -> {
-            chooseImage();
-        });
+        binding.btnFeedbackPick.setOnClickListener(view -> chooseImage());
 
         // Handle feedback submission
-        btn_feedback_submit.setOnClickListener(view -> {
-            uploadFeedback();
-        });
+        binding.btnFeedbackSubmit.setOnClickListener(view -> uploadFeedback());
     }
 
     private void chooseImage() {
@@ -73,15 +61,15 @@ public class AddFeedbackActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             selectedImageUri = data.getData(); // Save the selected image URI
-            imv_feedback_image.setImageURI(selectedImageUri); // Display the selected image
+            binding.imvFeedbackImage.setImageURI(selectedImageUri); // Display the selected image
         }
     }
 
     private void uploadFeedback() {
         final String userId = "user--O9e3Xs72KBFUIYkldJ0";
         final String productId = "p1";
-        final String comment = edt_feedback_comment.getText().toString().trim();
-        final int rating = (int) rb_feedback_rating.getRating();
+        final String comment = binding.edtFeedbackComment.getText().toString().trim();
+        final int rating = (int) binding.rbFeedbackRating.getRating();
 
         if (comment.isEmpty() || rating == 0) {
             Toast.makeText(this, "Please provide a comment and rating", Toast.LENGTH_SHORT).show();
@@ -97,22 +85,20 @@ public class AddFeedbackActivity extends AppCompatActivity {
                         storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                             String imageUrl = uri.toString();
                             // After image upload, submit the feedback to the database
-                            submitFeedback(userId, productId, comment, (int) rating, imageUrl);
+                            submitFeedback(userId, productId, comment, rating, imageUrl);
                         });
                     })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(AddFeedbackActivity.this, "Image upload failed!", Toast.LENGTH_SHORT).show();
-                    });
+                    .addOnFailureListener(e -> Toast.makeText(AddFeedbackActivity.this, "Image upload failed!", Toast.LENGTH_SHORT).show());
         } else {
             // If no image is selected, submit feedback without image
-            submitFeedback(userId, productId, comment, (int) rating, null);
+            submitFeedback(userId, productId, comment, rating, null);
         }
     }
 
     private void submitFeedback(String userId, String productId, String comment, int rating, @Nullable String imageUrl) {
         DatabaseReference feedbackRef = firebaseDatabase.getReference("feedbacks");
 
-        String feedbackId = "feedback-" +  feedbackRef.push().getKey(); // Generate a unique ID
+        String feedbackId = "feedback-" + feedbackRef.push().getKey(); // Generate a unique ID
 
         // Create a feedback object
         FeedBack feedback = FeedBack.builder()
@@ -127,11 +113,7 @@ public class AddFeedbackActivity extends AppCompatActivity {
 
         // Store the feedback in the database
         feedbackRef.child(feedbackId).setValue(feedback)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(AddFeedbackActivity.this, "Feedback submitted successfully!", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(AddFeedbackActivity.this, "Failed to submit feedback.", Toast.LENGTH_SHORT).show();
-                });
+                .addOnSuccessListener(aVoid -> Toast.makeText(AddFeedbackActivity.this, "Feedback submitted successfully!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(AddFeedbackActivity.this, "Failed to submit feedback.", Toast.LENGTH_SHORT).show());
     }
 }

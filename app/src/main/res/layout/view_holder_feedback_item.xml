@@ -39,6 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_gravity="center"
         android:layout_weight="1">
 
         <!-- User Comment -->
@@ -70,7 +71,8 @@
             android:layout_height="50dp"
             android:scaleType="centerCrop"
             android:layout_gravity="left"
-            android:background="@drawable/circle_avatar" />
+            android:background="@drawable/circle_avatar"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/tv_feedback_date"
