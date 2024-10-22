@@ -9,4 +9,7 @@
     <color name="gray">#7C7B7B</color>
     <color name="yellow">#FFEB3B</color>
     <color name="red">#E03535</color>
+    <color name="light_grey">#F3F3F3</color>
+    <color name="green">#1FA867</color>
+    <color name="yellow_star">#FFC106</color>
 </resources>
