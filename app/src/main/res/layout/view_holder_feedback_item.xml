@@ -1,10 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:padding="8dp"
-    android:background="@drawable/white_rectangle_button"
-    >
+    android:background="@drawable/white_rectangle_button">
 
     <!-- Avatar ImageView -->
     <LinearLayout
@@ -85,4 +85,12 @@
             android:layout_marginBottom="4dp" />
 
     </LinearLayout>
+    <!-- Hidden Spinner for actions (Update, Delete) -->
+    <Spinner
+        android:id="@+id/sp_feedback"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:dropDownWidth="wrap_content"
+        android:dropDownSelector="@drawable/ic_menu"
+        android:visibility="visible" />
 </LinearLayout>

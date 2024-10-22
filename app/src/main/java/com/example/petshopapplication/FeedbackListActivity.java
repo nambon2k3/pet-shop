@@ -41,7 +41,7 @@ public class FeedbackListActivity extends AppCompatActivity {
         rcv_feedback.setLayoutManager(new LinearLayoutManager(this));
 
         feedbackList = new ArrayList<>();
-        feedbackAdapter = new FeedBackListAdapter(this, feedbackList);
+        feedbackAdapter = new FeedBackListAdapter(this, feedbackList, "user--O9e3Xs72KBFUIYkldJ0");
         rcv_feedback.setAdapter(feedbackAdapter);
 
         // Firebase Realtime Database reference
@@ -52,43 +52,23 @@ public class FeedbackListActivity extends AppCompatActivity {
     }
 
     private void fetchFeedbacks() {
+        String productId = "p1";
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 feedbackList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
-                    getUsernameById("user--O9e3Xs72KBFUIYkldJ0");
-                    feedbackList.add(feedback);
+                    if (feedback != null && !feedback.isDeleted() && feedback.getProductId().equals(productId)) {
+                        feedbackList.add(feedback); // Add feedback to the list
+                    }
                 }
                 feedbackAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                //Toast.makeText(ProductDetailActivity.this, "Failed to fetch data.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void getUsernameById(String userId) {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(userId);
-        database.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String username = dataSnapshot.getValue(String.class);
-                    // Display username in TextView
-                    TextView usernameTextView = findViewById(R.id.tv_feedback_username);
-                    usernameTextView.setText(username);
-                } else {
-                    // Handle user not found
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle possible errors.
+                Toast.makeText(FeedbackListActivity.this, "Failed to fetch data.", Toast.LENGTH_SHORT).show();
             }
         });
     }

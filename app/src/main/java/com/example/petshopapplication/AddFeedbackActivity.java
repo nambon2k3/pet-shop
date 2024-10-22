@@ -78,10 +78,15 @@ public class AddFeedbackActivity extends AppCompatActivity {
     }
 
     private void uploadFeedback() {
-        final String userId = "user-1convit";
-        final String productId = "product-2convit";
+        final String userId = "user--O9e3Xs72KBFUIYkldJ0";
+        final String productId = "p1";
         final String comment = edt_feedback_comment.getText().toString().trim();
         final int rating = (int) rb_feedback_rating.getRating();
+
+        if (comment.isEmpty() || rating == 0) {
+            Toast.makeText(this, "Please provide a comment and rating", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (selectedImageUri != null) {
             // Upload the image to Firebase Storage
