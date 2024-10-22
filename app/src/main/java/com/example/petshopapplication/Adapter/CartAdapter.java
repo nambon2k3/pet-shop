@@ -10,74 +10,74 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Cart;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
-    List<Cart> productList;
-    private OnItemCheckListener onItemCheckListener;
+public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
+    private List<Cart> cartItems;
 
-    public CartAdapter(List<Cart> productList) {
-        this.productList = productList;
+    public CartAdapter(List<Cart> cartItems) {
+        this.cartItems = cartItems;
     }
 
     @NonNull
     @Override
-    public CartAdapter.CartHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cart, parent, false);
-        return new CartHolder(v);
+    public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cart, parent, false);
+        return new CartViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CartAdapter.CartHolder holder, int position) {
-        holder.imv_item.setImageResource(productList.get(position).getImageUrl());
-        holder.tv_itemName.setText(productList.get(position).getName());
-        holder.tv_itemPrice.setText(productList.get(position).getPrice());
-        holder.tv_itemQuatity.setText(productList.get(position).getQuatity());
-
-
-        //CheckBox Event
-        //Reset all event
-//        holder.checkBox.setOnCheckedChangeListener(null);
-//        holder.checkBox.setChecked(false);
-//        holder.checkBox.setChecked(productList.get(position).isChecked());
-//        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//                    productList.get(position).setChecked(isChecked);
-//                    if (isChecked) {
-//                        onItemCheckListener.onItemCheck(productList.get(position));
-//                    } else {
-//                        onItemCheckListener.onItemUncheck(productList.get(position));
-//                    }
-//                }
-//        );
+    public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
+        Cart cartItem = cartItems.get(position);
+        holder.bind(cartItem);
     }
 
     @Override
     public int getItemCount() {
-        return productList.size();
+        return cartItems.size();
     }
 
-    public class CartHolder extends RecyclerView.ViewHolder {
-        TextView tv_itemName, tv_itemPrice, tv_itemQuatity;
-        ImageView imv_item;
+    public List<Cart> getSelectedItems() {
+        List<Cart> selectedItems = new ArrayList<>();
+        for (Cart item : cartItems) {
+            if (item.isDeleted()) { // Chỉ cần kiểm tra điều kiện đã chọn
+                selectedItems.add(item);
+            }
+        }
+        return selectedItems;
+    }
+
+    public class CartViewHolder extends RecyclerView.ViewHolder {
+        ImageView imvItem;
+        TextView tvItemName;
+        TextView tvItemPrice;
         CheckBox checkBox;
 
-        public CartHolder(@NonNull View itemView) {
+        public CartViewHolder(@NonNull View itemView) {
             super(itemView);
-            tv_itemName = itemView.findViewById(R.id.tv_itemName);
-            tv_itemPrice = itemView.findViewById(R.id.tv_itemPrice);
-            tv_itemQuatity = itemView.findViewById(R.id.tv_itemQuatity);
-            imv_item = itemView.findViewById(R.id.imv_item);
+            imvItem = itemView.findViewById(R.id.imv_item);
+            tvItemName = itemView.findViewById(R.id.tv_itemName);
+            tvItemPrice = itemView.findViewById(R.id.tv_itemPrice);
             checkBox = itemView.findViewById(R.id.checkBox);
 
+            // Xử lý sự kiện checkbox
+            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                // Cập nhật trạng thái đã chọn
+                Cart cartItem = cartItems.get(getAdapterPosition());
+                cartItem.setDeleted(isChecked);
+            });
+        }
 
+        public void bind(Cart cartItem) {
+            tvItemName.setText(cartItem.getProductName());
+            tvItemPrice.setText("₫" + cartItem.getPrice());
+            Glide.with(imvItem.getContext()).load(cartItem.getImageUrl()).into(imvItem);
+            checkBox.setChecked(cartItem.isDeleted()); // Cập nhật trạng thái checkbox
         }
     }
-    public interface OnItemCheckListener {
-        void onItemCheck(Cart item);
-        void onItemUncheck(Cart item);
-    }
 }
-

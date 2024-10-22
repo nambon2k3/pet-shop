@@ -1,6 +1,10 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,61 +22,66 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CartActivity extends AppCompatActivity implements CartAdapter.OnItemCheckListener{
-    FirebaseDatabase database;
-    DatabaseReference productRef;
-    DatabaseReference productDetailRef;
+public class CartActivity extends AppCompatActivity {
+    private FirebaseDatabase database;
+    private DatabaseReference cartRef; // Sử dụng đường dẫn cho giỏ hàng
+    private RecyclerView recyclerView;
+    private CartAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
+        // Khởi tạo Firebase
         database = FirebaseDatabase.getInstance();
-        productRef = database.getReference("products");
-        productDetailRef = database.getReference("product-details");
+        cartRef = database.getReference("carts"); // Đường dẫn đến giỏ hàng
 
-//        Cart c1 = new Cart(R.drawable.ic_launcher_background, "ten", "1.2", "1");
-//        Cart c2 = new Cart(R.drawable.ic_launcher_background, "ten2", "1.3", "1");
-//        Cart c3 = new Cart(R.drawable.ic_launcher_background, "ten3", "1.4", "1");
+        recyclerView = findViewById(R.id.rec_cart);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-
-
-
-        productRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        // Lấy dữ liệu từ Firebase
+        cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Cart> cartItems = new ArrayList<>();
 
-                for(DataSnapshot proSnapshot: snapshot.getChildren()){
-                    String name = proSnapshot.child("name").getValue(String.class);
-                    Cart cartItem = new Cart();
-                    cartItem.setImageUrl(R.drawable.ic_launcher_background);
-                    cartItem.setName(name);
-                    cartItem.setPrice("1.2");
-                    cartItem.setQuatity("1");
-                    cartItems.add(cartItem);
+                // Duyệt qua từng sản phẩm trong giỏ hàng
+                for (DataSnapshot cartSnapshot : snapshot.getChildren()) {
+                    Cart cartItem = cartSnapshot.getValue(Cart.class);
+                    if (cartItem != null) {
+                        cartItems.add(cartItem);
+                    }
                 }
-                RecyclerView rec = findViewById(R.id.rec_cart);
-                CartAdapter adapter = new CartAdapter(cartItems);
-                rec.setLayoutManager(new LinearLayoutManager(CartActivity.this));
-                rec.setAdapter(adapter);
+
+                // Cập nhật RecyclerView
+                adapter = new CartAdapter(cartItems);
+                recyclerView.setAdapter(adapter);
+
+                // Kiểm tra xem giỏ hàng có rỗng không
+                if (cartItems.isEmpty()) {
+                    Toast.makeText(CartActivity.this, "Giỏ hàng trống!", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(CartActivity.this, "Lỗi: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
 
-    @Override
-    public void onItemCheck(Cart item) {
-        //Log.d("CartActivity", "Item checked: " + item.getName());
-    }
+        Button purchaseButton = findViewById(R.id.button);
+        purchaseButton.setOnClickListener(v -> {
+            List<Cart> selectedItems = adapter.getSelectedItems();
+            Log.d("CartActivity", "Selected items count: " + selectedItems.size());
+            if (selectedItems.isEmpty()) {
+                Toast.makeText(CartActivity.this, "Vui lòng chọn ít nhất một sản phẩm!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
+            intent.putExtra("selectedItems", new ArrayList<>(selectedItems)); // Chuyển danh sách đã chọn
+            startActivity(intent);
+        });
 
-    @Override
-    public void onItemUncheck(Cart item) {
-        //Log.d("CartActivity", "Item unchecked: " + item.getName());
     }
 }
