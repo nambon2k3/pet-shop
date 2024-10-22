@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/add_product_bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="80dp"
+        android:padding="20dp">
+
+        <EditText
+            android:id="@+id/add_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/around_border"
+            android:gravity="start|center_vertical"
+            android:hint="Product Name"
+            android:padding="16dp"/>
+
+        <EditText
+            android:id="@+id/add_product_import_price"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/around_border"
+            android:gravity="start|center_vertical"
+            android:hint="Import Price"
+            android:padding="16dp"
+            android:inputType="numberDecimal"/>
+
+        <EditText
+            android:id="@+id/add_product_export_price"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/around_border"
+            android:gravity="start|center_vertical"
+            android:hint="Export Price"
+            android:padding="16dp"
+            android:inputType="numberDecimal"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp">
+
+            <EditText
+                android:id="@+id/add_product_height"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:background="@drawable/around_border"
+                android:gravity="start|center_vertical"
+                android:hint="Height"
+                android:padding="12dp"
+                android:inputType="numberDecimal"/>
+
+            <EditText
+                android:id="@+id/add_product_weight"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:background="@drawable/around_border"
+                android:gravity="start|center_vertical"
+                android:hint="Weight"
+                android:padding="12dp"
+                android:inputType="numberDecimal"/>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/add_product_stock"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/around_border"
+            android:gravity="start|center_vertical"
+            android:hint="Stock"
+            android:padding="16dp"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:src="@drawable/upload_img"
+            android:id="@+id/add_product_upload_image"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <TextView
+            android:id="@+id/add_product_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="Upload Image"
+            android:textColor="@color/textColorHint"
+            android:textAlignment="center"
+            android:textSize="15sp"/>
+
+        <EditText
+            android:id="@+id/add_product_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/around_border"
+            android:gravity="start|center_vertical"
+            android:hint="Description"
+            android:padding="16dp"
+            android:minLines="2"
+            android:maxLines="10"
+            android:scrollbars="vertical"
+            android:inputType="textMultiLine"
+            android:overScrollMode="always"
+        />
+
+        <Button
+            android:id="@+id/add_product_button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/textColorHint"
+            android:text="Add"
+            android:textSize="18sp"
+            app:cornerRadius="20dp"/>
+    </LinearLayout>
+</ScrollView>

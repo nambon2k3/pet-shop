@@ -28,4 +28,6 @@ public class ProductDetail {
     private boolean isDeleted;
     private int createdBy;
     private String createdAt;
+    private int height;
+    private int weight;
 }

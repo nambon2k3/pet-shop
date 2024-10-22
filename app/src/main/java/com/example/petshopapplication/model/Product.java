@@ -25,4 +25,5 @@ public class Product {
     private boolean isDeleted;
     private String createdAt;
     private int createdBy;
+
 }
