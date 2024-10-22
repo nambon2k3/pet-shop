@@ -9,4 +9,5 @@
     <color name="gray">#7C7B7B</color>
     <color name="yellow">#FFEB3B</color>
     <color name="red">#E03535</color>
+    <color name="deleteText">#8A8989</color>
 </resources>
