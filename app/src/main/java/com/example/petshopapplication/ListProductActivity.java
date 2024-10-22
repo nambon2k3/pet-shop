@@ -7,9 +7,12 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.petshopapplication.Adapter.CategoryAdapter;
 import com.example.petshopapplication.Adapter.ListProductAdapter;
+import com.example.petshopapplication.Adapter.ListProductCategoryAdapter;
 import com.example.petshopapplication.databinding.ActivityListProductBinding;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Product;
@@ -29,7 +32,7 @@ public class ListProductActivity extends AppCompatActivity {
     ActivityListProductBinding binding;
     FirebaseDatabase database;
     DatabaseReference reference;
-    private RecyclerView.Adapter productAdapter;
+    private RecyclerView.Adapter productAdapter, categoryAdapter;
     private String searchText;
     private String categoryId;
     private boolean isSeaching;
@@ -47,8 +50,41 @@ public class ListProductActivity extends AppCompatActivity {
         //getIntentExtra();
 
         initListProduct();
+        initCategory();
 
     }
+
+    private void initCategory() {
+        reference = database.getReference(getString(R.string.tbl_category_name));
+
+        List<Category> categoryItems = new ArrayList<>();
+        Query query = reference.orderByChild("isDeleted").equalTo(false);
+        query.limitToFirst(6).addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        categoryItems.add(dataSnapshot.getValue(Category.class));
+                    }
+
+                    if(categoryItems.size() > 1) {
+                        categoryAdapter = new ListProductCategoryAdapter(categoryItems);
+                        binding.rcvListProductCategory.setLayoutManager(new LinearLayoutManager(ListProductActivity.this, RecyclerView.HORIZONTAL, false));
+                        binding.rcvListProductCategory.setAdapter(categoryAdapter);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
+
 
     private void initListProduct() {
         reference = database.getReference(getString(R.string.tbl_product_name));
@@ -154,7 +190,7 @@ public class ListProductActivity extends AppCompatActivity {
 
         isSeaching = getIntent().getBooleanExtra("isSearch", false);
 
-        binding.tvLpTitle.setText(categoryName);
+        //binding.tvLpTitle.setText(categoryName);
         binding.imvGoBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
