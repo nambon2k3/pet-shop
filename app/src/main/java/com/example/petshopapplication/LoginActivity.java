@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                     String passwordFromDatabase = dataSnapshot.child(userKey).child("password").getValue(String.class);
                     if (password.equals(passwordFromDatabase)) {
                         edt_username.setError(null);
-                        Intent intent = new Intent(LoginActivity.this, ListProductActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, ProductDetailActivity.class);
                         startActivity(intent);
                     } else {
                         edt_password.setError(getString(R.string.msg_invalid_credential));
