@@ -6,17 +6,12 @@ import android.view.View;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.petshopapplication.Adapter.CategoryAdapter;
-import com.example.petshopapplication.Adapter.ListProductAdapter;
 import com.example.petshopapplication.Adapter.ListProductCategoryAdapter;
 import com.example.petshopapplication.databinding.ActivityListProductBinding;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Product;
-import com.example.petshopapplication.model.ProductDetail;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -111,7 +106,6 @@ public class ListProductActivity extends AppCompatActivity {
                             productItems.add(product);
                         }
                     }
-                    fetchProductDetails(productItems);
                 }
 
             }
@@ -124,64 +118,7 @@ public class ListProductActivity extends AppCompatActivity {
     }
 
 
-    public void fetchProductDetails(List<Product> productItems) {
-        reference = database.getReference(getString(R.string.tbl_product_detail_name));
 
-        List<ProductDetail> productDetailItems = new ArrayList<>();
-
-        for(Product product : productItems) {
-            Query query = reference.orderByChild("productId").equalTo(product.getId());
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(snapshot.exists()) {
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            productDetailItems.add(dataSnapshot.getValue(ProductDetail.class));
-                        }
-                        fetchCategory(productItems, productDetailItems);
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        }
-    }
-
-
-    public void fetchCategory(List<Product> productItems, List<ProductDetail> productDetailItems) {
-        reference = database.getReference(getString(R.string.tbl_category_name));
-        List<Category> categoryItems = new ArrayList<>();
-
-        for (Product product : productItems) {
-            Query query = reference.orderByChild("id").equalTo(product.getCategoryId());
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(snapshot.exists()) {
-                        for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            categoryItems.add(dataSnapshot.getValue(Category.class));
-                        }
-                        if(!categoryItems.isEmpty()) {
-                            binding.rcvListProduct.setLayoutManager(new GridLayoutManager(ListProductActivity.this, 2));
-                            productAdapter = new ListProductAdapter(productItems, productDetailItems, categoryItems);
-                            binding.rcvListProduct.setAdapter(productAdapter);
-
-                        }
-                        binding.prgListProduct.setVisibility(View.GONE);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        }
-
-
-    }
 
 
     private void getIntentExtra() {

@@ -1,7 +1,6 @@
 package com.example.petshopapplication.model;
 
 
-import java.util.Date;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -17,13 +16,13 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Product {
+public class Variant {
     private String id;
-    private Category category;
-    private String name;
-    private String description;
-    private int discount;
-    private List<Variant> listVariant;
-    private boolean isDeleted;
-    private String createdAt;
+    private Size size;
+    private List<Color> listColor;
+    private Dimension dimension;
+    private double price;
+    private int stock;
+    private int deliveringQuantity;
+    private double importPrice;
 }
