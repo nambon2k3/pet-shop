@@ -16,6 +16,14 @@
     <string name="msg_password_fail">Passwords do not match</string>
     <string name="msg_login_fail">User does not exist</string>
     <string name="msg_invalid_credential">Invalid Credentials</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
+    <!--    // Shipping unit:-->
+    <string-array name="shipping_units">
+        <item>Tất cả</item>
+        <item>Giao Hàng Nhanh</item>
+        <item>Giao Hàng Tiết kiệm</item>
+    </string-array>
 </resources>
