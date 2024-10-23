@@ -64,54 +64,6 @@ public class AddProductActivity extends AppCompatActivity {
         String productDetailUniqueKey = "product-detail-" + databaseReferenceProducts.push().getKey();
         String createdAtString = String.valueOf(System.currentTimeMillis());
 
-        // Prepare product details
-        Product product = new Product(
-                productUniqueKey,
-                name,
-                description,
-                "1", // categoryID
-                "available", // status
-                false,
-                createdAtString, // createdAt
-                1001 // createdBy
-        );
-
-        // Prepare product details
-        ProductDetail productDetails = new ProductDetail(
-                productDetailUniqueKey,
-                productUniqueKey,
-                exportPrice,
-                "https://media.istockphoto.com/id/1017046150/photo/sale-shopping-dog.jpg?s=612x612&w=0&k=20&c=YxRVbcmq5BZMiurdsO3WYO-FYbUgmJG70tqUNov7wkw",
-                stock,
-                0,
-                importPrice,
-                0,
-                false,
-                1001,
-                createdAtString, // createdAt
-                height,
-                weight,
-                length,
-                width
-        );
-
-        // Save the product to Firebase
-        databaseReferenceProducts.child(productUniqueKey).setValue(product)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Save product details to Firebase
-                        databaseReferenceProductDetails.child(productDetailUniqueKey).setValue(productDetails)
-                                .addOnCompleteListener(detailsTask -> {
-                                    if (detailsTask.isSuccessful()) {
-                                        Toast.makeText(AddProductActivity.this, "Product added successfully", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(AddProductActivity.this, "Failed to add product details", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    } else {
-                        Toast.makeText(AddProductActivity.this, "Failed to add product", Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
 
