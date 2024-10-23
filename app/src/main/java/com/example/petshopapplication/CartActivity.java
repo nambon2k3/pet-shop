@@ -47,11 +47,11 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnIte
                 for(DataSnapshot proSnapshot: snapshot.getChildren()){
                     String name = proSnapshot.child("name").getValue(String.class);
                     Cart cartItem = new Cart();
-                    cartItem.setImageUrl(R.drawable.ic_launcher_background);
-                    cartItem.setName(name);
-                    cartItem.setPrice("1.2");
-                    cartItem.setQuatity("1");
-                    cartItems.add(cartItem);
+//                    cartItem.setImageUrl(R.drawable.ic_launcher_background);
+//                    cartItem.setName(name);
+//                    cartItem.setPrice("1.2");
+//                    cartItem.setQuatity("1");
+//                    cartItems.add(cartItem);
                 }
                 RecyclerView rec = findViewById(R.id.rec_cart);
                 CartAdapter adapter = new CartAdapter(cartItems);

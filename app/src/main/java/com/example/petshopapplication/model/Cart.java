@@ -6,9 +6,8 @@ import lombok.*;
 @Getter
 @Setter
 public class Cart {
-    private int imageUrl;
-    private String name;
-    private String price;
-    private String quatity;
-    private boolean isChecked;
+    private String cartId;
+    private String userId;
+    private String productId;
+    private String quantity;
 }

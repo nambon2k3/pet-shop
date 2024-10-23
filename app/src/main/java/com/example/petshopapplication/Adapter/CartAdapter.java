@@ -32,10 +32,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull CartAdapter.CartHolder holder, int position) {
-        holder.imv_item.setImageResource(productList.get(position).getImageUrl());
-        holder.tv_itemName.setText(productList.get(position).getName());
-        holder.tv_itemPrice.setText(productList.get(position).getPrice());
-        holder.tv_itemQuatity.setText(productList.get(position).getQuatity());
+        //holder.imv_item.setImageResource(productList.get(position).get());
+        //holder.tv_itemName.setText(productList.get(position).getName());
+        //holder.tv_itemPrice.setText(productList.get(position).getPrice());
+        //holder.tv_itemQuatity.setText(productList.get(position).getQuatity());
 
 
         //CheckBox Event
