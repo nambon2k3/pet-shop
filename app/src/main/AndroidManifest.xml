@@ -16,46 +16,35 @@
         android:theme="@style/Theme.PetShopApplication"
         tools:targetApi="31">
         <activity
-            android:name=".OrderManageActivity"
-            android:exported="true">
-         <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
-
-
-             <category android:name="android.intent.category.LAUNCHER" />
-         </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".ListProductActivity"
-            android:exported="false" />
-        <activity
             android:name=".HomeActivity"
             android:exported="false" />
+        <activity
+            android:name=".AddFeedbackActivity"
+            android:exported="false"></activity>
+        <activity
+            android:name=".FeedbackListActivity"
+            android:exported="false"></activity>
+        <activity
+            android:name=".UpdateFeedbackActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FeedbackListUserActivity"
+            android:exported="false"></activity>
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="false"/>
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
+            android:exported="true" />
 
         <meta-data
             android:name="preloaded_fonts"

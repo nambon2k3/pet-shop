@@ -15,20 +15,20 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.R;
+import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Product;
-import com.example.petshopapplication.model.ProductDetail;
 
 import java.util.List;
 
 public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.ProductHolder>{
 
     List<Product> productItems;
-    List<ProductDetail> productDetailItems;
+    List<Category> categoryItems;
     Context context;
 
-    public ListProductAdapter(List<Product> productItems, List<ProductDetail> productDetailItems) {
+    public ListProductAdapter(List<Product> productItems, List<Category> categoryItems) {
         this.productItems = productItems;
-        this.productDetailItems = productDetailItems;
+        this.categoryItems = categoryItems;
     }
 
 
@@ -43,34 +43,15 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
     @Override
     public void onBindViewHolder(@NonNull ProductHolder holder, int position) {
         Product product = productItems.get(position);
-        ProductDetail productDetail = getProductDetail(product.getId());
-        holder.txt_product_name.setText(product.getName());
-        //Check if product is discounted
-        if(productDetail.getDiscount() > 0) {
-            //holder.tv_discount.setText(-1 * productDetail.getDiscount() + "%");
-            holder.tv_old_price.setVisibility(View.VISIBLE);
-            holder.tv_new_price.setVisibility(View.VISIBLE);
-            holder.tv_new_price.setText(String.format("%.2f", productDetail.getPrice() - (productDetail.getPrice() * productDetail.getDiscount() / 100)));
-            holder.tv_old_price.setText(String.format("%.2f", productDetail.getPrice()));
-            holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
-        } else {
-            holder.tv_discount.setVisibility(View.GONE);
-            holder.tv_old_price.setVisibility(View.VISIBLE);
-            holder.tv_new_price.setVisibility(View.GONE);
-            holder.tv_old_price.setText(String.format("%.2f", productDetail.getPrice()));
-        }
-        Glide.with(context)
-                .load(productDetail.getImageUrl())
-                .transform(new CenterCrop(), new RoundedCorners(30))
-                .into(holder.imv_product_image);
-        //holder.txt_rating.setText(product.getRating());
     }
 
-    public ProductDetail getProductDetail(String productId) {
-        for (ProductDetail productDetail : productDetailItems) {
-            if (productDetail.getProductId().equals(productId)) {
-                return productDetail;
+
+
+    public Category getCategory(String categoryId) {
+        for (Category category : categoryItems) {
+            if (category.getId().equals(categoryId)) {
+                return category;
             }
         }
         return null;
@@ -84,14 +65,16 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
 
     public class ProductHolder extends RecyclerView.ViewHolder {
         ImageView imv_product_image;
-        TextView txt_product_name, tv_rating, tv_discount, tv_old_price, tv_new_price;
+        TextView tv_product_name, tv_rating, tv_old_price, tv_new_price, tv_discount, tv_category;
         public ProductHolder(@NonNull View itemView) {
             super(itemView);
             imv_product_image = itemView.findViewById(R.id.imv_product_image);
-            txt_product_name = itemView.findViewById(R.id.txt_product_name);
+            tv_product_name = itemView.findViewById(R.id.tv_product_name);
             tv_new_price = itemView.findViewById(R.id.tv_new_price);
             tv_old_price = itemView.findViewById(R.id.tv_old_price);
+            tv_discount = itemView.findViewById(R.id.tv_discount);
             tv_rating = itemView.findViewById(R.id.tv_rating);
+            tv_category = itemView.findViewById(R.id.tv_category);
 
 
         }
