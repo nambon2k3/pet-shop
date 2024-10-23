@@ -67,6 +67,7 @@ public class FeedbackListActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
                     if (feedback != null && !feedback.isDeleted() && feedback.getProductId().equals(productId)) {
+                        System.out.println(feedback);
                         feedbackList.add(feedback); // Add feedback to the list
                     }
                 }
@@ -92,13 +93,17 @@ public class FeedbackListActivity extends AppCompatActivity {
 
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    System.out.println("go");
                     if(snapshot.exists()) {
+                        System.out.println("go");
                         //Get user data from database
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            System.out.println("go");
                             User user = dataSnapshot.getValue(User.class);
+                            System.out.println(user);
                             userItems.add(user);
                         }
-                        if(userItems.size() > 0) {
+                        if(!userItems.isEmpty()) {
                             feedbackAdapter = new FeedBackListAdapter(feedbackItems, userItems);
                             binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(FeedbackListActivity.this, RecyclerView.VERTICAL, true));
                             binding.rcvFeedback.setAdapter(feedbackAdapter);

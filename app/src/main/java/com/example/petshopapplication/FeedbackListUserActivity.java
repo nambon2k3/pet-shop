@@ -31,7 +31,7 @@ public class FeedbackListUserActivity extends AppCompatActivity {
     List<User> userItems;
     private DatabaseReference databaseReference;
     private FirebaseDatabase database;
-    String currentUserId = "";
+    String currentUserId = "u1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,6 @@ public class FeedbackListUserActivity extends AppCompatActivity {
     }
 
     private void fetchFeedbacks() {
-        User user = getUser(currentUserId);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -69,6 +68,7 @@ public class FeedbackListUserActivity extends AppCompatActivity {
                         feedbackList.add(feedback); // Add feedback to the list
                     }
                 }
+                fetchUserData(feedbackList);
             }
 
             @Override
@@ -78,12 +78,36 @@ public class FeedbackListUserActivity extends AppCompatActivity {
         });
     }
 
-    public User getUser(String userId) {
-        for (User user : userItems) {
-            if (user.getId().equals(userId)) {
-                return user;
-            }
+    private void fetchUserData(List<FeedBack> feedbackItems) {
+    databaseReference = database.getReference(getString(R.string.tbl_user_name));
+        for (FeedBack feedBack : feedbackItems) {
+            //Reference to the user table
+            databaseReference = database.getReference(getString(R.string.tbl_user_name));
+            //Get user data by user Id in feed back
+            Query query = databaseReference.orderByChild("id").equalTo(feedBack.getUserId());
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User user = null;
+                    if (snapshot.exists()) {
+                        //Get user data from database
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            user = dataSnapshot.getValue(User.class);
+                        }
+                        if (user != null) {
+                            feedbackAdapter = new FeedBackListAdapter(feedbackItems, user);
+                            binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(FeedbackListUserActivity.this, RecyclerView.VERTICAL, true));
+                            binding.rcvFeedback.setAdapter(feedbackAdapter);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
-        return null;
     }
 }

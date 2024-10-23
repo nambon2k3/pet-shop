@@ -38,11 +38,17 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
 
     List<FeedBack> feedBackItems;
     List<User> userItems;
+    User user = null;
     Context context;
 
     public FeedBackListAdapter(List<FeedBack> feedBackItems, List<User> userItems) {
         this.feedBackItems = feedBackItems;
         this.userItems = userItems;
+    }
+
+    public FeedBackListAdapter(List<FeedBack> feedBackItems, User user) {
+        this.feedBackItems = feedBackItems;
+        this.user = user;
     }
 
     @NonNull
@@ -56,9 +62,18 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
     @Override
     public void onBindViewHolder(@NonNull FeedbackHolder holder, int position) {
         FeedBack feedback = feedBackItems.get(position);
-        User user = getUser(feedback.getUserId());
+        if(user == null){
+            user = getUser(feedback.getUserId());
+        }
 
         // Display elements of feedback
+        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+            holder.imv_feedback_user_avatar.setVisibility(View.VISIBLE);
+            Glide.with(context)
+                    .load(user.getAvatar())
+                    .placeholder(R.drawable.icon) // Optional placeholder image
+                    .into(holder.imv_feedback_user_avatar);
+        }
         holder.tv_feedback_user_name.setText(user.getUsername());
         holder.tv_feedback_content.setText(feedback.getContent());
         holder.tv_feedback_created_at.setText(feedback.getCreatedAt().replace("T", " "));
@@ -98,12 +113,16 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
 
                     switch (selectedAction) {
                         case "Edit":
-                            // Perform update feedback logic here
                             updateFeedback(feedback);
                             break;
                         case "Delete":
-                            // Perform delete feedback logic here
                             deleteFeedback(feedback);
+                            break;
+                        case "Ban":
+                            deleteFeedback(feedback);
+                            break;
+                        case "Unban":
+                            unbanFeedback(feedback);
                             break;
                         default:
                             break;
@@ -162,8 +181,6 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
 
 
     private void deleteFeedback(FeedBack feedback) {
-        // Set the feedback's isDeleted field to true
-
         feedback.setDeleted(true);
 
         // Save the updated feedback in Firebase (with isDeleted = true)
@@ -177,4 +194,17 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
         });
     }
 
+    private void unbanFeedback(FeedBack feedback) {
+        feedback.setDeleted(false);
+
+        // Save the updated feedback in Firebase (with isDeleted = true)
+        DatabaseReference feedbackRef = FirebaseDatabase.getInstance().getReference("feedbacks").child(feedback.getId());
+        feedbackRef.setValue(feedback).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(context, "Feedback marked as deleted successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Failed to delete feedback", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }
