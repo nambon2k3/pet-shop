@@ -47,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
         btn_login.setOnClickListener(v -> {
             //CONTENT: Implement login logic
             checkUser();
-
         });
 
         //Handling register link click

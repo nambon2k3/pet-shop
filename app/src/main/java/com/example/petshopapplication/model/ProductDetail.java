@@ -30,4 +30,6 @@ public class ProductDetail {
     private String createdAt;
     private int height;
     private int weight;
+    private int length;
+    private int width;
 }

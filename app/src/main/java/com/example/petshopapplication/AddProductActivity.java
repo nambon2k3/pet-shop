@@ -1,16 +1,10 @@
 package com.example.petshopapplication;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.petshopapplication.databinding.ActivityAddProductBinding;
 import com.example.petshopapplication.model.Product;
@@ -18,8 +12,10 @@ import com.example.petshopapplication.model.ProductDetail;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+
 public class AddProductActivity extends AppCompatActivity {
 
+    private static final int PICK_IMAGE_REQUEST = 1;
     private ActivityAddProductBinding binding;
     private DatabaseReference databaseReferenceProducts, databaseReferenceProductDetails;
 
@@ -47,6 +43,8 @@ public class AddProductActivity extends AppCompatActivity {
         String description = binding.addProductDescription.getText().toString().trim();
         String heightStr = binding.addProductHeight.getText().toString().trim();
         String weightStr = binding.addProductWeight.getText().toString().trim();
+        String lengthStr = binding.addProductLength.getText().toString().trim();
+        String widthStr = binding.addProductWidth.getText().toString().trim();
 
         if (name.isEmpty() || importPriceStr.isEmpty() || stockStr.isEmpty() || exportPriceStr.isEmpty() || heightStr.isEmpty() || weightStr.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
@@ -58,6 +56,8 @@ public class AddProductActivity extends AppCompatActivity {
         int stock = Integer.parseInt(stockStr);
         int height = Integer.parseInt(heightStr);
         int weight = Integer.parseInt(weightStr);
+        int length = Integer.parseInt(lengthStr);
+        int width = Integer.parseInt(widthStr);
 
         // Create a unique key for the product
         String productUniqueKey = "product-" + databaseReferenceProducts.push().getKey();
@@ -90,7 +90,9 @@ public class AddProductActivity extends AppCompatActivity {
                 1001,
                 createdAtString, // createdAt
                 height,
-                weight
+                weight,
+                length,
+                width
         );
 
         // Save the product to Firebase
@@ -111,4 +113,9 @@ public class AddProductActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
+
+
+
 }
