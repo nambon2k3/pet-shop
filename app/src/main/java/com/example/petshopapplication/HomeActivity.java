@@ -48,7 +48,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
         database = FirebaseDatabase.getInstance();
-        initNewProduct();
+        //initNewProduct();
         initCategory();
         initFeedback();
 
@@ -62,7 +62,7 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    private void initNewProduct(){
+    private void initNewProduct(List<Category> categoryItems){
         reference = database.getReference(getString(R.string.tbl_product_name));
         //Display progress bar
         binding.prgHomeNewProduct.setVisibility(View.VISIBLE);
@@ -79,7 +79,7 @@ public class HomeActivity extends AppCompatActivity {
                             productItems.add(product);
                         }
                     }
-                    productAdapter = new ProductAdapter(productItems);
+                    productAdapter = new ProductAdapter(productItems, categoryItems);
                     binding.rcvNewProduct.setLayoutManager(new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false));
                     binding.rcvNewProduct.setAdapter(productAdapter);
                     binding.prgHomeNewProduct.setVisibility(View.INVISIBLE);
@@ -165,7 +165,7 @@ public class HomeActivity extends AppCompatActivity {
 
         List<Category> categoryItems = new ArrayList<>();
         Query query = reference.orderByChild("isDeleted").equalTo(false);
-        query.limitToFirst(6).addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -180,6 +180,7 @@ public class HomeActivity extends AppCompatActivity {
                         binding.rcvHomeCategory.setAdapter(categoryAdapter);
                     }
                     binding.prgHomeCategory.setVisibility(View.GONE);
+                    initNewProduct(categoryItems);
                 }
             }
 
