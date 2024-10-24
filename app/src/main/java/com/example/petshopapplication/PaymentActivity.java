@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -110,6 +111,11 @@ public class PaymentActivity extends AppCompatActivity {
                 Toast.makeText(PaymentActivity.this, "Error fetching address: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("PaymentActivity", "Error fetching address: " + databaseError.getMessage());
             }
+        });
+        Button changeAddressButton = findViewById(R.id.changeAddressButton); // ID của nút "Thay đổi địa chỉ"
+        changeAddressButton.setOnClickListener(v -> {
+            Intent intent = new Intent(PaymentActivity.this, AddressSelectionActivity.class);
+            startActivity(intent); // Mở AddressSelectionActivity
         });
 
     }
