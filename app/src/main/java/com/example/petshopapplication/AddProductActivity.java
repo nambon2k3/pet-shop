@@ -7,8 +7,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petshopapplication.databinding.ActivityAddProductBinding;
-import com.example.petshopapplication.model.Product;
-import com.example.petshopapplication.model.ProductDetail;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 

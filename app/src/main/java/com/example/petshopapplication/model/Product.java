@@ -19,10 +19,12 @@ import lombok.ToString;
 @ToString
 public class Product {
     private String id;
-    private Category category;
+    private String categoryId;
     private String name;
     private String description;
     private int discount;
+    private String baseImageURL;
+    private double basePrice;
     private List<Variant> listVariant;
     private boolean isDeleted;
     private String createdAt;

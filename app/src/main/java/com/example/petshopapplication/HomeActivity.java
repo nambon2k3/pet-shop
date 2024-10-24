@@ -79,7 +79,10 @@ public class HomeActivity extends AppCompatActivity {
                             productItems.add(product);
                         }
                     }
-
+                    productAdapter = new ProductAdapter(productItems);
+                    binding.rcvNewProduct.setLayoutManager(new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                    binding.rcvNewProduct.setAdapter(productAdapter);
+                    binding.prgHomeNewProduct.setVisibility(View.INVISIBLE);
                 }
 
             }
