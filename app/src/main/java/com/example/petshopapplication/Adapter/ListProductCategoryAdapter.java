@@ -49,7 +49,7 @@ public class ListProductCategoryAdapter extends RecyclerView.Adapter<ListProduct
 
     @Override
     public int getItemCount() {
-        return categoryItems.size();
+        return categoryItems.size() > 6 ? 6 : categoryItems.size();
     }
 
     class CategoryHolder extends RecyclerView.ViewHolder{

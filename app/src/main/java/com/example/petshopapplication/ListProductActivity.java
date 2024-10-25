@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.petshopapplication.Adapter.ListProductAdapter;
 import com.example.petshopapplication.Adapter.ListProductCategoryAdapter;
 import com.example.petshopapplication.databinding.ActivityListProductBinding;
 import com.example.petshopapplication.model.Category;
@@ -44,7 +46,7 @@ public class ListProductActivity extends AppCompatActivity {
 
         //getIntentExtra();
 
-        initListProduct();
+        //initListProduct();
         initCategory();
 
     }
@@ -54,7 +56,7 @@ public class ListProductActivity extends AppCompatActivity {
 
         List<Category> categoryItems = new ArrayList<>();
         Query query = reference.orderByChild("isDeleted").equalTo(false);
-        query.limitToFirst(6).addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -68,6 +70,7 @@ public class ListProductActivity extends AppCompatActivity {
                         binding.rcvListProductCategory.setLayoutManager(new LinearLayoutManager(ListProductActivity.this, RecyclerView.HORIZONTAL, false));
                         binding.rcvListProductCategory.setAdapter(categoryAdapter);
                     }
+                    initListProduct(categoryItems);
                 }
             }
 
@@ -81,7 +84,7 @@ public class ListProductActivity extends AppCompatActivity {
 
 
 
-    private void initListProduct() {
+    private void initListProduct(List<Category> categoryItems) {
         reference = database.getReference(getString(R.string.tbl_product_name));
         //Display progress bar
         binding.prgListProduct.setVisibility(View.VISIBLE);
@@ -101,11 +104,11 @@ public class ListProductActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Product product = dataSnapshot.getValue(Product.class);
-                        if(!product.isDeleted()) {
-                            productItems.add(product);
-                        }
+                        productItems.add(dataSnapshot.getValue(Product.class));
                     }
+
+                    productAdapter = new ListProductAdapter(productItems, categoryItems);
+
                 }
 
             }

@@ -17,4 +17,8 @@ public class Color {
     private String id;
     private String name;
     private String imageUrl;
+    private int stock;
+    private int deliveringQuantity;
+    private boolean isDeleted;
+    private String createdAt;
 }
