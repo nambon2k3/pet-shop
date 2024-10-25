@@ -18,7 +18,7 @@
             android:name=".AddProductVariantActivity"
             android:exported="false" />
         <activity
-            android:name=".utils.AddProductVariantActivity"
+            android:name=".AddProductActivity"
             android:exported="false" />
         <activity
             android:name=".HomeActivity"
