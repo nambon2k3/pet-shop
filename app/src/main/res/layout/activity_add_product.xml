@@ -32,6 +32,20 @@
             android:gravity="start|center_vertical"
             android:hint="Product Name"
             android:padding="16dp"/>
+
+        <EditText
+            android:id="@+id/add_product_category"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/around_border"
+            android:gravity="start|center_vertical"
+            android:hint="Category"
+            android:padding="16dp"
+            />
+
         <EditText
             android:id="@+id/add_product_import_price"
             android:layout_width="match_parent"
@@ -56,6 +70,20 @@
             android:hint="Export Price"
             android:padding="16dp"
             android:inputType="numberDecimal"/>
+
+        <EditText
+            android:id="@+id/add_product_discount"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/around_border"
+            android:gravity="start|center_vertical"
+            android:hint="Discount"
+            android:padding="16dp"
+            android:inputType="numberDecimal"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

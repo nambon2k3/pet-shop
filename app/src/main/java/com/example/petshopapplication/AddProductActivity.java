@@ -15,7 +15,4 @@ import com.google.firebase.database.FirebaseDatabase;
 public class AddProductActivity extends AppCompatActivity {
 
     }
-
-
-
 }
