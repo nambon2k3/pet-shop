@@ -25,4 +25,6 @@ public class Variant {
     private int stock;
     private int deliveringQuantity;
     private double importPrice;
+    private boolean isDeleted;
+    private String createdAt;
 }
