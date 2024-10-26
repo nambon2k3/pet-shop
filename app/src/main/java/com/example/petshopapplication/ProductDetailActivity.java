@@ -19,11 +19,14 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.Adapter.FeedBackAdapter;
 import com.example.petshopapplication.Adapter.ListProductAdapter;
 import com.example.petshopapplication.Adapter.ListProductCategoryAdapter;
+import com.example.petshopapplication.Adapter.ProductImageAdapter;
 import com.example.petshopapplication.databinding.ActivityProductDetailBinding;
 import com.example.petshopapplication.model.Category;
+import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.User;
+import com.example.petshopapplication.model.Variant;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +39,7 @@ import java.util.List;
 
 import lombok.NonNull;
 
-public class ProductDetailActivity extends AppCompatActivity {
+public class ProductDetailActivity extends AppCompatActivity implements ProductImageAdapter.OnProductImageClickListener{
 
 
     ActivityProductDetailBinding binding;
@@ -48,6 +51,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private final int ITEMS_PER_PAGE = 16;
     private ListProductAdapter productAdapter;
     private FeedBackAdapter feedBackAdapter;
+    private ProductImageAdapter productImageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,44 +85,24 @@ public class ProductDetailActivity extends AppCompatActivity {
                          Product product = dataSnapshot.getValue(Product.class);
                          binding.tvProductName.setText(product.getName());
 
-                        double oldPrice = product.getBasePrice();
-                        String imageUrl = product.getBaseImageURL();
-                        int stock = 0;
-
                         //Check if product have variants
                         if(!product.getListVariant().isEmpty()) {
-                            oldPrice = product.getListVariant().get(0).getPrice();
-                            stock = product.getListVariant().get(0).getStock();
-                            //check if product have color variants
-                            if(!product.getListVariant().get(0).getListColor().isEmpty()) {
-                                imageUrl = product.getListVariant().get(0).getListColor().get(0).getImageUrl();
-                                stock = product.getListVariant().get(0).getListColor().get(0).getStock();
+                            Variant variant = product.getListVariant().get(0);
+                            if(!variant.getListColor().isEmpty()) {
+                                Color color = variant.getListColor().get(0);
+                                fillProductData(product, variant, color);
+                            } else {
+                                fillProductData(product, variant, null);
                             }
-                        }
-
-                        //check if product is discounted
-                        if(product.getDiscount() > 0) {
-                            binding.tvDiscount.setText(String.valueOf("-" + product.getDiscount()) + "%");
-                            binding.tvOldPrice.setText(String.format("%.1f$", oldPrice));
-                            binding.tvOldPrice.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-                            binding.tvNewPrice.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
                         } else {
-                            binding.tvDiscount.setVisibility(View.GONE);
-                            binding.tvOldPrice.setVisibility(View.GONE);
-                            binding.tvNewPrice.setText(String.format("%.1f$", oldPrice));
+                            fillProductData(product, null, null);
                         }
 
-                        binding.tvDescription.setText(product.getDescription());
-                        binding.tvStockProduct.setText("Stock: " + stock);
 
-                         Glide.with(ProductDetailActivity.this)
-                                 .load(imageUrl)
-                                 .transform(new CenterCrop(), new RoundedCorners(30))
-                                 .into(binding.imvProductImage);
 
                          initCategory(product);
                          fetchFeedback(product);
-
+                         fetchProductImage(product);
                     }
 
 
@@ -130,6 +114,51 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void fillProductData(Product product, Variant variant, Color color) {
+        binding.tvProductName.setText(product.getName());
+        double oldPrice = product.getBasePrice();
+        String imageUrl = product.getBaseImageURL();
+        int stock = 0;
+
+        //Check if product have variants
+        if(variant != null) {
+            oldPrice = variant.getPrice();
+            stock = variant.getStock();
+            //check if product have color variants
+            if(color != null) {
+                imageUrl = color.getImageUrl();
+                stock = color.getStock();
+            }
+        }
+
+        //check if product is discounted
+        if(product.getDiscount() > 0) {
+            binding.tvDiscount.setText(String.valueOf("-" + product.getDiscount()) + "%");
+            binding.tvOldPrice.setText(String.format("%.1f$", oldPrice));
+            binding.tvOldPrice.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            binding.tvNewPrice.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
+        } else {
+            binding.tvDiscount.setVisibility(View.GONE);
+            binding.tvOldPrice.setVisibility(View.GONE);
+            binding.tvNewPrice.setText(String.format("%.1f$", oldPrice));
+        }
+
+        binding.tvDescription.setText(product.getDescription());
+        binding.tvStockProduct.setText("Stock: " + stock);
+
+        Glide.with(ProductDetailActivity.this)
+                .load(imageUrl)
+                .transform(new CenterCrop(), new RoundedCorners(30))
+                .into(binding.imvProductImage);
+    }
+
+
+    public void fetchProductImage(Product product) {
+        productImageAdapter = new ProductImageAdapter(product, ProductDetailActivity.this);
+        binding.rcvImageProduct.setLayoutManager(new LinearLayoutManager(ProductDetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
+        binding.rcvImageProduct.setAdapter(productImageAdapter);
     }
 
 
@@ -261,5 +290,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
 
-
+    @Override
+    public void onProductImageClick(Product product, Variant variant, Color color) {
+        fillProductData(product, variant, color);
+    }
 }
