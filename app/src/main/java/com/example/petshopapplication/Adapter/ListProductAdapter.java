@@ -44,6 +44,54 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
     public void onBindViewHolder(@NonNull ProductHolder holder, int position) {
         Product product = productItems.get(position);
 
+        //Check length of product name
+        if(product.getName().length() > 40) {
+            holder.tv_product_name.setText(product.getName().substring(0, 30) + "...");
+        } else {
+            holder.tv_product_name.setText(product.getName());
+        }
+
+        double oldPrice = product.getBasePrice();
+        String imageUrl = product.getBaseImageURL();
+        //Check if product have variants
+        if(!product.getListVariant().isEmpty()) {
+            oldPrice = product.getListVariant().get(0).getPrice();
+            //check if product have color variants
+            if(!product.getListVariant().get(0).getListColor().isEmpty()) {
+                imageUrl = product.getListVariant().get(0).getListColor().get(0).getImageUrl();
+            }
+        }
+
+        //check if product is discounted
+        if(product.getDiscount() > 0) {
+            holder.tv_discount.setText(String.valueOf("-" + product.getDiscount()) + "%");
+            holder.tv_old_price.setText(String.format("%.1f$", oldPrice));
+            holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.tv_new_price.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
+
+        } else {
+            holder.tv_discount.setVisibility(View.GONE);
+            holder.tv_old_price.setVisibility(View.GONE);
+            holder.tv_new_price.setText(String.format("%.1f$", oldPrice));
+        }
+
+        //Set category
+        holder.tv_category.setText(getCategoryById(product.getCategoryId()).getName());
+
+        Glide.with(context)
+                .load(imageUrl)
+                .transform(new CenterCrop(), new RoundedCorners(30))
+                .into(holder.imv_product_image);
+
+    }
+
+    private Category getCategoryById(String categoryId) {
+        for (Category category : categoryItems) {
+            if (category.getId().equals(categoryId)) {
+                return category;
+            }
+        }
+        return null;  // Return null if category not found
     }
 
 

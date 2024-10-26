@@ -6,6 +6,7 @@ import android.view.View;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -108,7 +109,9 @@ public class ListProductActivity extends AppCompatActivity {
                     }
 
                     productAdapter = new ListProductAdapter(productItems, categoryItems);
-
+                    binding.rcvListProduct.setLayoutManager(new GridLayoutManager(ListProductActivity.this, 2));
+                    binding.rcvListProduct.setAdapter(productAdapter);
+                    binding.prgListProduct.setVisibility(View.GONE);
                 }
 
             }
