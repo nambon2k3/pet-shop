@@ -1,6 +1,7 @@
 package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.petshopapplication.ProductDetailActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Product;
@@ -83,6 +85,13 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
                 .transform(new CenterCrop(), new RoundedCorners(30))
                 .into(holder.imv_product_image);
 
+        holder.itemView.setOnClickListener(v -> {
+            // Open product detail activity with product id
+            Intent intent = new Intent(context, ProductDetailActivity.class);
+            intent.putExtra("productId", product.getId());
+            context.startActivity(intent);
+        });
+
     }
 
     private Category getCategoryById(String categoryId) {
@@ -123,8 +132,6 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
             tv_discount = itemView.findViewById(R.id.tv_discount);
             tv_rating = itemView.findViewById(R.id.tv_rating);
             tv_category = itemView.findViewById(R.id.tv_category);
-
-
         }
     }
 

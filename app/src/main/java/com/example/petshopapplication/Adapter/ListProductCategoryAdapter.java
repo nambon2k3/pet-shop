@@ -15,16 +15,23 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Category;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
 public class ListProductCategoryAdapter extends RecyclerView.Adapter<ListProductCategoryAdapter.CategoryHolder>{
 
     List<Category> categoryItems;
+    OnCategoryClickListener onCategoryClickListener;
     Context context;
 
-    public ListProductCategoryAdapter(List<Category> categoryItems) {
+    public ListProductCategoryAdapter(List<Category> categoryItems, OnCategoryClickListener onCategoryClickListener) {
         this.categoryItems = categoryItems;
+        this.onCategoryClickListener = onCategoryClickListener;
+    }
+
+    public interface OnCategoryClickListener {
+        void onCategoryClick(Category category);
     }
 
 
@@ -45,6 +52,7 @@ public class ListProductCategoryAdapter extends RecyclerView.Adapter<ListProduct
                 .load(category.getImage())
                 .transform(new CenterCrop(), new RoundedCorners(30))
                 .into(holder.imv_cate_image);
+        holder.itemView.setOnClickListener(v -> onCategoryClickListener.onCategoryClick(category));
     }
 
     @Override
@@ -61,6 +69,7 @@ public class ListProductCategoryAdapter extends RecyclerView.Adapter<ListProduct
             super(itemView);
             imv_cate_image = itemView.findViewById(R.id.imv_cate_image);
             txt_cate_name = itemView.findViewById(R.id.txt_cate_name);
+
         }
     }
 }
