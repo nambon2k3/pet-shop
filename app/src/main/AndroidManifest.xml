@@ -18,6 +18,12 @@
             android:name=".HomeActivity"
             android:exported="false" />
         <activity
+            android:name=".ProductDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CartActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddFeedbackActivity"
             android:exported="false"></activity>
         <activity

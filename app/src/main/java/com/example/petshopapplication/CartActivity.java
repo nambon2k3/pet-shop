@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.CartAdapter;
 import com.example.petshopapplication.model.Cart;
+import com.example.petshopapplication.model.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -16,47 +17,50 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class CartActivity extends AppCompatActivity implements CartAdapter.OnItemCheckListener{
+public class CartActivity extends AppCompatActivity{
     FirebaseDatabase database;
-    DatabaseReference productRef;
-    DatabaseReference productDetailRef;
+    DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
+
+        //Get Id of current User (Fake Id)
+        String userId = "u1";
+
+        //Initialize firebase
         database = FirebaseDatabase.getInstance();
-        productRef = database.getReference("products");
-        productDetailRef = database.getReference("product-details");
 
-//        Cart c1 = new Cart(R.drawable.ic_launcher_background, "ten", "1.2", "1");
-//        Cart c2 = new Cart(R.drawable.ic_launcher_background, "ten2", "1.3", "1");
-//        Cart c3 = new Cart(R.drawable.ic_launcher_background, "ten3", "1.4", "1");
+        initCart(userId);
+    }
 
+    public void initCart(String userId){
+        reference = database.getReference(getString(R.string.tbl_cart_name));
 
+        //Read data cart of current user from firebase
+        reference.orderByChild("userId").equalTo(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
 
-
-        productRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Cart> cartItems = new ArrayList<>();
+                List<Cart> cartList = new ArrayList<>();
 
-                for(DataSnapshot proSnapshot: snapshot.getChildren()){
-                    String name = proSnapshot.child("name").getValue(String.class);
-                    Cart cartItem = new Cart();
-//                    cartItem.setImageUrl(R.drawable.ic_launcher_background);
-//                    cartItem.setName(name);
-//                    cartItem.setPrice("1.2");
-//                    cartItem.setQuatity("1");
-//                    cartItems.add(cartItem);
+                if(snapshot.exists()){
+                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        Cart cart = dataSnapshot.getValue(Cart.class);
+                        cartList.add(cart);
+
+                        getListProductInCart(cartList);
+                    }
+
+
                 }
-                RecyclerView rec = findViewById(R.id.rec_cart);
-                CartAdapter adapter = new CartAdapter(cartItems);
-                rec.setLayoutManager(new LinearLayoutManager(CartActivity.this));
-                rec.setAdapter(adapter);
             }
 
             @Override
@@ -65,14 +69,118 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnIte
             }
         });
     }
+    public void getListProductInCart(List<Cart> cartList){
+        List<Product> productList = new ArrayList<>();
+        List<String> cartProductId = new ArrayList<>();
 
-    @Override
-    public void onItemCheck(Cart item) {
-        //Log.d("CartActivity", "Item checked: " + item.getName());
+        for(Cart cart: cartList){
+            cartProductId.add(cart.getProductId());
+        }
+
+        reference = database.getReference(getString(R.string.tbl_product_name));
+            reference.orderByChild("id")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(snapshot.exists()){
+                        for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+
+                            //check if product is in cart or not
+                            if(cartProductId.contains(dataSnapshot.
+                                    child("id").getValue(String.class))){
+                                productList.add(dataSnapshot.getValue(Product.class));
+                            }
+                        }
+
+                        RecyclerView rec = findViewById(R.id.rec_cart);
+                        CartAdapter adapter = new CartAdapter(productList, cartList);
+                        rec.setLayoutManager(new LinearLayoutManager(CartActivity.this));
+                        rec.setAdapter(adapter);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
     }
 
-    @Override
-    public void onItemUncheck(Cart item) {
-        //Log.d("CartActivity", "Item unchecked: " + item.getName());
-    }
+//    public Map<Integer, String> getColorListOfProduct(Cart cart){
+//        Map<Integer, String> colorList = new HashMap<>();
+//
+//        reference = database.getReference(getString(R.string.tbl_product_name));
+//        reference.orderByChild("id").equalTo(cart.getProductId())
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        if(snapshot.exists()){
+//                            for(DataSnapshot proSnapshot: snapshot.getChildren()){
+//                                for(DataSnapshot variantSnapshot: proSnapshot.getChildren()){
+//
+//                                    //check if product has color
+//                                    if(variantSnapshot.hasChild("listColor")){
+//                                        Integer colorId = variantSnapshot.child("listColor").
+//                                                child("id").getValue(Integer.class);
+//                                        String colorName = variantSnapshot.child("listColor")
+//                                                .child("name").getValue(String.class);
+//                                        colorList.put(colorId, colorName);
+//
+//                                    }
+//                                }
+//
+//                            }
+//
+//                        }
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                    }
+//                });
+//        return colorList;
+//    }
+//
+//    public Map<Integer, String> getSizeListOfProduct(Cart cart){
+//        Map<Integer, String> sizeList = new HashMap<>();
+//
+//        reference = database.getReference(getString(R.string.tbl_product_name));
+//        reference.orderByChild("id").equalTo(cart.getProductId())
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        if(snapshot.exists()){
+//                            for(DataSnapshot proSnapshot: snapshot.getChildren()){
+//                                for(DataSnapshot variantSnapshot: proSnapshot.getChildren()){
+//
+//                                    //check if product has size
+//                                    if(variantSnapshot.hasChild("size")){
+//                                        Integer colorId = variantSnapshot.child("size").
+//                                                child("id").getValue(Integer.class);
+//                                        String colorName = variantSnapshot.child("size")
+//                                                .child("name").getValue(String.class);
+//                                        sizeList.put(colorId, colorName);
+//
+//                                    }
+//                                }
+//
+//                            }
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                    }
+//                });
+//        return sizeList;
+//    }
+
+
+
+
 }

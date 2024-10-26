@@ -9,5 +9,7 @@ public class Cart {
     private String cartId;
     private String userId;
     private String productId;
-    private String quantity;
+    private String quatity;
+    private String selectedColorId;
+    private String selectedSizeId;
 }
