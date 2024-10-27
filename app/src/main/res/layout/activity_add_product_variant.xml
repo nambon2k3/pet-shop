@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+    <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -20,7 +20,7 @@
             android:layout_marginTop="100dp"
             android:padding="20dp">
             <EditText
-                android:id="@+id/add_product_name"
+                android:id="@+id/add_pv_name"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginStart="10dp"
@@ -32,7 +32,7 @@
                 android:padding="16dp"/>
 
             <EditText
-                android:id="@+id/add_product_import_price"
+                android:id="@+id/add_pv_import_price"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginStart="10dp"
@@ -43,27 +43,25 @@
                 android:hint="Import Price"
                 android:padding="16dp" />
 
-            <EditText
-                android:id="@+id/add_product_export_price"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/add_pv_button_add_size_color"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
-                android:background="@drawable/around_border"
-                android:gravity="start|center_vertical"
-                android:hint="Export Price"
-                android:padding="16dp" />
-            <TextView
-                android:id="@+id/add_product_upload_img_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="15dp"
-                android:text="Product Dimension"
-                android:textColor="@color/textColorHint"
-                android:textSize="15sp"/>
+                android:backgroundTint="@color/textColorHint"
+                android:text="Add Size and Color"
+                android:textSize="15sp"
+                app:cornerRadius="20dp"/>
+
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -131,24 +129,8 @@
                 android:gravity="start|center_vertical"
                 android:hint="Stock"
                 android:padding="16dp"/>
-            <EditText
-                android:id="@+id/add_product_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/around_border"
-                android:gravity="start|center_vertical"
-                android:hint="Description"
-                android:padding="16dp"
-                android:minLines="2"
-                android:maxLines="10"
-                android:scrollbars="vertical"
-                android:inputType="textMultiLine"
-                android:overScrollMode="always" />
             <Button
-                android:id="@+id/add_product_button"
+                android:id="@+id/add_pv_button"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginStart="10dp"
