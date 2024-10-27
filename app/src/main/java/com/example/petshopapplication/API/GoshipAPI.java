@@ -2,13 +2,17 @@ package com.example.petshopapplication.API;
 
 import com.example.petshopapplication.API_model.CityResponse;
 import com.example.petshopapplication.API_model.DistrictResponse;
+import com.example.petshopapplication.API_model.RateRequest;
+import com.example.petshopapplication.API_model.RateResponse;
 import com.example.petshopapplication.API_model.WardResponse;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface GoshipAPI {
@@ -28,4 +32,12 @@ public interface GoshipAPI {
                                 @Header("Accept") String accept,
                                 @Header("Content-Type") String contentType,
                                 @Header("Authorization") String authToken);
+
+    @POST("/api/v2/rates")
+    Call<RateResponse> getRates(
+            @Header("Accept") String accept,
+            @Header("Content-Type") String contentType,
+            @Header("Authorization") String authToken,
+            @Body RateRequest rateRequest
+    );
 }

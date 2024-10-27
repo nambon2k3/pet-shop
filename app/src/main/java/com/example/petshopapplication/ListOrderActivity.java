@@ -15,10 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.API.GoshipAPI;
 import com.example.petshopapplication.API.RetrofitClient;
+import com.example.petshopapplication.API_model.Address;
 import com.example.petshopapplication.API_model.City;
 import com.example.petshopapplication.API_model.CityResponse;
 import com.example.petshopapplication.API_model.District;
 import com.example.petshopapplication.API_model.DistrictResponse;
+import com.example.petshopapplication.API_model.Parcel;
+import com.example.petshopapplication.API_model.RateRequest;
+import com.example.petshopapplication.API_model.RateResponse;
+import com.example.petshopapplication.API_model.Shipment;
 import com.example.petshopapplication.API_model.Ward;
 import com.example.petshopapplication.API_model.WardResponse;
 import com.example.petshopapplication.Adapter.OrderAdapter;
@@ -70,6 +75,21 @@ public class ListOrderActivity extends AppCompatActivity {
         loadCities();
         loadDistricts("100000");
         loadWards("100900");
+
+        // Test get rates:
+
+        String fromDistrict = "100900";
+        String fromCity = "100000";
+        String toDistrict = "100200";
+        String toCity = "100000";
+        int cod = 500000;
+        int weight = 220;
+        int width = 10;
+        int height = 15;
+        int length = 15;
+
+        loadRates(fromDistrict, fromCity, toDistrict, toCity, cod, cod, width, height, length, weight);
+
 
     }
 
@@ -154,6 +174,45 @@ public class ListOrderActivity extends AppCompatActivity {
         });
     }
 
+    private void loadRates(String fromDistrict, String fromCity, String toDistrict, String toCity,
+                           int cod, int amount, int width, int height, int length, int weight) {
+
+        GoshipAPI api = RetrofitClient.getRetrofitInstance().create(GoshipAPI.class);
+
+        // Tạo thông tin địa chỉ và gói hàng với các tham số truyền vào
+        Address addressFrom = new Address(fromDistrict, fromCity);
+        Address addressTo = new Address(toDistrict, toCity);
+        Parcel parcel = new Parcel(cod, amount, width, height, length, weight);
+        Shipment shipment = new Shipment(addressFrom, addressTo, parcel);
+
+        RateRequest rateRequest = new RateRequest(shipment);
+
+        // Gọi API để lấy biểu phí
+        Call<RateResponse> call = api.getRates("application/json", "application/json", AUTH_TOKEN, rateRequest);
+        call.enqueue(new Callback<RateResponse>() {
+            @Override
+            public void onResponse(Call<RateResponse> call, Response<RateResponse> response) {
+                if (response.isSuccessful()) {
+                    RateResponse rateResponse = response.body();
+                    if (rateResponse != null && rateResponse.getData() != null) {
+                        for (int i = 0; i < rateResponse.getData().size(); i++) {
+                            Log.d(TAG, "Carrier " + (i + 1) + ": " + rateResponse.getData().get(i).getCarrierName() +
+                                    ", Fee: " + rateResponse.getData().get(i).getTotalFee());
+                        }
+                    } else {
+                        Log.e(TAG, "No data in rate response");
+                    }
+                } else {
+                    Log.e(TAG, "Request failed: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RateResponse> call, Throwable t) {
+                Log.e(TAG, "API call failed: " + t.getMessage());
+            }
+        });
+    }
 
 
     private void initOrder() {
