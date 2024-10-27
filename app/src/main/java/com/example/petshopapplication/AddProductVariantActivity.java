@@ -42,12 +42,12 @@ public class AddProductVariantActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
 
         // Set OnClickListener for the button
-        binding.addPvButtonAddSize.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddSize();
-            }
-        });
+//        binding.addPvButtonAddSize.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showAddSize();
+//            }
+//        });
     }
 
     private void showAddSize(){
