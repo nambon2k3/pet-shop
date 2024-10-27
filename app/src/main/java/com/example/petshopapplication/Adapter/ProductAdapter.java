@@ -16,29 +16,19 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.R;
+import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Product;
-import com.example.petshopapplication.model.ProductDetail;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.ProductHolder>{
 
     List<Product> productItems;
-    List<ProductDetail> productDetailItems;
+    List<Category> categoryItems;
     Context context;
 
-    public ProductAdapter(List<Product> productItems, List<ProductDetail> productDetailItems) {
+    public ProductAdapter(List<Product> productItems, List<Category> categoryItems) {
         this.productItems = productItems;
-        this.productDetailItems = productDetailItems;
+        this.categoryItems = categoryItems;
     }
 
 
@@ -53,45 +43,69 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
     @Override
     public void onBindViewHolder(@NonNull ProductHolder holder, int position) {
         Product product = productItems.get(position);
-        ProductDetail productDetail = getProductDetail(product.getId());
-        holder.txt_product_name.setText(product.getName());
-        //Check if product is discounted
-        if(productDetail.getDiscount() > 0) {
-            holder.tv_discount.setText(-1 * productDetail.getDiscount() + "%");
+
+        //Check length of product name
+        if(product.getName().length() > 40) {
+            holder.txt_product_name.setText(product.getName().substring(0, 30) + "...");
         } else {
-            holder.tv_discount.setVisibility(View.GONE);
+            holder.txt_product_name.setText(product.getName());
+
+        }
+        double oldPrice = product.getBasePrice();
+        String imageUrl = product.getBaseImageURL();
+
+        //Check if product have variants
+        if(!product.getListVariant().isEmpty()) {
+            oldPrice = product.getListVariant().get(0).getPrice();
+            //check if product have color variants
+            if(!product.getListVariant().get(0).getListColor().isEmpty()) {
+                imageUrl = product.getListVariant().get(0).getListColor().get(0).getImageUrl();
+            }
         }
 
+        //check if product is discounted
+        if(product.getDiscount() > 0) {
+            holder.tv_discount.setText(String.valueOf("-" + product.getDiscount()) + "%");
+            holder.tv_old_price.setText(String.format("%.1f$", oldPrice));
+            holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.tv_new_price.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
 
-        holder.tv_old_price.setText(String.valueOf(productDetail.getPrice())+"$");
-        holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            holder.tv_discount.setVisibility(View.GONE);
+            holder.tv_old_price.setVisibility(View.GONE);
+            holder.tv_new_price.setText(String.format("%.1f$", oldPrice));
+        }
 
-        holder.txt_price.setText(String.format("%.2f$",productDetail.getPrice() * ( 1- productDetail.getDiscount()/100.0)));
+        //Set category
+        holder.tv_category.setText(getCategoryById(product.getCategoryId()).getName());
 
         Glide.with(context)
-                .load(productDetail.getImageUrl())
+                .load(imageUrl)
                 .transform(new CenterCrop(), new RoundedCorners(30))
                 .into(holder.imv_product_image);
 
+
+    }
+
+    private Category getCategoryById(String categoryId) {
+        for (Category category : categoryItems) {
+            if (category.getId().equals(categoryId)) {
+                return category;
+            }
+        }
+        return null;  // Return null if category not found
     }
 
     @Override
     public int getItemCount() {
-        return productDetailItems.size();
+        return productItems.size();
     }
 
-    public ProductDetail getProductDetail(String productId) {
-        for (ProductDetail productDetail : productDetailItems) {
-            if (productDetail.getProductId().equals(productId)) {
-                return productDetail;
-            }
-        }
-        return null;
-    }
+
 
     public class ProductHolder extends RecyclerView.ViewHolder {
 
-        TextView txt_product_name, txt_price, txt_star, tv_discount, tv_old_price;
+        TextView txt_product_name, tv_new_price, txt_star, tv_discount, tv_old_price, tv_category;
         ImageView imv_product_image;
 
 
@@ -99,10 +113,11 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
             super(itemView);
             tv_discount = itemView.findViewById(R.id.tv_discount);
             txt_product_name = itemView.findViewById(R.id.txt_product_name);
-            txt_price = itemView.findViewById(R.id.txt_price);
+            tv_new_price = itemView.findViewById(R.id.txt_price);
             txt_star = itemView.findViewById(R.id.txt_star);
             imv_product_image = itemView.findViewById(R.id.imv_product_image);
             tv_old_price = itemView.findViewById(R.id.tv_old_price);
+            tv_category = itemView.findViewById(R.id.tv_category);
         }
     }
 }

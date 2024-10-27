@@ -2,9 +2,6 @@ package com.example.petshopapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,8 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.PaymentAdapter;
-import com.example.petshopapplication.model.Address;
 import com.example.petshopapplication.model.Cart;
+import com.example.petshopapplication.model.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,98 +23,83 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentActivity extends AppCompatActivity {
-    private TextView totalPriceView;
-    private TextView addressTextView; // TextView để hiển thị địa chỉ
+    private RecyclerView recyclerView;
+    private List<Cart> selectedCartItems; // Danh sách sản phẩm đã chọn
+    private List<Product> productList = new ArrayList<>(); // Danh sách sản phẩm
+    private TextView tvTotalPrice;
     private FirebaseDatabase database;
-    private DatabaseReference addressRef; // Tham chiếu đến địa chỉ trong cơ sở dữ liệu
+    private DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.payment);
 
-        // Khởi tạo các view
-        totalPriceView = findViewById(R.id.totalPriceTextView);
-        addressTextView = findViewById(R.id.addressTextView); // ID của TextView
+        // Nhận dữ liệu từ CartActivity
+        selectedCartItems = (ArrayList<Cart>) getIntent().getSerializableExtra("selectedItems"); // Chuyển đổi sang ArrayList
 
         // Khởi tạo Firebase
         database = FirebaseDatabase.getInstance();
-        addressRef = database.getReference("addresses"); // Tham chiếu đến địa chỉ
-
-        // Nhận các sản phẩm đã chọn từ intent
-        List<Cart> selectedItems = (ArrayList<Cart>) getIntent().getSerializableExtra("selectedItems");
-
-        // Tính tổng giá
-        double totalPrice = 0.0;
-        if (selectedItems != null) {
-            for (Cart item : selectedItems) {
-                totalPrice += item.getPrice(); // Tính tổng giá của các sản phẩm đã chọn
-            }
-        }
-
-        // Cập nhật hiển thị tổng giá
-        totalPriceView.setText("₫" + totalPrice);
+        tvTotalPrice = findViewById(R.id.totalPriceTextView); // TextView để hiển thị tổng giá
 
         // Thiết lập RecyclerView
-        RecyclerView recyclerView = findViewById(R.id.recyclerViewProductList);
+        recyclerView = findViewById(R.id.recyclerViewProductList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Tạo adapter và thiết lập dữ liệu
-        PaymentAdapter paymentAdapter = new PaymentAdapter(selectedItems);
-        recyclerView.setAdapter(paymentAdapter);
-
-        // Lấy địa chỉ mặc định cho người dùng
-        String userId = "user123"; // ID của người dùng hiện tại
-        Log.d("PaymentActivity", "Fetching default address for user ID: " + userId);
-        fetchDefaultAddress(userId);
+        // Tải thông tin sản phẩm
+        loadProductDetails();
     }
 
-    private void fetchDefaultAddress(String userId) {
-        addressRef.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+    private void loadProductDetails() {
+        reference = database.getReference(getString(R.string.tbl_product_name));
+
+        // Lấy thông tin sản phẩm từ Firebase
+        List<String> productIds = new ArrayList<>();
+        for (Cart cart : selectedCartItems) {
+            productIds.add(cart.getProductId());
+        }
+
+        reference.orderByChild("id").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("PaymentActivity", "Data snapshot received: " + dataSnapshot.toString());
-
-                Address defaultAddress = null;
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Address address = snapshot.getValue(Address.class);
-                    if (address != null) {
-                        Log.d("PaymentActivity", "Fetched Address: " + address.getFullName() + ", isDefault: " + address.isDefault());
-                        if (address.isDefault() == false) {
-                            defaultAddress = address;
-                            Log.d("PaymentActivity", "Default address found: " + address.getFullName());
-                            break; // Thoát vòng lặp nếu tìm thấy địa chỉ mặc định
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        String productId = dataSnapshot.child("id").getValue(String.class);
+                        if (productIds.contains(productId)) {
+                            Product product = dataSnapshot.getValue(Product.class);
+                            if (product != null) {
+                                productList.add(product);
+                            }
                         }
-                    } else {
-                        Log.d("PaymentActivity", "Address is null for snapshot: " + snapshot.toString());
                     }
-                }
-
-                if (defaultAddress != null) {
-                    // Định dạng chuỗi địa chỉ và đặt vào TextView
-                    String addressString = defaultAddress.getFullName() + " | " + defaultAddress.getPhone() +
-                            "\n" + defaultAddress.getHouseNumber() + ", " +
-                            defaultAddress.getDistrict() + ", " + defaultAddress.getCity();
-                    addressTextView.setText(addressString);
-                } else {
-                    addressTextView.setText("No default address found.");
-                    Log.d("PaymentActivity", "No default address found for user ID: " + userId);
+                    // Cập nhật adapter với danh sách sản phẩm
+                    PaymentAdapter paymentAdapter = new PaymentAdapter(productList, selectedCartItems, PaymentActivity.this);
+                    recyclerView.setAdapter(paymentAdapter);
+                    calculateTotalPrice(); // Tính tổng giá sau khi sản phẩm đã được tải
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(PaymentActivity.this, "Error fetching address: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("PaymentActivity", "Error fetching address: " + databaseError.getMessage());
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý lỗi
+                Toast.makeText(PaymentActivity.this, "Có lỗi xảy ra khi tải dữ liệu!", Toast.LENGTH_SHORT).show();
             }
         });
-        Button changeAddressButton = findViewById(R.id.changeAddressButton);
-        changeAddressButton.setOnClickListener(v -> {
-            Intent intent = new Intent(PaymentActivity.this, AddressSelectionActivity.class);
-            startActivity(intent); // Mở AddressSelectionActivity
-        });
+    }
 
-
+    private void calculateTotalPrice() {
+        double totalPrice = 0.0;
+        for (Cart cart : selectedCartItems) {
+            // Tìm sản phẩm tương ứng và tính giá
+            for (Product product : productList) {
+                if (product.getId().equals(cart.getProductId())) {
+                    double price = product.getListVariant().get(0).getPrice();
+                    int quantity = Integer.parseInt(cart.getQuatity());
+                    totalPrice += price * quantity; // Tính tổng giá
+                }
+            }
+        }
+        // Cập nhật TextView với tổng giá
+        tvTotalPrice.setText(String.format("Tổng tiền: %.2f$", totalPrice));
     }
 }

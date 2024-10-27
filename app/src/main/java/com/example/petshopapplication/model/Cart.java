@@ -2,22 +2,17 @@ package com.example.petshopapplication.model;
 
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Setter
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Cart implements Serializable {
+    private String cartId;
+    private String userId;
     private String productId;
-    private String productName;
-    private String productDescription;
-    private String imageUrl;
-    private double price;
-    private int stock;
-    private int quantity;
-    private boolean isDeleted;
+    private String quatity; // Sửa từ 'quatity' thành 'quantity'
+    private String selectedColorId;
+    private String selectedSizeId;
 }

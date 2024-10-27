@@ -40,6 +40,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
     implementation platform('com.google.firebase:firebase-bom:33.4.0')
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-storage:20.0.1'
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
@@ -48,4 +49,7 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
 }

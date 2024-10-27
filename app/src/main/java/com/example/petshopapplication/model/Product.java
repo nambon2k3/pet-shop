@@ -2,6 +2,7 @@ package com.example.petshopapplication.model;
 
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,11 +19,13 @@ import lombok.ToString;
 @ToString
 public class Product {
     private String id;
+    private String categoryId;
     private String name;
     private String description;
-    private String categoryId;
-    private String status;
+    private int discount;
+    private String baseImageURL;
+    private double basePrice;
+    private List<Variant> listVariant;
     private boolean isDeleted;
     private String createdAt;
-    private int createdBy;
 }
