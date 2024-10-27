@@ -30,28 +30,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
-
         <TextView
-            android:id="@+id/addressTextView"
+            android:id="@+id/edt_update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
             android:text="Sửa"
             android:textColor="@android:color/holo_red_dark" />
     </LinearLayout>
 
     <TextView
+        android:id="@+id/addressTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
         android:text="Nhà Trọ Minh Quân, Thôn Thái Bình"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="14sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:text="Xã Bình Yên, Huyện Thạch Thất, Hà Nội"
         android:textColor="@android:color/darker_gray"
         android:textSize="14sp" />
 
@@ -67,7 +60,6 @@
         android:text="Mặc định"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="14sp" />
-
     <View
         android:layout_width="match_parent"
         android:layout_height="3dp"
@@ -75,4 +67,3 @@
         android:alpha="0.5"
         android:background="#E0E0E0" />
 </LinearLayout>
-

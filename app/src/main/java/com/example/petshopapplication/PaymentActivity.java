@@ -2,6 +2,8 @@ package com.example.petshopapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,8 @@ public class PaymentActivity extends AppCompatActivity {
     private TextView tvTotalPrice;
     private FirebaseDatabase database;
     private DatabaseReference reference;
+    private TextView addressTextView;
+    private Button changeAddressButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +41,13 @@ public class PaymentActivity extends AppCompatActivity {
 
         // Nhận dữ liệu từ CartActivity
         selectedCartItems = (ArrayList<Cart>) getIntent().getSerializableExtra("selectedItems"); // Chuyển đổi sang ArrayList
-
         // Khởi tạo Firebase
         database = FirebaseDatabase.getInstance();
         tvTotalPrice = findViewById(R.id.totalPriceTextView); // TextView để hiển thị tổng giá
+        addressTextView = findViewById(R.id.addressTextView);
+        changeAddressButton = findViewById(R.id.changeAddressButton);
+
+        getDefaultAddress();
 
         // Thiết lập RecyclerView
         recyclerView = findViewById(R.id.recyclerViewProductList);
@@ -48,6 +55,11 @@ public class PaymentActivity extends AppCompatActivity {
 
         // Tải thông tin sản phẩm
         loadProductDetails();
+
+        changeAddressButton.setOnClickListener(v -> {
+            Intent intent = new Intent(PaymentActivity.this, AddressSelectionActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void loadProductDetails() {
@@ -86,6 +98,46 @@ public class PaymentActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void getDefaultAddress() {
+        DatabaseReference addressReference = database.getReference("addresses");
+        String userId = "u1"; // ID của người dùng hiện tại
+
+        addressReference.orderByChild("userId").equalTo(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot addressSnapshot : snapshot.getChildren()) {
+                                Boolean isDefault = addressSnapshot.child("isDefault").getValue(Boolean.class);
+                                String fullName = addressSnapshot.child("fullName").getValue(String.class);
+                                String phone = addressSnapshot.child("phone").getValue(String.class);
+                                String houseNumber = addressSnapshot.child("houseNumber").getValue(String.class);
+                                String district = addressSnapshot.child("district").getValue(String.class);
+                                String city = addressSnapshot.child("city").getValue(String.class);
+
+                                if (isDefault != null && isDefault) {
+                                    String address = fullName + " | " + phone + "\n" +
+                                            houseNumber + ", " + district + ", " + city;
+                                    Log.d("PaymentActivity", "Address found: " + address + ", isDefault: " + isDefault);
+                                    addressTextView.setText(address != null ? address : "Không tìm thấy địa chỉ!");
+                                    break;
+                                }
+                            }
+                        } else {
+                            Log.d("PaymentActivity", "No address found for user: " + userId);
+                            addressTextView.setText("Chưa có địa chỉ nào!");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(PaymentActivity.this, "Có lỗi xảy ra khi lấy địa chỉ!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+
 
     private void calculateTotalPrice() {
         double totalPrice = 0.0;

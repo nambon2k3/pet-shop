@@ -40,7 +40,7 @@ public class AddressSelectionActivity extends AppCompatActivity {
         addressRef = FirebaseDatabase.getInstance().getReference("addresses"); // Tham chiếu đến địa chỉ
 
         // Lấy tất cả địa chỉ của người dùng
-        fetchUserAddresses("user456"); // Thay đổi user ID nếu cần
+        fetchUserAddresses("u1"); // Thay đổi user ID nếu cần
     }
 
     private void fetchUserAddresses(String userId) {
