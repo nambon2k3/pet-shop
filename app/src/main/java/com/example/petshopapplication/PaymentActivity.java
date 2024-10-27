@@ -67,7 +67,7 @@ public class PaymentActivity extends AppCompatActivity {
         recyclerView.setAdapter(paymentAdapter);
 
         // Lấy địa chỉ mặc định cho người dùng
-        String userId = "user456"; // ID của người dùng hiện tại
+        String userId = "user123"; // ID của người dùng hiện tại
         Log.d("PaymentActivity", "Fetching default address for user ID: " + userId);
         fetchDefaultAddress(userId);
     }
@@ -112,11 +112,12 @@ public class PaymentActivity extends AppCompatActivity {
                 Log.e("PaymentActivity", "Error fetching address: " + databaseError.getMessage());
             }
         });
-        Button changeAddressButton = findViewById(R.id.changeAddressButton); // ID của nút "Thay đổi địa chỉ"
+        Button changeAddressButton = findViewById(R.id.changeAddressButton);
         changeAddressButton.setOnClickListener(v -> {
             Intent intent = new Intent(PaymentActivity.this, AddressSelectionActivity.class);
             startActivity(intent); // Mở AddressSelectionActivity
         });
+
 
     }
 }

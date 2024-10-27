@@ -1,6 +1,7 @@
 package com.example.petshopapplication;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,24 +41,29 @@ public class AddressSelectionActivity extends AppCompatActivity {
         addressRef = FirebaseDatabase.getInstance().getReference("addresses"); // Tham chiếu đến địa chỉ
 
         // Lấy tất cả địa chỉ của người dùng
-        fetchUserAddresses("user456"); // Thay đổi user ID nếu cần
+        fetchUserAddresses("user123"); // Thay đổi user ID nếu cần
     }
 
     private void fetchUserAddresses(String userId) {
         addressRef.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                addressList.clear(); // Xóa danh sách địa chỉ cũ
+                if (!dataSnapshot.exists()) {
+                    Toast.makeText(AddressSelectionActivity.this, "Không có dữ liệu địa chỉ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
+                addressList.clear(); // Xóa danh sách địa chỉ cũ
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Address address = snapshot.getValue(Address.class);
                     if (address != null) {
                         addressList.add(address); // Thêm địa chỉ vào danh sách
+                        Log.d("AddressSelection", "Địa chỉ: " + address.getFullName());
                     }
                 }
-
                 addressAdapter.notifyDataSetChanged(); // Cập nhật RecyclerView
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
