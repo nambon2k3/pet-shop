@@ -22,4 +22,10 @@ public class OrderDetail {
     private double price;
     private int quantity;
     private Date createdAt;
+
+    // private String productId;
+    // private double purchasedMoney;
+    // private String shipment;
+    // voucher old
+    // thanh toan: private String payment;
 }

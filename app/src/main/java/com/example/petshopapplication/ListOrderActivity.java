@@ -17,6 +17,10 @@ import com.example.petshopapplication.API.GoshipAPI;
 import com.example.petshopapplication.API.RetrofitClient;
 import com.example.petshopapplication.API_model.City;
 import com.example.petshopapplication.API_model.CityResponse;
+import com.example.petshopapplication.API_model.District;
+import com.example.petshopapplication.API_model.DistrictResponse;
+import com.example.petshopapplication.API_model.Ward;
+import com.example.petshopapplication.API_model.WardResponse;
 import com.example.petshopapplication.Adapter.OrderAdapter;
 import com.example.petshopapplication.Adapter.ProductAdapter;
 import com.example.petshopapplication.databinding.ActivityHomeBinding;
@@ -64,6 +68,8 @@ public class ListOrderActivity extends AppCompatActivity {
 
         // Call the method to load cities
         loadCities();
+        loadDistricts("100000");
+        loadWards("100900");
 
     }
 
@@ -93,6 +99,61 @@ public class ListOrderActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void loadDistricts(String cityId) {
+        GoshipAPI api = RetrofitClient.getRetrofitInstance().create(GoshipAPI.class);
+
+        Call<DistrictResponse> call = api.getDistricts(cityId, "application/json", "application/json", AUTH_TOKEN);
+        call.enqueue(new Callback<DistrictResponse>() {
+            @Override
+            public void onResponse(Call<DistrictResponse> call, Response<DistrictResponse> response) {
+                if (response.isSuccessful()) {
+                    DistrictResponse districtResponse = response.body();
+                    List<District> districts = districtResponse != null ? districtResponse.getData() : new ArrayList<>();
+                    int i = 1;
+                    for (District district : districts) {
+                        Log.d(TAG, "District - " + i + ": " + district.getName());
+                        i++;
+                    }
+                } else {
+                    Log.e(TAG, "Request Failed: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DistrictResponse> call, Throwable t) {
+                Log.e(TAG, "API Call Failed: " + t.getMessage());
+            }
+        });
+    }
+
+    private void loadWards(String districtId) {
+        GoshipAPI api = RetrofitClient.getRetrofitInstance().create(GoshipAPI.class);
+
+        Call<WardResponse> call = api.getWards(districtId, "application/json", "application/json", AUTH_TOKEN);
+        call.enqueue(new Callback<WardResponse>() {
+            @Override
+            public void onResponse(Call<WardResponse> call, Response<WardResponse> response) {
+                if (response.isSuccessful()) {
+                    WardResponse wardResponse = response.body();
+                    List<Ward> wards = wardResponse != null ? wardResponse.getData() : new ArrayList<>();
+                    int i = 1;
+                    for (Ward ward : wards) {
+                        Log.d(TAG, "Ward - " + i + ": " + ward.getName());
+                        i++;
+                    }
+                } else {
+                    Log.e(TAG, "Request Failed: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WardResponse> call, Throwable t) {
+                Log.e(TAG, "API Call Failed: " + t.getMessage());
+            }
+        });
+    }
+
 
 
     private void initOrder() {
