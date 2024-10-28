@@ -66,7 +66,7 @@ public class AddFeedbackActivity extends AppCompatActivity {
     }
 
     private void uploadFeedback() {
-        final String userId = "user--O9e3Xs72KBFUIYkldJ0";
+        final String userId = "u1";
         final String productId = "p1";
         final String comment = binding.edtFeedbackComment.getText().toString().trim();
         final int rating = (int) binding.rbFeedbackRating.getRating();

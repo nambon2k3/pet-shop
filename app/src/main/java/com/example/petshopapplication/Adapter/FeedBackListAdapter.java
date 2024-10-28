@@ -2,7 +2,6 @@ package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,19 +17,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.petshopapplication.FeedbackListActivity;
-import com.example.petshopapplication.FeedbackListUserActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.UpdateFeedbackActivity;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,81 +55,80 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
     @Override
     public void onBindViewHolder(@NonNull FeedbackHolder holder, int position) {
         FeedBack feedback = feedBackItems.get(position);
-        if(user == null){
+        if (user == null) {
             user = getUser(feedback.getUserId());
         }
 
-        // Display elements of feedback
-        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-            holder.imv_feedback_user_avatar.setVisibility(View.VISIBLE);
-            Glide.with(context)
-                    .load(user.getAvatar())
-                    .placeholder(R.drawable.icon) // Optional placeholder image
-                    .into(holder.imv_feedback_user_avatar);
-        }
-        holder.tv_feedback_user_name.setText(user.getUsername());
-        holder.tv_feedback_content.setText(feedback.getContent());
-        holder.tv_feedback_created_at.setText(feedback.getCreatedAt().replace("T", " "));
-        holder.rtb_feedback_rating.setRating(feedback.getRating());
+        if (user != null) {
+            // Display elements of feedback
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                holder.imv_feedback_user_avatar.setVisibility(View.VISIBLE);
+                Glide.with(context)
+                        .load(user.getAvatar())
+                        .placeholder(R.drawable.icon) // Optional placeholder image
+                        .into(holder.imv_feedback_user_avatar);
+            }
+            holder.tv_feedback_user_name.setText(user.getFullName());
+            holder.tv_feedback_content.setText(feedback.getContent());
+            holder.tv_feedback_created_at.setText(feedback.getCreatedAt().replace("T", " "));
+            holder.rtb_feedback_rating.setRating(feedback.getRating());
 
-        // Load image into ImageView using Glide
-        if (feedback.getImageUrl() != null && !feedback.getImageUrl().isEmpty()) {
-            holder.imv_feedback_image.setVisibility(View.VISIBLE);
-            Glide.with(context)
-                    .load(feedback.getImageUrl())
-                    .placeholder(R.drawable.icon) // Optional placeholder image
-                    .into(holder.imv_feedback_image);
-        }
+            // Load image into ImageView using Glide
+            if (feedback.getImageUrl() != null && !feedback.getImageUrl().isEmpty()) {
+                holder.imv_feedback_image.setVisibility(View.VISIBLE);
+                Glide.with(context)
+                        .load(feedback.getImageUrl())
+                        .placeholder(R.drawable.icon) // Optional placeholder image
+                        .into(holder.imv_feedback_image);
+            }
 
-        // Check if the current user matches the feedback user and if feedback is not marked as deleted
-        if (feedback.getUserId().equals(user.getId())) {
-            // Add options to the spinner
-            List<String> options = new ArrayList<>();
-            options.add("Select Action:");
-            options.add("Edit");
-            options.add("Delete");
 
-            //for marketer
-//            options.add("Ban");
-//            options.add("Unban");
+            // Check if the current user matches the feedback user and if feedback is not marked as deleted
+            if (feedback.getUserId().equals(user.getId())) {
+                // Add options to the spinner
+                List<String> options = new ArrayList<>();
+                options.add("Select Action:");
+                options.add("Edit");
+                options.add("Delete");
 
-            // Set up spinner
-            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);
-            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            holder.sp_feedback.setAdapter(spinnerAdapter);
+                // Set up spinner
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                holder.sp_feedback.setAdapter(spinnerAdapter);
 
-            // Handle spinner item selection
-            holder.sp_feedback.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                    String selectedAction = (String) parentView.getItemAtPosition(position);
+                // Handle spinner item selection
+                holder.sp_feedback.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        String selectedAction = (String) parentView.getItemAtPosition(position);
 
-                    switch (selectedAction) {
-                        case "Edit":
-                            updateFeedback(feedback);
-                            break;
-                        case "Delete":
-                            deleteFeedback(feedback);
-                            break;
-                        case "Ban":
-                            deleteFeedback(feedback);
-                            break;
-                        case "Unban":
-                            unbanFeedback(feedback);
-                            break;
-                        default:
-                            break;
+                        switch (selectedAction) {
+                            case "Edit":
+                                updateFeedback(feedback);
+                                break;
+                            case "Delete":
+                                deleteFeedback(feedback);
+                                break;
+                            case "Ban":
+                                deleteFeedback(feedback);
+                                break;
+                            case "Unban":
+                                unbanFeedback(feedback);
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parentView) {
-                    // No action needed
-                }
-            });
-        } else {
-            // Hide spinner if conditions are not met
-            holder.sp_feedback.setVisibility(View.GONE);
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                        // No action needed
+                    }
+                });
+            } else {
+                // Hide spinner if conditions are not met
+                holder.sp_feedback.setVisibility(View.GONE);
+            }
         }
     }
 
