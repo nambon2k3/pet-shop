@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.petshopapplication.API.GoshipAPI;
 import com.example.petshopapplication.API.RetrofitClient;
@@ -19,10 +20,13 @@ import com.example.petshopapplication.API_model.City;
 import com.example.petshopapplication.API_model.CityResponse;
 import com.example.petshopapplication.Adapter.OrderAdapter;
 import com.example.petshopapplication.Adapter.ProductAdapter;
+import com.example.petshopapplication.Adapter.ViewPagerOrderManageAdapter;
 import com.example.petshopapplication.databinding.ActivityHomeBinding;
 import com.example.petshopapplication.databinding.ActivityListOrderBinding;
 import com.example.petshopapplication.model.Order;
 import com.example.petshopapplication.model.Product;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,11 +64,34 @@ public class ListOrderActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         database = FirebaseDatabase.getInstance();
-        initOrder();
+        initTablayouts();
+//        initOrder();
 
-        // Call the method to load cities
+        // Call the method to load cities:
         loadCities();
 
+    }
+
+    private void initTablayouts() {
+        ViewPager2 viewPager = binding.viewPager;
+        TabLayout tabLayout = binding.tabLayout;
+//        binding.prgListOrder.setVisibility(View.INVISIBLE);
+//        binding.rcvOrders.setVisibility(View.INVISIBLE);
+        // Set Adapter for ViewPager2:
+        ViewPagerOrderManageAdapter adapter = new ViewPagerOrderManageAdapter(this);
+        viewPager.setAdapter(adapter);
+
+        // Get tab titles from strings.xml:
+        String[] tabTitles = getResources().getStringArray(R.array.tab_order_manage_titles);
+
+        // Connect TabLayout with ViewPager2:
+        new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                String[] parts = tabTitles[position].split("\\|");
+                tab.setText(parts[0]);
+            }
+        }).attach();
     }
 
     private void loadCities() {
@@ -96,15 +123,23 @@ public class ListOrderActivity extends AppCompatActivity {
 
 
     private void initOrder() {
-        reference = database.getReference(getString(R.string.tbl_order_name));
-
-        //Display progress bar
-        binding.prgListOrder.setVisibility(View.VISIBLE);
-
-        List<Order> orderItems = new ArrayList<>();
-//        orderAdapter = new OrderAdapter(productItems, categoryItems);
-//        binding.rcvNewProduct.setLayoutManager(new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false));
-//        binding.rcvNewProduct.setAdapter(productAdapter);
-//        binding.prgHomeNewProduct.setVisibility(View.INVISIBLE);
+//        reference = database.getReference(getString(R.string.tbl_order_name));
+//        //Display progress bar
+//        binding.prgListOrder.setVisibility(View.VISIBLE);
+//        List<Order> orderItems = new ArrayList<>();
+//        orderItems.add(new Order());
+//        orderItems.add(new Order());
+//        orderItems.add(new Order());
+//        orderItems.add(new Order());
+//        orderItems.add(new Order());
+//        orderItems.add(new Order());
+//        orderItems.add(new Order());
+//        orderItems.add(new Order());
+//        orderItems.add(new Order());
+//
+//        orderAdapter = new OrderAdapter(orderItems);
+//        binding.rcvOrders.setLayoutManager(new LinearLayoutManager(ListOrderActivity.this, LinearLayoutManager.VERTICAL, false));
+//        binding.rcvOrders.setAdapter(orderAdapter);
+//        binding.prgListOrder.setVisibility(View.INVISIBLE);
     }
 }

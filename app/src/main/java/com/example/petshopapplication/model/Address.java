@@ -21,4 +21,9 @@ public class Address {
     private String houseNumber;
     private boolean isDefault;
     private String userId;
+
+    // private int cityID;
+    // private int districtID;
+    // private int wardID;
+    // private String ward;
 }
