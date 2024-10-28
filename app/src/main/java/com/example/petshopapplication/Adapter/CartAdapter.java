@@ -24,10 +24,12 @@ import com.example.petshopapplication.model.Size;
 import com.example.petshopapplication.model.Variant;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
-    private static final String CART = "ad";
+    private static final String CART = "Cart";
     List<Cart> cartList;
     List<Product> productList;
     Context context;
@@ -44,10 +46,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cart, parent, false);
         return new CartHolder(v);
     }
-
     @Override
     public void onBindViewHolder(@NonNull CartAdapter.CartHolder holder, int position) {
         List<Color> colorList = new ArrayList<>();
+        List<Color> colorList2 = new ArrayList<>();
+        Map<Size, List<Color>> sizeListMap = new HashMap<>();
         List<Size> sizeList = new ArrayList<>();
         Size size = new Size();
         String selectedColor = "", selectedSize = "", item_type = "";
@@ -56,20 +59,33 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
         Product product = getProductById(cart.getProductId());
         Double oldPrice = product.getListVariant().get(0).getPrice();
 
-        //get list color and size of product
+        //Get list size of product
         for (Variant variant: product.getListVariant()){
-            colorList = variant.getListColor();
-            size = variant.getSize();
+            sizeList.add(variant.getSize());
         }
 
-        //get selected color and selected size of this product
-        for(Color color: colorList){
+        //Get product size has been selected
+        for (Size s : sizeList){
+            if(s.getId().equals(cart.getSelectedSizeId())){
+                selectedSize = s.getName();
+                size = s;
+            }
+        }
+
+        //Get list color of product base on size
+        for (Variant variant: product.getListVariant()){
+            sizeListMap.put(variant.getSize(), variant.getListColor());
+        }
+
+        //Get product color has been selected
+        colorList = sizeListMap.get(size);
+        for (Color color : colorList){
             if(color.getId().equals(cart.getSelectedColorId())){
                 selectedColor = color.getName();
             }
         }
-        //Size dang ko de trong List??
-        selectedSize = size.getName();
+
+
 
         //Check if product has color and size
         if(selectedColor == null && size == null){
@@ -94,7 +110,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
             holder.tv_item_old_price.setVisibility(View.GONE);
             holder.tv_item_new_price.setText(String.format("%.1f$", oldPrice));
         }
-        holder.tv_item_quatity.setText(cart.getQuatity());
+        holder.tv_item_quatity.setText(String.valueOf(cart.getQuatity()));
         Glide.with(context)
                 .load(product.getBaseImageURL())
                 .into(holder.imv_item);
