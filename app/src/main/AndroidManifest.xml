@@ -52,7 +52,13 @@
         <activity
             android:name=".AddressSelectionActivity"
             android:exported="false" />
+        <activity
+            android:name=".AddProductActivity"
+            android:exported="false"></activity>
 
+        <activity
+            android:name=".AddProductVariantActivity"
+            android:exported="false"></activity>
 
         <activity
             android:name=".UpdateFeedbackActivity"
