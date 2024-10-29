@@ -41,6 +41,9 @@
             android:name=".AddFeedbackActivity"
             android:exported="false"></activity>
         <activity
+            android:name=".AddProductActivity"
+            android:exported="false" />
+        <activity
             android:name=".FeedbackListActivity"
             android:exported="false"></activity>
 
