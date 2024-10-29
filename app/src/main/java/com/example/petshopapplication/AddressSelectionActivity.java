@@ -2,10 +2,12 @@ package com.example.petshopapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,8 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddressSelectionActivity extends AppCompatActivity {
+    private static final int REQUEST_CODE_ADD_ADDRESS = 1;
+    private static final int REQUEST_CODE_UPDATE_ADDRESS = 2;
+    private static final String TAG = "AddressSelectionActivity";
+
     private RecyclerView recyclerView;
-    private AddressAdapter addressAdapter; // Bạn cần tạo AddressAdapter
+    private AddressAdapter addressAdapter;
     private List<Address> addressList;
     private DatabaseReference addressRef;
 
@@ -36,40 +42,48 @@ public class AddressSelectionActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         addressList = new ArrayList<>();
-        addressAdapter = new AddressAdapter(addressList, this); // Tạo adapter cho RecyclerView
-
+        addressAdapter = new AddressAdapter(addressList, this, address -> {
+            Intent intent = new Intent(AddressSelectionActivity.this, AddressUpdateActivity.class);
+            intent.putExtra("addressId", address.getAddressId());
+            startActivityForResult(intent, REQUEST_CODE_UPDATE_ADDRESS);
+        });
         recyclerView.setAdapter(addressAdapter);
 
-        addressRef = FirebaseDatabase.getInstance().getReference("addresses"); // Tham chiếu đến địa chỉ
+        addressRef = FirebaseDatabase.getInstance().getReference("addresses");
 
         // Lấy tất cả địa chỉ của người dùng
-        fetchUserAddresses("u1"); // Thay đổi user ID nếu cần
+        fetchUserAddresses("u1");
 
         LinearLayout addAddressLayout = findViewById(R.id.add_address_layout);
-        addAddressLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Chuyển đến AddressAddActivity
-                Intent intent = new Intent(AddressSelectionActivity.this, AddressAddActivity.class);
-                startActivity(intent);
-            }
+        addAddressLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(AddressSelectionActivity.this, AddressAddActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_ADD_ADDRESS);
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ((requestCode == REQUEST_CODE_ADD_ADDRESS || requestCode == REQUEST_CODE_UPDATE_ADDRESS) && resultCode == RESULT_OK) {Log.d(TAG, "onActivityResult: Triggered for requestCode " + requestCode);
+            Log.d(TAG, "onActivityResult: Triggered for requestCode " + requestCode);
+            fetchUserAddresses("u1");
+        }
+    }
+
+
     private void fetchUserAddresses(String userId) {
-        addressRef.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+        Log.d(TAG, "fetchUserAddresses: Fetching addresses for userId " + userId);
+        addressRef.orderByChild("userId").equalTo(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                addressList.clear(); // Xóa danh sách địa chỉ cũ
-
+                addressList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Address address = snapshot.getValue(Address.class);
                     if (address != null) {
-                        addressList.add(address); // Thêm địa chỉ vào danh sách
+                        addressList.add(address);
                     }
                 }
-
-                addressAdapter.notifyDataSetChanged(); // Cập nhật RecyclerView
+                addressAdapter.notifyDataSetChanged(); // Cập nhật adapter sau khi thay đổi dữ liệu
             }
 
             @Override
@@ -78,4 +92,6 @@ public class AddressSelectionActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

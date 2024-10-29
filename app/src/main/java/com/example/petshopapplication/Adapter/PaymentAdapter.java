@@ -45,7 +45,7 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
         if (product != null) {
             // Hiển thị tên sản phẩm
             holder.tv_item_name.setText(product.getName());
-            holder.tv_item_quantity.setText(String.valueOf(cart.getQuatity())); // Chuyển đổi số lượng thành chuỗi
+            holder.tv_item_quantity.setText(String.valueOf(cart.getQuantity())); // Chuyển đổi số lượng thành chuỗi
 
             // Hiển thị giá cũ và giá mới
             double oldPrice = product.getListVariant().get(0).getPrice();
