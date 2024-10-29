@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:padding="20dp"
     android:background="@drawable/rectangle_white_rounded_button">
 
     <LinearLayout
@@ -20,7 +21,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/imv_product_image"
+                android:id="@+id/imv_cart_product_image"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:scaleType="fitXY"
@@ -29,7 +30,7 @@
                 tools:srcCompat="@tools:sample/avatars" />
 
             <TextView
-                android:id="@+id/tv_new_price"
+                android:id="@+id/tv_cart_new_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="35dp"
@@ -37,29 +38,29 @@
                 android:text="20$"
                 android:fontFamily="@font/poppins_light"
                 android:textColor="@color/red"
-                app:layout_constraintStart_toEndOf="@+id/imv_product_image"
+                app:layout_constraintStart_toEndOf="@+id/imv_cart_product_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_old_price"
+                android:id="@+id/tv_cart_old_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:text="100$"
                 android:fontFamily="@font/poppins_light"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_new_price"
-                app:layout_constraintStart_toEndOf="@+id/tv_new_price"
-                app:layout_constraintTop_toTopOf="@+id/tv_new_price" />
+                app:layout_constraintBottom_toBottomOf="@+id/tv_cart_new_price"
+                app:layout_constraintStart_toEndOf="@+id/tv_cart_new_price"
+                app:layout_constraintTop_toTopOf="@+id/tv_cart_new_price" />
 
             <TextView
-                android:id="@+id/tv_stock"
+                android:id="@+id/tv_cart_stock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Stock: 200"
                 android:fontFamily="@font/poppins_light"
-                app:layout_constraintStart_toStartOf="@+id/tv_new_price"
-                app:layout_constraintTop_toBottomOf="@+id/tv_new_price" />
+                app:layout_constraintStart_toStartOf="@+id/tv_cart_new_price"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cart_new_price" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
