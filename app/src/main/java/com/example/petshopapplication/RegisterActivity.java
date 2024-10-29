@@ -59,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
             if(password.equals(re_password)){
 
                 // Generate a unique key using push()
-                String uniqueKey = "user-" + reference.push().getKey(); // This generates a unique ID
+                String uniqueKey = "user" + reference.push().getKey(); // This generates a unique ID
 
                 //Creating a new user
                 User user = User.builder()

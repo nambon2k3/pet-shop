@@ -20,11 +20,13 @@
             android:orientation="vertical"
             android:paddingBottom="80dp">
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:orientation="vertical">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -38,15 +40,19 @@
                         app:layout_constraintTop_toTopOf="parent"
                         tools:srcCompat="@drawable/meow_mix" />
 
-                    <ImageView
-                        android:id="@+id/favBtn"
+                    <TextView
+                        android:id="@+id/tv_discount"
                         android:layout_width="75dp"
                         android:layout_height="75dp"
                         android:layout_marginEnd="16dp"
+                        android:background="@drawable/circle_discount"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:gravity="center"
+                        android:text="-20%"
+                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/imv_product_image"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/imv_product_image"
-                        app:srcCompat="@drawable/favorite_white" />
+                        app:layout_constraintTop_toBottomOf="@+id/imv_product_image" />
 
                     <ImageView
                         android:id="@+id/backBtn"
@@ -55,10 +61,23 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="24dp"
                         android:padding="8dp"
+                        android:src="@drawable/arrow"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:src="@drawable/arrow" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rcv_image_product"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
@@ -73,8 +92,8 @@
                         android:id="@+id/tv_product_name"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins_semibold"
                         android:layout_weight="1"
+                        android:fontFamily="@font/poppins_semibold"
                         android:text="Title"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -92,8 +111,8 @@
                         android:id="@+id/tv_new_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="40$"
                         android:fontFamily="@font/poppins_light"
+                        android:text="40$"
                         android:textColor="@color/red"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -139,11 +158,11 @@
                         tools:srcCompat="@drawable/time_125" />
 
                     <TextView
-                        android:id="@+id/tv_stock"
+                        android:id="@+id/tv_stock_product"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:text="15 min"
+                        android:text="15"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/imageView5"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -155,8 +174,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:fontFamily="@font/poppins_semibold"
                     android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppins_semibold"
                     android:text="Details"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -170,52 +189,11 @@
                     android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                     android:textSize="16sp" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp">
-
-
-                    <Button
-                        android:id="@+id/minusBtn"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:background="@drawable/custom_btn_remove"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tv_quantity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="0"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/minusBtn"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <Button
-                        android:id="@+id/button2"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/custom_btn_add"
-                        android:backgroundTint="@color/green"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/tv_quantity"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="24dp"
                     android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
                     android:layout_marginEnd="16dp"
                     android:orientation="horizontal">
 
@@ -224,10 +202,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textSize="18sp"
                         android:fontFamily="@font/poppins_semibold"
-                        android:textStyle="bold"
-                        android:text="Product Feedback"/>
+                        android:text="Product Feedback"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_view_list_product"
@@ -236,9 +214,11 @@
                         android:text="VIEW ALL" />
 
                 </LinearLayout>
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rcv_feedback"
                         android:layout_width="match_parent"
@@ -248,8 +228,14 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </LinearLayout>
 
+                <TextView
+                    android:id="@+id/tv_empty_feedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="No Feedback yet!" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -258,6 +244,7 @@
                 android:orientation="vertical">
                 <LinearLayout
                     android:layout_width="match_parent"
+                    android:paddingVertical="16dp"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
@@ -305,13 +292,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="75dp"
-        android:background="@color/light_grey"
+        android:background="@color/edtColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/addBtn"
+            android:id="@+id/btn_add_cart"
             style="@android:style/Widget.Button"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
@@ -325,26 +312,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:text="Total Price"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/addBtn" />
-
-        <TextView
-            android:id="@+id/tv_total_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0$"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/textView12"
-            app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
