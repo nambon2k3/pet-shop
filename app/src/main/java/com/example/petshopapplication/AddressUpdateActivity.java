@@ -1,14 +1,13 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.UUID;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +22,9 @@ import com.example.petshopapplication.API_model.WardResponse;
 import com.example.petshopapplication.model.Address;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.List;
 
@@ -30,53 +32,65 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddressAddActivity extends AppCompatActivity {
-    private static final String TAG = "AddAddressActivity";
-    private String AUTH_TOKEN;
-
+public class AddressUpdateActivity extends AppCompatActivity {
+    private static final String TAG = "AddressUpdateActivity";
     private String selectedCityId;
     private String selectedDistrictId;
     private int selectedWardId;
-
-    private TextView citySelectButton;
-    private TextView districtSelectButton;
-    private TextView wardSelectButton;
-    private EditText fullNameEditText;
-    private EditText phoneEditText;
-
-    // Khai báo biến addressesRef
-    private DatabaseReference addressesRef;
+    private EditText fullNameEditText, phoneEditText, citySelectButton, districtSelectButton, wardSelectButton;
+    private Button updateButton, deleteButton;
+    private DatabaseReference addressRef;
+    private String addressId; // ID của địa chỉ
+    private String AUTH_TOKEN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.address_add);
-
-        // Khởi tạo Firebase Database và reference
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        addressesRef = database.getReference("addresses");
-
+        setContentView(R.layout.address_update);
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
 
-        // Find views by ID
+        fullNameEditText = findViewById(R.id.fullNameEditText);
+        phoneEditText = findViewById(R.id.phoneEditText);
         citySelectButton = findViewById(R.id.citySelectButton);
         districtSelectButton = findViewById(R.id.districtSelectButton);
         wardSelectButton = findViewById(R.id.wardSelectButton);
-        fullNameEditText = findViewById(R.id.fullNameEditText);
-        phoneEditText = findViewById(R.id.phoneEditText);
+        updateButton = findViewById(R.id.updateButton);
+        deleteButton = findViewById(R.id.deleteButton);
 
-        Button completeButton = findViewById(R.id.completeButton);
+        addressRef = FirebaseDatabase.getInstance().getReference("addresses");
 
-        // Set button click listeners
+        // Nhận ID địa chỉ từ Intent
+        addressId = getIntent().getStringExtra("addressId");
+        fetchAddressDetails(addressId);
+
         citySelectButton.setOnClickListener(v -> loadCities());
         districtSelectButton.setOnClickListener(v -> loadDistricts(selectedCityId));
         wardSelectButton.setOnClickListener(v -> loadWards(selectedDistrictId));
 
-        completeButton.setOnClickListener(v -> {
-            Log.d(TAG, "Complete button clicked");
-            saveAddress();
-        });
 
+        updateButton.setOnClickListener(v -> updateAddress());
+        deleteButton.setOnClickListener(v -> deleteAddress());
+    }
+
+    private void fetchAddressDetails(String addressId) {
+        addressRef.child(addressId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Address address = snapshot.getValue(Address.class);
+                if (address != null) {
+                    fullNameEditText.setText(address.getFullName());
+                    phoneEditText.setText(address.getPhone());
+                    citySelectButton.setText(address.getCity());
+                    districtSelectButton.setText(address.getDistrict());
+                    wardSelectButton.setText(address.getWard());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AddressUpdateActivity.this, "Error fetching address details: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadCities() {
@@ -91,14 +105,14 @@ public class AddressAddActivity extends AppCompatActivity {
                     displayCitySelectionDialog(cities);
                 } else {
                     Log.e(TAG, "Failed to load cities: " + response.message());
-                    Toast.makeText(AddressAddActivity.this, "Lỗi khi tải danh sách thành phố", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddressUpdateActivity.this, "Lỗi khi tải danh sách thành phố", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<CityResponse> call, Throwable t) {
                 Log.e(TAG, "API Call Failed: " + t.getMessage());
-                Toast.makeText(AddressAddActivity.this, "Lỗi khi gọi API", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddressUpdateActivity.this, "Lỗi khi gọi API", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -135,14 +149,14 @@ public class AddressAddActivity extends AppCompatActivity {
                     displayDistrictSelectionDialog(districts);
                 } else {
                     Log.e(TAG, "Failed to load districts: " + response.message());
-                    Toast.makeText(AddressAddActivity.this, "Lỗi khi tải danh sách quận", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddressUpdateActivity.this, "Lỗi khi tải danh sách quận", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<DistrictResponse> call, Throwable t) {
                 Log.e(TAG, "API Call Failed: " + t.getMessage());
-                Toast.makeText(AddressAddActivity.this, "Lỗi khi gọi API", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddressUpdateActivity.this, "Lỗi khi gọi API", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -179,14 +193,14 @@ public class AddressAddActivity extends AppCompatActivity {
                     displayWardSelectionDialog(wards);
                 } else {
                     Log.e(TAG, "Failed to load wards: " + response.message());
-                    Toast.makeText(AddressAddActivity.this, "Lỗi khi tải danh sách phường", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddressUpdateActivity.this, "Lỗi khi tải danh sách phường", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<WardResponse> call, Throwable t) {
                 Log.e(TAG, "API Call Failed: " + t.getMessage());
-                Toast.makeText(AddressAddActivity.this, "Lỗi khi gọi API", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddressUpdateActivity.this, "Lỗi khi gọi API", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -205,20 +219,20 @@ public class AddressAddActivity extends AppCompatActivity {
                 })
                 .show();
     }
-
-    private void saveAddress() {
-        Log.d(TAG, "saveAddress() called");
+    private void updateAddress() {
         String fullName = fullNameEditText.getText().toString().trim();
         String phone = phoneEditText.getText().toString().trim();
+        String city = citySelectButton.getText().toString().trim();
+        String district = districtSelectButton.getText().toString().trim();
+        String ward = wardSelectButton.getText().toString().trim();
+        boolean isDefault = false; // Hoặc lấy từ trạng thái của Switch nếu có
 
-        if (fullName.isEmpty() || phone.isEmpty() || selectedCityId == null || selectedDistrictId == null || selectedWardId == 0) {
+        if (fullName.isEmpty() || phone.isEmpty() || city.isEmpty() || district.isEmpty() || ward.isEmpty()) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String addressId = UUID.randomUUID().toString(); // Tạo ID ngẫu nhiên
-
-        Address address = new Address(
+        Address updatedAddress = new Address(
                 addressId,                                   // ID địa chỉ
                 fullName,                                   // Họ và tên
                 phone,                                      // Số điện thoại
@@ -230,19 +244,24 @@ public class AddressAddActivity extends AppCompatActivity {
                 false,                                      // isDefault (ví dụ: false cho địa chỉ không mặc định)
                 "u1"                                        // ID người dùng
         );
-
-        // Lưu địa chỉ vào Firebase
-        addressesRef.child(addressId).setValue(address)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(this, "Địa chỉ đã được lưu!", Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK); // Trả kết quả thành công về AddressSelectionActivity
-                        finish(); // Kết thúc Activity
-                    } else {
-                        Log.e(TAG, "Failed to save address: " + task.getException().getMessage());
-                        Toast.makeText(this, "Lỗi khi lưu địa chỉ", Toast.LENGTH_SHORT).show();
-                    }
+        addressRef.child(addressId).setValue(updatedAddress)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(AddressUpdateActivity.this, "Cập nhật địa chỉ thành công", Toast.LENGTH_SHORT).show();
+                    finish(); // Quay lại màn hình trước đó
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AddressUpdateActivity.this, "Cập nhật địa chỉ thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
+    private void deleteAddress() {
+        addressRef.child(addressId).removeValue()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(AddressUpdateActivity.this, "Xóa địa chỉ thành công", Toast.LENGTH_SHORT).show();
+                    finish(); // Quay lại màn hình trước đó
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AddressUpdateActivity.this, "Xóa địa chỉ thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
 }

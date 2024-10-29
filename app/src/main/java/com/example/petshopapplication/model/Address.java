@@ -17,16 +17,13 @@ public class Address {
     private String addressId;
     private String fullName;
     private String phone;
-    private String city;
-    private String cityId;
-    private String district;
-    private String districtId;
-    private String ward;
-    private boolean isDefault;
-    private String userId;
+    private String city;         // Tên thành phố
+    private String cityId;      // ID thành phố
+    private String district;     // Tên quận
+    private String districtId;   // ID quận
+    private String ward;        // Tên phường
+    private boolean isDefault;   // Địa chỉ mặc định hay không
+    private String userId;      // ID người dùng
 
-    // private int cityID;
-    // private int districtID;
-    // private int wardID;
-    // private String ward;
+
 }

@@ -52,6 +52,9 @@
         <activity
             android:name=".AddressSelectionActivity"
             android:exported="false" />
+        <activity
+            android:name=".AddressUpdateActivity"
+            android:exported="false" />
 
 
         <activity
