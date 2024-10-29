@@ -1,7 +1,7 @@
-package com.example.petshopapplication.model;
+package com.example.petshopapplication.API_model;
 
-import java.util.Date;
-
+import com.google.gson.annotations.SerializedName;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,12 +15,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Order {
-    private String id;
-    private String userId;
-    private Date orderDate;
-    private double amount;
+public class RateResponse {
+    private int code;
     private String status;
-    private String address_id;
 
+    @SerializedName("data")
+    private List<Rate> data;
 }

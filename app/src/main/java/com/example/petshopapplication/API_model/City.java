@@ -1,4 +1,6 @@
-package com.example.petshopapplication.model;
+package com.example.petshopapplication.API_model;
+
+import com.google.gson.annotations.SerializedName;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,18 +9,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @ToString
-public class Color {
+public class City {
+    @SerializedName("id")
     private String id;
+
+    @SerializedName("name")
     private String name;
-    private String imageUrl;
-    private int stock;
-    private int deliveringQuantity;
-    private boolean isDeleted;
-    private String createdAt;
 }

@@ -57,6 +57,8 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -81,7 +83,7 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/editTextText"
+                        android:id="@+id/tvSearch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -114,6 +116,11 @@
                     app:srcCompat="@drawable/baseline_shopping_cart_24" />
 
             </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_marginVertical="16dp"
+                android:background="@drawable/banner_home"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

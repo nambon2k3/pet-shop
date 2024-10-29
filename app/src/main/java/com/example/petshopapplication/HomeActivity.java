@@ -48,21 +48,28 @@ public class HomeActivity extends AppCompatActivity {
 
 
         database = FirebaseDatabase.getInstance();
-        initNewProduct();
+        //initNewProduct();
         initCategory();
         initFeedback();
 
-        binding.tvViewListProduct.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.btnHomeSearch.setOnClickListener(v -> {
+            String searchText = binding.tvSearch.getText().toString().trim();
+            if(!searchText.isEmpty()) {
                 Intent intent = new Intent(HomeActivity.this, ListProductActivity.class);
+                intent.putExtra("searchText", searchText);
+                intent.putExtra("isSearch", true);
                 startActivity(intent);
             }
         });
 
+        binding.tvViewListProduct.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, ListProductActivity.class);
+            startActivity(intent);
+        });
+
     }
 
-    private void initNewProduct(){
+    private void initNewProduct(List<Category> categoryItems){
         reference = database.getReference(getString(R.string.tbl_product_name));
         //Display progress bar
         binding.prgHomeNewProduct.setVisibility(View.VISIBLE);
@@ -79,7 +86,7 @@ public class HomeActivity extends AppCompatActivity {
                             productItems.add(product);
                         }
                     }
-                    productAdapter = new ProductAdapter(productItems);
+                    productAdapter = new ProductAdapter(productItems, categoryItems);
                     binding.rcvNewProduct.setLayoutManager(new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false));
                     binding.rcvNewProduct.setAdapter(productAdapter);
                     binding.prgHomeNewProduct.setVisibility(View.INVISIBLE);
@@ -165,7 +172,7 @@ public class HomeActivity extends AppCompatActivity {
 
         List<Category> categoryItems = new ArrayList<>();
         Query query = reference.orderByChild("isDeleted").equalTo(false);
-        query.limitToFirst(6).addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -180,6 +187,7 @@ public class HomeActivity extends AppCompatActivity {
                         binding.rcvHomeCategory.setAdapter(categoryAdapter);
                     }
                     binding.prgHomeCategory.setVisibility(View.GONE);
+                    initNewProduct(categoryItems);
                 }
             }
 
