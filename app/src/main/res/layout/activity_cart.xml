@@ -24,7 +24,7 @@
             android:text="Tổng thanh toán" />
 
         <TextView
-            android:id="@+id/textView7"
+            android:id="@+id/tv_total_price"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
@@ -33,10 +33,10 @@
             android:gravity="center"
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
-            android:text="99.99" />
+            android:text="0 VND" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btn_purchase"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
