@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PetShopApplication"
         tools:targetApi="31">
+
         <activity
             android:name=".ViewFeedBackItemActivity"
             android:exported="true" >
@@ -39,9 +40,7 @@
         <activity
             android:name=".ListFeedbackActivity"
             android:exported="false" />
-        <activity
-            android:name=".ProductDetailActivity"
-            android:exported="false" />
+
         <activity
             android:name=".UpdateFeedbackActivity"
             android:exported="false" />
