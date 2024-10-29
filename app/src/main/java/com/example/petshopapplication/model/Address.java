@@ -14,12 +14,14 @@ import lombok.ToString;
 @Builder
 @ToString
 public class Address {
-    private String id;
+    private String addressId;
     private String fullName;
     private String phone;
     private String city;
+    private String cityId;
     private String district;
-    private String houseNumber;
-    private boolean isDefault; // Kiểu dữ liệu boolean
+    private String districtId;
+    private String ward;
+    private boolean isDefault;
     private String userId;
 }

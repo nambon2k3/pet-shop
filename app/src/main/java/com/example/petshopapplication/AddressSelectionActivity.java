@@ -1,6 +1,9 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +44,16 @@ public class AddressSelectionActivity extends AppCompatActivity {
 
         // Lấy tất cả địa chỉ của người dùng
         fetchUserAddresses("u1"); // Thay đổi user ID nếu cần
+
+        LinearLayout addAddressLayout = findViewById(R.id.add_address_layout);
+        addAddressLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Chuyển đến AddressAddActivity
+                Intent intent = new Intent(AddressSelectionActivity.this, AddressAddActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void fetchUserAddresses(String userId) {

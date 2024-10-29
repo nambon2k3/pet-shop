@@ -33,7 +33,8 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         Address address = addressList.get(position);
         holder.fullNameTextView.setText(address.getFullName());
         holder.phoneTextView.setText(address.getPhone());
-        holder.addressTextView.setText(address.getHouseNumber() + ", " + address.getDistrict() + ", " + address.getCity());
+        // Cập nhật phần này để hiển thị ward
+        holder.addressTextView.setText(address.getWard() + ", " + address.getDistrict() + ", " + address.getCity());
 
         // Cài đặt RadioButton nếu cần
         holder.radioButton.setChecked(address.isDefault());

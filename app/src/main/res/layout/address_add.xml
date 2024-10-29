@@ -45,6 +45,7 @@
         android:textStyle="bold" />
 
     <EditText
+        android:id="@+id/fullNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -58,7 +59,9 @@
 
         android:alpha="0.5"
         android:background="#E0E0E0" />
+
     <EditText
+        android:id="@+id/phoneEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -82,6 +85,7 @@
         android:orientation="vertical">
 
         <EditText
+            android:id="@+id/citySelectButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
@@ -92,11 +96,20 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="3dp"
-
             android:alpha="0.5"
             android:background="#E0E0E0" />
 
         <EditText
+            android:id="@+id/districtSelectButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:hint="Tên đường, Tòa nhà, Số nhà."
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp" />
+
+        <EditText
+            android:id="@+id/wardSelectButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
@@ -133,6 +146,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/completeButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -140,6 +154,5 @@
         android:enabled="false"
         android:text="HOÀN THÀNH"
         android:textColor="@android:color/white" />
-
 
 </LinearLayout>

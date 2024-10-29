@@ -21,4 +21,6 @@ public class Order {
     private Date orderDate;
     private double amount;
     private String status;
+    private String address_id;
+
 }

@@ -12,6 +12,10 @@
     <string name="tbl_address_name">addresses</string>
     <string name="tbl_cart_name">carts</string>
 
+    <string name="petshop_address_city_id">100000</string>
+    <string name="petshop_address_district_id">100900</string>
+    <string name="petshop_address_ward_id">113</string>
+
     <string name="msg_register_Success">Registration successful</string>
     <string name="msg_password_fail">Passwords do not match</string>
     <string name="msg_login_fail">User does not exist</string>
