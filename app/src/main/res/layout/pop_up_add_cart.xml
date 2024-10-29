@@ -135,32 +135,6 @@
 
 
                 <Button
-                    android:id="@+id/btn_plus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:minHeight="0dp"
-                    android:minWidth="0dp"
-                    android:paddingTop="0dp"
-                    android:paddingBottom="0dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:background="@drawable/custom_btn_add"
-                    android:textSize="10sp"
-                    app:backgroundTint="@color/edtColor"
-                    android:text="+" />
-
-                <EditText
-                    android:id="@+id/editTextText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/rectangle_edit_text"
-                    android:ems="2"
-                    android:gravity="center"
-                    android:inputType="numberDecimal"
-                    android:text="1"
-                    android:textSize="14sp" />
-
-                <Button
                     android:id="@+id/btn_minus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -170,10 +144,36 @@
                     android:paddingBottom="0dp"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
+                    android:background="@drawable/custom_btn_add"
+                    android:textSize="16sp"
+                    app:backgroundTint="@color/edtColor"
+                    android:text="-" />
+
+                <EditText
+                    android:id="@+id/tv_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle_edit_text"
+                    android:ems="2"
+                    android:gravity="center"
+                    android:inputType="numberDecimal"
+                    android:text="1"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/btn_plus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp"
+                    android:paddingLeft="8dp"
+                    android:textSize="16sp"
+                    android:paddingRight="8dp"
                     app:backgroundTint="@color/edtColor"
                     android:background="@drawable/custom_btn_remove"
-                    android:textSize="10sp"
-                    android:text="-" />
+                    android:text="+" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 

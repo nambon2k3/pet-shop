@@ -5,15 +5,20 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,27 +65,37 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
     ActivityProductDetailBinding binding;
     FirebaseDatabase database;
     DatabaseReference reference;
+
+    //Intent data
     private String productId;
+
+    //Init items
     private List<Product> productItems;
     private List<Category> categoryItems;
     private List<Color> colorItems;
     private List<Variant> variantItems;
     private List<Size> sizeItems;
+
+
+    //Number items per page
     private final int ITEMS_PER_PAGE = 16;
+
+    //Adapter
     private ListProductAdapter productAdapter;
     private FeedBackAdapter feedBackAdapter;
     private ProductImageAdapter productImageAdapter;
     private ColorAdapter colorAdapter;
     private SizeAdapter sizeAdapter;
+
+    //Set up dialog cart
     ConstraintLayout layout;
     Dialog dialog;
 
-    RecyclerView colorCartRecyclerView, sizeCartRecyclerView;
-
-
     //pop up view
+    RecyclerView colorCartRecyclerView, sizeCartRecyclerView;
     ImageView imv_cart_product;
-    TextView tv_cart_new_price, tv_cart_old_price, tv_cart_stock;
+    TextView tv_cart_new_price, tv_cart_old_price, tv_cart_stock, tv_quantity;
+    Button btn_plus, btn_minus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,11 +117,64 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
         dialog.setContentView(R.layout.pop_up_add_cart);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
+        //init dialog view items
+        imv_cart_product = dialog.findViewById(R.id.imv_cart_product_image);
+        tv_cart_new_price = dialog.findViewById(R.id.tv_cart_new_price);
+        tv_cart_old_price = dialog.findViewById(R.id.tv_cart_old_price);
+        tv_cart_stock = dialog.findViewById(R.id.tv_cart_stock);
+        tv_quantity = dialog.findViewById(R.id.tv_quantity);
+        btn_plus = dialog.findViewById(R.id.btn_plus);
+        btn_minus = dialog.findViewById(R.id.btn_minus);
 
+        //modify cart quantity function
+        btn_plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentQuantity = Integer.parseInt(tv_quantity.getText().toString());
+                int maxStock = Integer.parseInt(tv_cart_stock.getText().toString().replace("Stock: ", ""));
+                if(currentQuantity < maxStock) {
+                    tv_quantity.setText(String.valueOf(currentQuantity + 1));
+                }
+            }
+        });
 
+        btn_minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentQuantity = Integer.parseInt(tv_quantity.getText().toString());
+                if(currentQuantity > 1) {
+                    tv_quantity.setText(String.valueOf(currentQuantity - 1));
+                }
+            }
+        });
 
+        tv_quantity.addTextChangedListener(new TextWatcher() {
 
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //No used
+            }
 
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int quantity = Integer.parseInt(tv_quantity.getText().toString());
+                    if(quantity <= 0) {
+                        tv_quantity.setText("1");
+                    } else if(quantity > Integer.parseInt(tv_cart_stock.getText().toString().replace("Stock: ", ""))) {
+                        tv_quantity.setText(String.valueOf(Integer.parseInt(tv_cart_stock.getText().toString().replace("Stock: ", ""))));
+                    }
+                } catch (Exception e) {
+                    tv_quantity.setText("1");
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                //No used
+            }
+        });
 
         getIntend();
         initProductDetail(productId);
@@ -173,7 +241,7 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             for (Variant variant : product.getListVariant()) {
                 sizeItems.add(variant.getSize());
             }
-            sizeAdapter = new SizeAdapter(sizeItems, ProductDetailActivity.this);
+            sizeAdapter = new SizeAdapter(sizeItems, ProductDetailActivity.this, product);
             sizeCartRecyclerView = dialog.findViewById(R.id.rcv_size);
             sizeCartRecyclerView.setLayoutManager(new GridLayoutManager(ProductDetailActivity.this, 2));
             sizeCartRecyclerView.setAdapter(sizeAdapter);
@@ -182,7 +250,7 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             Variant variant = product.getListVariant().get(0);
             if(!variant.getListColor().isEmpty()) {
                 colorItems.addAll(variant.getListColor());
-                colorAdapter = new ColorAdapter(colorItems);
+                colorAdapter = new ColorAdapter(colorItems, ProductDetailActivity.this);
                 colorCartRecyclerView = dialog.findViewById(R.id.rcv_color);
                 colorCartRecyclerView.setLayoutManager(new GridLayoutManager(ProductDetailActivity.this, 1));
                 colorCartRecyclerView.setAdapter(colorAdapter);
@@ -193,11 +261,6 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
     private void fillProductData(Product product, Variant variant, Color color) {
 
         //fill product information into dialog
-        imv_cart_product = dialog.findViewById(R.id.imv_cart_product_image);
-        tv_cart_new_price = dialog.findViewById(R.id.tv_cart_new_price);
-        tv_cart_old_price = dialog.findViewById(R.id.tv_cart_old_price);
-        tv_cart_stock = dialog.findViewById(R.id.tv_cart_stock);
-
         binding.tvProductName.setText(product.getName());
         double oldPrice = product.getBasePrice();
         String imageUrl = product.getBaseImageURL();
@@ -214,9 +277,6 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
                 stock = color.getStock();
             }
         }
-
-
-
 
         //check if product is discounted
         if(product.getDiscount() > 0) {
@@ -400,20 +460,30 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
     }
 
     @Override
-    public void onSizeClickEvent(Size size) {
+    public void onSizeClickEvent(Size size, Product product) {
         Variant variant = getVariantBySize(size.getId());
         colorItems.clear();
-        colorItems.addAll(variant.getListColor());
+        if(!variant.getListColor().isEmpty()) {
+            colorItems.addAll(variant.getListColor());
+            fillColorInformation(colorItems.get(0));
+        } else {
+            tv_cart_stock.setText(variant.getStock());
+        }
         colorAdapter.notifyDataSetChanged();
+
+        double oldPrice = variant.getPrice();
+
+        if(product.getDiscount() > 0) {
+            //fill cart information
+            tv_cart_old_price.setText(String.format("%.1f$", oldPrice));
+            tv_cart_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            tv_cart_new_price.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
+        }  else {
+            //fill cart information
+            tv_cart_old_price.setVisibility(View.GONE);
+            tv_cart_new_price.setText(String.format("%.1f$", oldPrice));
+        }
     }
-
-
-    private void fillProductCartData(Size size, Color color) {
-
-    }
-
-
-
 
     private Variant getVariantBySize(String sizeId) {
         for (Variant variant : variantItems) {
@@ -424,8 +494,17 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
         return null;
     }
 
+    private void fillColorInformation(Color color) {
+        //Set color image
+        Glide.with(dialog.getContext())
+                .load(color.getImageUrl())
+                .into(imv_cart_product);
+
+        tv_cart_stock.setText("Stock: " + color.getStock());
+    }
+
     @Override
     public void onColorClick(Color color) {
-
+        fillColorInformation(color);
     }
 }
