@@ -146,7 +146,7 @@ public class PaymentActivity extends AppCompatActivity {
             for (Product product : productList) {
                 if (product.getId().equals(cart.getProductId())) {
                     double price = product.getListVariant().get(0).getPrice();
-                    int quantity = Integer.parseInt(cart.getQuatity());
+                    int quantity = Integer.parseInt(cart.getQuantity());
                     totalPrice += price * quantity; // Tính tổng giá
                 }
             }
