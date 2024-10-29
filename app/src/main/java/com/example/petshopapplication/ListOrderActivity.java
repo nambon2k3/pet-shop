@@ -219,7 +219,7 @@ public class ListOrderActivity extends AppCompatActivity {
         reference = database.getReference(getString(R.string.tbl_order_name));
 
         //Display progress bar
-        binding.prgListOrder.setVisibility(View.VISIBLE);
+//        binding.prgListOrder.setVisibility(View.VISIBLE);
 
         List<Order> orderItems = new ArrayList<>();
 //        orderAdapter = new OrderAdapter(productItems, categoryItems);
