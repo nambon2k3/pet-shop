@@ -97,6 +97,11 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
     TextView tv_cart_new_price, tv_cart_old_price, tv_cart_stock, tv_quantity;
     Button btn_plus, btn_minus;
 
+
+    //Add to cart data
+    private String selectedColorId;
+    private String selectedVariantId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
