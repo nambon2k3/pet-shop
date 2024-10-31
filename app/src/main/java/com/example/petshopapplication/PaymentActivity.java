@@ -41,12 +41,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PaymentActivity extends AppCompatActivity   implements RateAdapter.OnRateSelectListener{
-    private static final int REQUEST_CODE = 3;
+public class PaymentActivity extends AppCompatActivity implements RateAdapter.OnRateSelectListener {
+    private static final int REQUEST_CODE = 1;
     private static final String TAG = "PaymentActivity";
     private RecyclerView recyclerView;
     private List<Cart> selectedCartItems;
-    private List<Product> productList = new ArrayList<>();
     private TextView tvTotalPrice;
     private FirebaseDatabase database;
     private DatabaseReference reference;
@@ -67,53 +66,50 @@ public class PaymentActivity extends AppCompatActivity   implements RateAdapter.
         setContentView(R.layout.payment);
 
         selectedCartItems = (ArrayList<Cart>) getIntent().getSerializableExtra("selectedItems");
-
-
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
-
         database = FirebaseDatabase.getInstance();
         tvTotalPrice = findViewById(R.id.totalPriceTextView);
         addressTextView = findViewById(R.id.addressTextView);
         changeAddressButton = findViewById(R.id.changeAddressButton);
-
-        getDefaultAddress();
         priceReal = findViewById(R.id.price_in_real);
         recyclerView = findViewById(R.id.recyclerViewProductList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView rateRecyclerView = findViewById(R.id.rateRecyclerView); // ID của RecyclerView trong layout
-        rateRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Khởi tạo adapter cho danh sách phí vận chuyển
         rateAdapter = new RateAdapter(rateList, this, this);
+        RecyclerView rateRecyclerView = findViewById(R.id.rateRecyclerView);
+        rateRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         rateRecyclerView.setAdapter(rateAdapter);
+
+        getDefaultAddress();
         loadProductDetails();
 
         changeAddressButton.setOnClickListener(v -> {
             Intent intent = new Intent(PaymentActivity.this, AddressSelectionActivity.class);
-            // Truyền địa chỉ hiện tại đến Activity chọn địa chỉ
             intent.putExtra("selectedAddress", selectedUAddress);
             startActivityForResult(intent, REQUEST_CODE);
         });
-
-        rateAdapter = new RateAdapter(rateList, this, new RateAdapter.OnRateSelectListener() {
-            @Override
-            public void onRateSelected(double fee, boolean isSelected) {
-                updateTotalAmount(fee, isSelected);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            selectedUAddress = (UAddress) data.getSerializableExtra("selectedAddress");
+            if (selectedUAddress != null) {
+                displayAddress(selectedUAddress);
+                // Gọi lại loadRates nếu cần thiết
+                if (selectedUAddress.getDistrictId() != null && selectedUAddress.getCityId() != null) {
+                    loadRates(selectedUAddress.getDistrictId(), selectedUAddress.getCityId(), 1, (int) totalAmount, totalWidth, totalHeight, totalLength, totalWeight);
+                }
             }
-        });
-        rateRecyclerView.setAdapter(rateAdapter);
+        }
     }
 
-    private void updateTotalAmount(double fee, boolean isSelected) {
-        if (isSelected) {
-            totalAmount -= fee;  // Trừ tiền vận chuyển vào tổng
-        } else {
-            totalAmount += fee;  // Cộng lại nếu bỏ chọn
-        }
-        tvTotalPrice.setText("Tổng tiền: " + totalAmount);
-    }
 
     private void loadProductDetails() {
-        reference = database.getReference(getString(R.string.tbl_product_name));
+         List<Product> productList = new ArrayList<>();
 
+        reference = database.getReference(getString(R.string.tbl_product_name));
         List<String> productIds = new ArrayList<>();
         for (Cart cart : selectedCartItems) {
             productIds.add(cart.getProductId());
@@ -132,20 +128,17 @@ public class PaymentActivity extends AppCompatActivity   implements RateAdapter.
                             Product product = dataSnapshot.getValue(Product.class);
                             if (product != null) {
                                 productList.add(product);
-
-                                // Tính toán tổng giá và kích thước dựa trên quantity
                                 for (Variant variant : product.getListVariant()) {
                                     Dimension dimension = variant.getDimension();
-                                    // Tìm quantity từ selectedCartItems
                                     for (Cart cart : selectedCartItems) {
                                         if (cart.getProductId().equals(productId)) {
-                                            int quantity = cart.getQuantity(); // Lấy quantity
-                                            totalAmount += variant.getPrice() * (1 - product.getDiscount() / 100.0) * quantity; // Nhân với (1 - discount / 100.0) để tính phần trăm giảm giá
-                                            totalWidth += dimension.getWidth() * quantity; // Nhân với quantity
-                                            totalHeight += dimension.getHeight() * quantity; // Nhân với quantity
-                                            totalLength += dimension.getLength() * quantity; // Nhân với quantity
-                                            totalWeight += dimension.getWeight() * quantity; // Nhân với quantity
-                                            break; // Thoát khỏi vòng lặp khi tìm thấy quantity
+                                            int quantity = cart.getQuantity();
+                                            totalAmount += variant.getPrice() * (1 - product.getDiscount() / 100.0) * quantity;
+                                            totalWidth += dimension.getWidth() * quantity;
+                                            totalHeight += dimension.getHeight() * quantity;
+                                            totalLength += dimension.getLength() * quantity;
+                                            totalWeight += dimension.getWeight() * quantity;
+                                            break;
                                         }
                                     }
                                 }
@@ -153,16 +146,16 @@ public class PaymentActivity extends AppCompatActivity   implements RateAdapter.
                         }
                     }
 
-                    priceReal.setText(""+ totalAmount);
+                    priceReal.setText("" + totalAmount);
                     PaymentAdapter paymentAdapter = new PaymentAdapter(productList, selectedCartItems, PaymentActivity.this);
                     recyclerView.setAdapter(paymentAdapter);
 
-                    // Gọi phương thức loadRates với ID khu vực và thành phố từ selectedUAddress
                     if (selectedUAddress != null) {
                         loadRates(selectedUAddress.getDistrictId(), selectedUAddress.getCityId(), 1, (int) totalAmount, totalWidth, totalHeight, totalLength, totalWeight);
                     } else {
                         Toast.makeText(PaymentActivity.this, "Địa chỉ chưa được chọn", Toast.LENGTH_SHORT).show();
                     }
+
                 }
             }
 
@@ -175,18 +168,14 @@ public class PaymentActivity extends AppCompatActivity   implements RateAdapter.
 
     private void loadRates(String toDistrict, String toCity, int cod, int amount, int width, int height, int length, int weight) {
         GoshipAPI api = RetrofitClient.getRetrofitInstance().create(GoshipAPI.class);
-
         String fromCityId = getString(R.string.petshop_address_city_id);
         String fromDistrictId = getString(R.string.petshop_address_district_id);
-
         Address addressFrom = new Address(fromDistrictId, fromCityId);
         Address addressTo = new Address(toDistrict, toCity);
-
         Parcel parcel = new Parcel(cod, amount, width, height, length, weight);
         Shipment shipment = new Shipment(addressFrom, addressTo, parcel);
         RateRequest rateRequest = new RateRequest(shipment);
 
-        // Log thông tin gọi API
         Log.d(TAG, "Requesting rates with: " +
                 "\nFrom District: " + fromDistrictId +
                 "\nFrom City: " + fromCityId +
@@ -203,12 +192,13 @@ public class PaymentActivity extends AppCompatActivity   implements RateAdapter.
             @Override
             public void onResponse(Call<RateResponse> call, Response<RateResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Cập nhật danh sách rate và thông báo adapter
                     List<Rate> rates = response.body().getData();
                     rateAdapter.setRateList(rates);
+                    for (Rate rate : rates) {
+                        Log.d(TAG, "Rate ID: " + rate.getId() + ", Rate Value: " + rate.getCarrierName());
+                    }
                 } else {
                     Log.e(TAG, "Request failed: " + response.message());
-                    // Log body response để biết thêm chi tiết
                     if (response.errorBody() != null) {
                         try {
                             Log.e(TAG, "Error body: " + response.errorBody().string());
@@ -226,7 +216,6 @@ public class PaymentActivity extends AppCompatActivity   implements RateAdapter.
         });
     }
 
-
     private void getDefaultAddress() {
         DatabaseReference addressReference = database.getReference("addresses");
         String userId = "u1"; // Thay đổi với ID người dùng thực tế
@@ -239,7 +228,7 @@ public class PaymentActivity extends AppCompatActivity   implements RateAdapter.
                             Boolean isDefault = addressSnapshot.child("default").getValue(Boolean.class);
                             if (isDefault != null && isDefault) {
                                 selectedUAddress = addressSnapshot.getValue(UAddress.class);
-                                displayAddress(selectedUAddress); // Hiển thị địa chỉ mặc định
+                                displayAddress(selectedUAddress);
                                 break;
                             }
                         }
@@ -253,34 +242,13 @@ public class PaymentActivity extends AppCompatActivity   implements RateAdapter.
     }
 
     private void displayAddress(UAddress address) {
-        if (address != null) {
-            String addressText = address.getFullName() + " | " + address.getPhone() + "\n" +
-                    address.getWard() + ", " +
-                    address.getDistrict() + ", " + address.getCity();
-            addressTextView.setText(addressText);
-        }
+        addressTextView.setText(address.getFullName() + " | " + address.getPhone() + "\n" + address.getWard() + ", " + address.getDistrict() + ", " + address.getCity());
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            // Nhận địa chỉ mới từ AddressSelectionActivity
-            selectedUAddress = (UAddress) data.getSerializableExtra("selectedAddress");
-            displayAddress(selectedUAddress); // Hiển thị địa chỉ đã chọn
 
-            // Tải lại chi tiết sản phẩm để tính phí vận chuyển với địa chỉ mới
-            // Gọi loadRates với địa chỉ mới
-            if (selectedUAddress != null) {
-                loadRates(selectedUAddress.getDistrictId(), selectedUAddress.getCityId(), 1, (int) totalAmount, totalWidth, totalHeight, totalLength, totalWeight);
-            } else {
-                Toast.makeText(PaymentActivity.this, "Địa chỉ chưa được chọn", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
     @Override
     public void onRateSelected(double fee, boolean isSelected) {
-        updateTotalAmount(fee, isSelected);
+
     }
 }
