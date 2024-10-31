@@ -47,9 +47,11 @@ public class CartActivity extends AppCompatActivity {
 
         // Thiết lập sự kiện khi nút mua hàng được nhấn
         purchaseButton.setOnClickListener(v -> {
+            double totalAmount = updateTotalPrice();
             List<Cart> selectedItems = adapter.getSelectedItems(); // Lấy danh sách sản phẩm đã chọn
             Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
             intent.putExtra("selectedItems", (ArrayList<Cart>) selectedItems); // Chuyển danh sách sản phẩm đã chọn
+            intent.putExtra("totalAmount", totalAmount);
             startActivity(intent); // Chuyển sang PaymentActivity
         });
     }
@@ -134,7 +136,8 @@ public class CartActivity extends AppCompatActivity {
             }
         }
 
-        totalPriceTextView.setText("Tổng tiền: " + String.format("%.1f$", totalPrice));
+
+        totalPriceTextView.setText( String.format("Total Price: %.2f", totalPrice));
 
         return totalPrice;
     }

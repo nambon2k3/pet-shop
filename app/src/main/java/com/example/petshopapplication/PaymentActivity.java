@@ -34,8 +34,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,19 +61,30 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private RateAdapter rateAdapter;
     private List<Rate> rateList = new ArrayList<>();
     private TextView priceReal;
+    private TextView feeShip;
+    private TextView purchasedMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.payment);
+        Intent intent1 = getIntent();
+        selectedCartItems = (ArrayList<Cart>) intent1.getSerializableExtra("selectedItems");
+        double totalAmount = intent1.getDoubleExtra("totalAmount", 0.0);
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
+        numberFormat.setMinimumFractionDigits(0);
 
-        selectedCartItems = (ArrayList<Cart>) getIntent().getSerializableExtra("selectedItems");
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
         database = FirebaseDatabase.getInstance();
         tvTotalPrice = findViewById(R.id.totalPriceTextView);
         addressTextView = findViewById(R.id.addressTextView);
         changeAddressButton = findViewById(R.id.changeAddressButton);
         priceReal = findViewById(R.id.price_in_real);
+        priceReal.setText(String.format("%s VND", numberFormat.format(totalAmount)));
+        feeShip = findViewById(R.id.fee_ship);
+        purchasedMoney = findViewById(R.id.purchasedMoney);
+        purchasedMoney.setText(String.format("%s VND", numberFormat.format(totalAmount)));
+
         recyclerView = findViewById(R.id.recyclerViewProductList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -146,7 +159,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                         }
                     }
 
-                    priceReal.setText("" + totalAmount);
                     PaymentAdapter paymentAdapter = new PaymentAdapter(productList, selectedCartItems, PaymentActivity.this);
                     recyclerView.setAdapter(paymentAdapter);
 
@@ -195,7 +207,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                     List<Rate> rates = response.body().getData();
                     rateAdapter.setRateList(rates);
                     for (Rate rate : rates) {
-                        Log.d(TAG, "Rate ID: " + rate.getId() + ", Rate Value: " + rate.getCarrierName());
+                        Log.d(TAG, "Rate ID: " + rate.getId() + ", Rate Value: " + rate.getTotalAmount());
                     }
                 } else {
                     Log.e(TAG, "Request failed: " + response.message());
@@ -246,9 +258,14 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     }
 
 
-
     @Override
-    public void onRateSelected(double fee, boolean isSelected) {
+    public void onRateSelected(double fee) {
+        double finalTotalAmount = totalAmount + fee; // Update total price
 
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
+        numberFormat.setMinimumFractionDigits(0);
+        feeShip.setText(String.format("%s VND", numberFormat.format(fee)));
+        purchasedMoney.setText(String.format("%s VND", numberFormat.format(finalTotalAmount)));
+        tvTotalPrice.setText(String.format("%s VND", numberFormat.format(finalTotalAmount)));
     }
 }
