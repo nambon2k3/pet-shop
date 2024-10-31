@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FeedbackListActivity">
+    tools:context=".ListFeedbackActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,11 +54,50 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:paddingBottom="16dp"
                 android:text="Product Feedbacks"
                 android:textColor="@color/textColorHint"
                 android:textSize="20sp"
                 android:textStyle="bold" />
+
+            <!-- Rating Text -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:padding="4dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tv_feedback_rating_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4.6"
+                    android:textColor="#E74C3C"
+                    android:textSize="24sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tv_feedback_rating_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" / 5"
+                    android:textColor="#E74C3C"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <!-- Rating Stars -->
+            <RatingBar
+                android:id="@+id/rb_feedback_average_rating"
+                style="?android:attr/ratingBarStyleIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:numStars="5"
+                android:stepSize="0.1"
+                android:progressTint="#E74C3C"
+                android:isIndicator="false"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcv_feedback"
