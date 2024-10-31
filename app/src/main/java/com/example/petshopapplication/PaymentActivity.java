@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,9 @@ import com.example.petshopapplication.API_model.Shipment;
 import com.example.petshopapplication.Adapter.PaymentAdapter;
 import com.example.petshopapplication.API_model.Address;
 import com.example.petshopapplication.Adapter.RateAdapter;
+import com.example.petshopapplication.model.Order;
+import com.example.petshopapplication.model.OrderDetail;
+import com.example.petshopapplication.model.Payment;
 import com.example.petshopapplication.model.ShippingMethod;
 import com.example.petshopapplication.model.UAddress;
 import com.example.petshopapplication.model.Cart;
@@ -36,8 +41,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,6 +70,10 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private TextView priceReal;
     private TextView feeShip;
     private TextView purchasedMoney;
+    private RadioButton checkboxPaymentOnDelivery;
+    private Button payButton;
+    private String selectedRateID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,13 +107,26 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
         getDefaultAddress();
         loadProductDetails();
-
+        checkboxPaymentOnDelivery = findViewById(R.id.checkboxPaymentOnDelivery);
+        payButton = findViewById(R.id.payButton);
+        payButton.setOnClickListener(v -> {
+            if (selectedRateID == null || selectedRateID.isEmpty()) {
+                Toast.makeText(PaymentActivity.this, "Vui lòng chọn phương thức vận chuyển", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (checkboxPaymentOnDelivery.isChecked() ) {/* other payment method check */
+                createOrderAndPayment();
+            } else {
+                Toast.makeText(this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
+            }
+        });
         changeAddressButton.setOnClickListener(v -> {
             Intent intent = new Intent(PaymentActivity.this, AddressSelectionActivity.class);
             intent.putExtra("selectedAddress", selectedUAddress);
             startActivityForResult(intent, REQUEST_CODE);
         });
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -119,8 +143,159 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     }
 
 
+    private List<OrderDetail> getOrderDetailsList(DataSnapshot dataSnapshot) {
+        List<OrderDetail> orderDetailsList = new ArrayList<>();
+
+        // Sử dụng selectedCartItems để lấy danh sách sản phẩm
+        for (Cart cartItem : selectedCartItems) {
+            // Tìm sản phẩm tương ứng trong dataSnapshot
+            for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
+                Product product = productSnapshot.getValue(Product.class);
+                if (product != null && cartItem.getProductId().equals(product.getId())) {
+                    // Lặp qua các variant của sản phẩm
+                    for (Variant variant : product.getListVariant()) {
+                        // Kiểm tra xem variant có tương ứng với variant được chọn trong giỏ hàng không
+                        if (cartItem.getSelectedVariantId().equals(variant.getId())) {
+                            OrderDetail orderDetail = new OrderDetail();
+                            orderDetail.setProductId(cartItem.getProductId());  // Lấy ID sản phẩm từ giỏ hàng
+                            orderDetail.setVariantId(cartItem.getSelectedVariantId());  // Lấy ID variant từ giỏ hàng
+                            orderDetail.setColorId(cartItem.getSelectedColorId());      // Lấy ID color từ giỏ hàng
+                            orderDetail.setQuantity(cartItem.getQuantity());     // Lấy số lượng từ giỏ hàng
+
+                            // Tính giá sau khi trừ giảm giá
+                            double discountedPrice = variant.getPrice() * (1 - product.getDiscount() / 100.0);
+                            orderDetail.setPurchased(discountedPrice); // Lưu giá đã giảm
+
+                            orderDetailsList.add(orderDetail);  // Thêm vào danh sách chi tiết đơn hàng
+                            break; // Thoát vòng lặp variant sau khi đã tìm thấy
+                        }
+                    }
+                    break; // Thoát vòng lặp sản phẩm sau khi đã tìm thấy
+                }
+            }
+        }
+
+        return orderDetailsList; // Trả về danh sách chi tiết đơn hàng
+    }
+
+
+
+    private void createOrderAndPayment() {
+        // Tạo đơn hàng với UUID
+        Order order = new Order();
+        order.setId(UUID.randomUUID().toString()); // Tạo ID tự động bằng UUID
+        order.setUserId("u1"); // Gán ID người dùng thực tế
+        order.setTotalAmount(totalAmount); // Tổng số tiền
+        order.setShipmentId(""); // ID vận chuyển
+        order.setRateId(selectedRateID); // Sử dụng selectedRateID đã lưu
+        order.setOrderDetails(getOrderDetailsList()); // Danh sách chi tiết đơn hàng
+        order.setOrderDate(new Date()); // Thời gian đặt hàng
+        order.setStatus("Đang chờ"); // Trạng thái đơn hàng
+
+        // Thêm vào Firebase
+        DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference("orders");
+        String orderId = order.getId(); // Lấy ID từ đơn hàng đã tạo
+
+        ordersRef.child(orderId).setValue(order)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Tạo thông tin thanh toán sau khi tạo đơn hàng thành công
+                        Payment payment = new Payment();
+                        payment.setId(UUID.randomUUID().toString()); // Tạo ID tự động cho thanh toán
+                        payment.setOrderId(orderId);
+                        payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Chuyển khoản"); // Gán phương thức thanh toán
+                        payment.setAmount(order.getTotalAmount()); // Số tiền thanh toán
+                        payment.setTransactionId(""); // Nếu có ID giao dịch, thêm vào đây
+
+                        // Thêm vào Firebase
+                        DatabaseReference paymentsRef = FirebaseDatabase.getInstance().getReference("payments");
+                        String paymentId = payment.getId(); // Lấy ID từ thanh toán đã tạo
+
+                        paymentsRef.child(paymentId).setValue(payment)
+                                .addOnCompleteListener(paymentTask -> {
+                                    if (paymentTask.isSuccessful()) {
+                                        // Cập nhật paymentId vào đơn hàng
+                                        order.setPaymentId(paymentId);
+                                        ordersRef.child(orderId).setValue(order) // Cập nhật đơn hàng với paymentId
+                                                .addOnCompleteListener(updateTask -> {
+                                                    if (updateTask.isSuccessful()) {
+                                                        Toast.makeText(this, "Đơn hàng và thanh toán đã được tạo thành công!", Toast.LENGTH_SHORT).show();
+                                                        // Chuyển đến màn hình xác nhận đơn hàng
+                                                        Intent intent = new Intent(PaymentActivity.this, OrderingActivity.class);
+                                                        intent.putExtra("orderId", orderId);
+                                                        startActivity(intent);
+                                                        finish();
+                                                    } else {
+                                                        Toast.makeText(this, "Lỗi khi cập nhật thông tin thanh toán vào đơn hàng!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    } else {
+                                        Toast.makeText(this, "Lỗi khi tạo thông tin thanh toán!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(this, "Lỗi khi tạo đơn hàng!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public List<OrderDetail> getOrderDetailsList() {
+        List<OrderDetail> orderDetailsList = new ArrayList<>();
+
+        // Giả sử selectedCartItems là danh sách các mặt hàng trong giỏ hàng
+        for (Cart cartItem : selectedCartItems) {
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setProductId(cartItem.getProductId());
+            orderDetail.setVariantId(cartItem.getSelectedVariantId());
+            orderDetail.setColorId(cartItem.getSelectedColorId());
+            orderDetail.setQuantity(cartItem.getQuantity());
+
+            // Tính giá sau khi trừ giảm giá (giả sử bạn đã có giá sản phẩm và thông tin giảm giá)
+            double price = getPriceForProduct(cartItem.getProductId(), cartItem.getSelectedVariantId());
+            double discountedPrice = price * (1 - getDiscountForProduct(cartItem.getProductId()) / 100.0);
+            orderDetail.setPurchased(discountedPrice); // Lưu giá đã giảm
+
+            orderDetailsList.add(orderDetail); // Thêm vào danh sách chi tiết đơn hàng
+        }
+        return orderDetailsList;
+    }
+
+
+    private double getPriceForProduct(String productId, String variantId) {
+        // Giả sử bạn có một danh sách sản phẩm đã được tải từ Firebase hoặc cơ sở dữ liệu
+        List<Product> productList = new ArrayList<>(); // Danh sách sản phẩm
+
+        // Lặp qua danh sách sản phẩm để tìm sản phẩm tương ứng
+        for (Product product : productList) {
+            if (product.getId().equals(productId)) {
+                // Lặp qua các variant của sản phẩm để tìm variant tương ứng
+                for (Variant variant : product.getListVariant()) {
+                    if (variant.getId().equals(variantId)) {
+                        return variant.getPrice(); // Trả về giá của variant tìm thấy
+                    }
+                }
+            }
+        }
+        return 0.0; // Trả về 0 nếu không tìm thấy
+    }
+
+    private double getDiscountForProduct(String productId) {
+        // Giả sử bạn có một danh sách sản phẩm đã được tải từ Firebase hoặc cơ sở dữ liệu
+        List<Product> productList = new ArrayList<>(); // Danh sách sản phẩm
+
+        // Lặp qua danh sách sản phẩm để tìm sản phẩm tương ứng
+        for (Product product : productList) {
+            if (product.getId().equals(productId)) {
+                return product.getDiscount(); // Trả về mức giảm giá của sản phẩm tìm thấy
+            }
+        }
+        return 0.0; // Trả về 0 nếu không tìm thấy
+    }
+
+
+
     private void loadProductDetails() {
-         List<Product> productList = new ArrayList<>();
+        List<Product> productList = new ArrayList<>();
 
         reference = database.getReference(getString(R.string.tbl_product_name));
         List<String> productIds = new ArrayList<>();
@@ -259,13 +434,23 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
 
     @Override
-    public void onRateSelected(double fee) {
-        double finalTotalAmount = totalAmount + fee; // Update total price
+    public void onRateSelected(double fee, String rateID) {
+        double finalTotalAmount = totalAmount + fee; // Cập nhật tổng giá
 
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
         numberFormat.setMinimumFractionDigits(0);
+
+        // Cập nhật hiển thị phí giao hàng
         feeShip.setText(String.format("%s VND", numberFormat.format(fee)));
+
+        // Cập nhật hiển thị số tiền đã mua
         purchasedMoney.setText(String.format("%s VND", numberFormat.format(finalTotalAmount)));
+
+        // Cập nhật hiển thị tổng giá
         tvTotalPrice.setText(String.format("%s VND", numberFormat.format(finalTotalAmount)));
+        this.selectedRateID = rateID;
+        // Bạn có thể thực hiện các hành động khác với rateID nếu cần
+        Log.d(TAG, "Selected Fee: " + fee + ", Selected Rate ID: " + selectedRateID);
     }
+
 }
