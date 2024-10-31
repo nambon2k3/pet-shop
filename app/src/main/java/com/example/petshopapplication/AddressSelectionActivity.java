@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,7 +42,7 @@ public class AddressSelectionActivity extends AppCompatActivity implements Addre
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         UAddressList = new ArrayList<>();
-        addressAdapter = new AddressAdapter(UAddressList, this, this); // Pass this as the listener
+        addressAdapter = new AddressAdapter(UAddressList, this, this);
         recyclerView.setAdapter(addressAdapter);
 
         addressRef = FirebaseDatabase.getInstance().getReference("addresses");
@@ -58,21 +59,23 @@ public class AddressSelectionActivity extends AppCompatActivity implements Addre
     }
 
     @Override
-    public void onAddressSelected(UAddress UAddress) {
-        Log.d(TAG, "Selected address: " + UAddress.toString());
-        proceedToPayment(UAddress); // Gọi hàm để chuyển sang PaymentActivity
+    public void onAddressSelected(UAddress selectedAddress) {
+        Log.d(TAG, "Selected address1: " + selectedAddress.toString());
+        proceedToPayment(selectedAddress); // Gọi hàm để chuyển sang PaymentActivity
     }
 
-    private void proceedToPayment(UAddress UAddress) {
-        if (UAddress != null) {
-            Intent intent = new Intent(AddressSelectionActivity.this, PaymentActivity.class);
-            intent.putExtra("selectedAddress", UAddress); // Chuyển địa chỉ đã chọn
-            Log.d(TAG, "Proceeding to Payment with address: " + UAddress.toString());
-            startActivity(intent);
+    private void proceedToPayment(UAddress selectedAddress) {
+        if (selectedAddress != null) {
+            Intent intent = new Intent();
+            intent.putExtra("selectedAddress", selectedAddress); // Chuyển địa chỉ đã chọn
+            setResult(RESULT_OK, intent); // Gửi kết quả về activity trước đó
+            finish(); // Kết thúc Activity này
         } else {
             Toast.makeText(this, "Vui lòng chọn địa chỉ!", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
