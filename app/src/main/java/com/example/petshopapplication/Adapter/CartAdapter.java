@@ -66,7 +66,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
 
         //Get product size has been selected
         for (Size s : sizeList){
-            if(s.getId().equals(cart.getSelectedSizeId())){
+            if(s.getId().equals(cart.getSelectedVariantId())){
                 selectedSize = s.getName();
                 size = s;
             }
@@ -110,7 +110,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
             holder.tv_item_old_price.setVisibility(View.GONE);
             holder.tv_item_new_price.setText(String.format("%.1f$", oldPrice));
         }
-        holder.tv_item_quatity.setText(String.valueOf(cart.getQuatity()));
+        holder.tv_item_quatity.setText(String.valueOf(cart.getQuantity()));
         Glide.with(context)
                 .load(product.getBaseImageURL())
                 .into(holder.imv_item);

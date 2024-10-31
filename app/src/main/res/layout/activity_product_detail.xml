@@ -308,7 +308,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/addBtn"
+            android:id="@+id/btn_add_cart"
             style="@android:style/Widget.Button"
             android:layout_width="180dp"
             android:layout_height="wrap_content"

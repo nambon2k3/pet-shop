@@ -1,6 +1,6 @@
-package com.example.petshopapplication.model;
+package com.example.petshopapplication.API_model;
 
-import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,12 +15,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Order {
-    private String id;
-    private String userId;
-    private Date orderDate;
-    private double amount;
+public class DistrictResponse {
+    private int code;
     private String status;
-    private String address_id;
-
+    private List<District> data;
 }
