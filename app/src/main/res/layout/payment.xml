@@ -47,6 +47,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
+                android:layout_marginTop="20dp"
                 android:alpha="0.5"
                 android:background="#E0E0E0" />
 
@@ -68,6 +69,7 @@
                         android:src="@drawable/bg_address" />
 
                     <TextView
+                        android:id="@+id/addressTextView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -77,6 +79,7 @@
                 </LinearLayout>
 
                 <Button
+                    android:id="@+id/changeAddressButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -104,153 +107,22 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <!-- RecyclerView thay cho danh sách sản phẩm tĩnh -->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewProductList"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="12dp">
-
-                <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/product_image" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sao Thái Dương Miền Nam"
-                        android:textColor="@android:color/black"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dầu gội dược liệu Thái Dương 7 bưởi tây"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Phân loại: TD7 Gold 500ml mới"
-                        android:textColor="@android:color/darker_gray"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="₫275.000"
-                    android:textColor="@android:color/holo_red_dark"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="12dp">
-
-                <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/product_image" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sao Thái Dương Miền Nam"
-                        android:textColor="@android:color/black"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dầu gội dược liệu Thái Dương 7 bưởi tây"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Phân loại: TD7 Gold 500ml mới"
-                        android:textColor="@android:color/darker_gray"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="₫275.000"
-                    android:textColor="@android:color/holo_red_dark"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:alpha="0.5"
-                android:background="#E0E0E0" />
-
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:layout_marginBottom="8dp"
-                android:text="Chính sách bảo hiểm"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:orientation="vertical" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="12dp">
-
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:text="Bảo hiểm bảo vệ người tiêu dùng\n₫2.999 x1"
-                    android:textColor="@android:color/black"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Gợi ý cho bạn"
-                    android:textColor="@android:color/holo_blue_light"
-                    android:textSize="14sp" />
-            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="20dp"
                 android:alpha="0.5"
                 android:background="#E0E0E0" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -267,50 +139,22 @@
                 android:orientation="horizontal"
                 android:paddingTop="12dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Thêm RecyclerView cho phương thức vận chuyển -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rateRecyclerView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="Nhanh"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="₫43.400 ₫23.500\nĐảm bảo giao hàng từ 23 - 25 Tháng 10"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="12sp" />
+
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:alpha="0.5"
-                android:background="#E0E0E0" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="8dp"
-                android:text="Thêm voucher"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/background_light"
-                android:hint="Nhập mã voucher"
-                android:padding="10dp" />
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="20dp"
                 android:alpha="0.5"
                 android:background="#E0E0E0" />
 
@@ -337,19 +181,13 @@
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Thẻ tín dụng"
+                        android:text="Thanh toán qua VNPAY"
                         android:textColor="@android:color/black" />
 
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Chuyển khoản"
-                        android:textColor="@android:color/black" />
-
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tiền mặt"
+                        android:text="Thanh toán ngay khi nhận hàng"
                         android:textColor="@android:color/black" />
                 </RadioGroup>
             </LinearLayout>
@@ -385,15 +223,16 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Tổng cộng sản phẩm:"
+                        android:text="Tổng tiền sản phẩm:"
                         android:textColor="@android:color/black"
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/price_in_real"
                         android:layout_width="wrap_content"
                         android:layout_height="17dp"
                         android:layout_gravity="end"
-                        android:text="₫550.000"
+                        android:text="tt"
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -408,9 +247,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Giảm giá voucher:"
+                        android:text="Giá vận chuyển:"
                         android:textColor="@android:color/black"
                         android:textSize="14sp" />
+
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -473,15 +313,17 @@
                 android:layout_weight="1"
                 android:text="Thành tiền: "
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/totalPriceTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="₫500.000"
+                android:text="₫0"
                 android:textColor="@android:color/holo_red_dark"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
+
         </LinearLayout>
 
         <Button

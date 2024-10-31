@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp">
         <ImageView
             android:id="@+id/imv_feedback_user_avatar"
@@ -62,7 +62,7 @@
             android:layout_marginBottom="4dp"
             android:isIndicator="true"
             android:numStars="5"
-            android:stepSize="0.5" />
+            android:stepSize="1" />
 
 
         <ImageView

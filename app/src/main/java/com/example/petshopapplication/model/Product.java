@@ -26,6 +26,6 @@ public class Product {
     private String baseImageURL;
     private double basePrice;
     private List<Variant> listVariant;
+    private String createdAt;;
     private boolean isDeleted;
-    private String createdAt;
 }

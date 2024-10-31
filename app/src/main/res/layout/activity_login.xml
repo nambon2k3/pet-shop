@@ -52,14 +52,14 @@
 
 
         <EditText
-            android:id="@+id/edt_login_username"
+            android:id="@+id/edt_login_email"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@drawable/rounded_edt"
             android:textColor="@color/textColorHint"
-            android:drawableLeft="@drawable/baseline_person_24"
+            android:drawableLeft="@drawable/baseline_email_24"
             android:drawablePadding="8dp"
-            android:hint="Enter username"
+            android:hint="Enter email"
             android:padding="15dp"
             android:textColorHint="@color/textColorHint" />
 

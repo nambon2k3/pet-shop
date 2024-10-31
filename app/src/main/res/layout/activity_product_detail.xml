@@ -142,9 +142,19 @@
                         android:id="@+id/tv_rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="5 Rating"
+                        android:text="5"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/ratingBar"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txt_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rating"
+                        android:layout_marginStart="4dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tv_rating"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
@@ -208,7 +218,7 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tv_view_list_product"
+                        android:id="@+id/tv_view_list_product_feedback"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="VIEW ALL" />
@@ -298,7 +308,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/addBtn"
+            android:id="@+id/btn_add_cart"
             style="@android:style/Widget.Button"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
