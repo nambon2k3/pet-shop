@@ -1,18 +1,17 @@
 package com.example.petshopapplication.model;
-
-import java.io.Serializable;
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
-public class Cart implements Serializable {
+public class Cart {
     private String cartId;
     private String userId;
     private String productId;
     private int quantity;
-    private String selectedColorId;
     private String selectedVariantId;
+    private String selectedColorId;
+    private boolean isChecked;
+
 }
