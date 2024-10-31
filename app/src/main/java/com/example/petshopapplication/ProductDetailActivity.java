@@ -54,7 +54,7 @@ import java.util.List;
 
 import lombok.NonNull;
 
-public class ProductDetailActivity extends AppCompatActivity implements ProductImageAdapter.OnProductImageClickListener, SizeAdapter.OnSizeClickEventListener, ColorAdapter.OnColorClickEventListener{
+public class    ProductDetailActivity extends AppCompatActivity implements ProductImageAdapter.OnProductImageClickListener, SizeAdapter.OnSizeClickEventListener, ColorAdapter.OnColorClickEventListener{
 
 
     ActivityProductDetailBinding binding;
@@ -182,7 +182,7 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             Variant variant = product.getListVariant().get(0);
             if(!variant.getListColor().isEmpty()) {
                 colorItems.addAll(variant.getListColor());
-                colorAdapter = new ColorAdapter(colorItems);
+                colorAdapter = new ColorAdapter(colorItems,this::onColorClick);
                 colorCartRecyclerView = dialog.findViewById(R.id.rcv_color);
                 colorCartRecyclerView.setLayoutManager(new GridLayoutManager(ProductDetailActivity.this, 1));
                 colorCartRecyclerView.setAdapter(colorAdapter);
