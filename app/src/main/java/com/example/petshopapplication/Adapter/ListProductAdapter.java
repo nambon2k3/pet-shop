@@ -18,8 +18,16 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.ProductDetailActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Category;
+import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.Product;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.ProductHolder>{
@@ -27,6 +35,8 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
     List<Product> productItems;
     List<Category> categoryItems;
     Context context;
+    FirebaseDatabase database;
+    DatabaseReference reference;
 
     public ListProductAdapter(List<Product> productItems, List<Category> categoryItems) {
         this.productItems = productItems;
@@ -92,6 +102,8 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
             context.startActivity(intent);
         });
 
+        System.out.println(product);
+        fetchFeedback(product, holder);
     }
 
     private Category getCategoryById(String categoryId) {
@@ -114,6 +126,42 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
         return null;
     }
 
+    private void fetchFeedback(Product product, @NonNull ProductHolder holder) {
+        List<FeedBack> feedbackItems = new ArrayList<>();
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference("feedbacks");
+        System.out.println("id: " + product.getId());
+        Query query = reference.orderByChild("productId").equalTo(product.getId());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                System.out.println("onDataChange");
+                feedbackItems.clear();
+                int totalRating = 0;
+                int feedbackCount = 0;
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
+                    System.out.println(feedback);
+                    if (!feedback.isDeleted()) {
+                        System.out.println();
+                        feedbackItems.add(feedback);
+                        totalRating += feedback.getRating();
+                        feedbackCount++;
+                    }
+                    if (feedbackCount > 0){
+                        double averageRating = (double) totalRating / feedbackCount;
+                        holder.tv_rating.setText(String.valueOf(averageRating));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     @Override
     public int getItemCount() {
         return productItems.size();
@@ -134,7 +182,4 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
             tv_category = itemView.findViewById(R.id.tv_category);
         }
     }
-
-
-
 }

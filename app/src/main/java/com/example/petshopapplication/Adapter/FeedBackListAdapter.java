@@ -31,7 +31,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
 
     List<FeedBack> feedBackItems;
     List<User> userItems;
-    User user = null;
+    User user;
     Context context;
 
     public FeedBackListAdapter(List<FeedBack> feedBackItems, List<User> userItems) {
@@ -59,7 +59,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
             user = getUser(feedback.getUserId());
         }
 
-        if (user != null) {
+        if (!user.getId().isEmpty()) {
             // Display elements of feedback
             if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
                 holder.imv_feedback_user_avatar.setVisibility(View.VISIBLE);

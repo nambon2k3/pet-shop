@@ -29,6 +29,7 @@ public class ListFeedbackActivity extends AppCompatActivity {
     private List<FeedBack> feedbackList;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
+    private String productId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +46,14 @@ public class ListFeedbackActivity extends AppCompatActivity {
 
         // Firebase Realtime Database reference
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("feedbacks");
+        databaseReference = database.getReference(getString(R.string.tbl_feedback_name));
 
         // Fetch feedbacks from Firebase
+        getIntend();
         fetchFeedbacks();
     }
 
     private void fetchFeedbacks() {
-        String productId = "p1";
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -101,12 +102,9 @@ public class ListFeedbackActivity extends AppCompatActivity {
 
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    System.out.println("go");
                     if(snapshot.exists()) {
-                        System.out.println("go");
                         //Get user data from database
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            System.out.println("go");
                             User user = dataSnapshot.getValue(User.class);
                             System.out.println(user);
                             userItems.add(user);
@@ -125,5 +123,10 @@ public class ListFeedbackActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void getIntend() {
+        productId = getIntent().getStringExtra("productId");
+        binding.btnBack.setOnClickListener(v -> finish());
     }
 }

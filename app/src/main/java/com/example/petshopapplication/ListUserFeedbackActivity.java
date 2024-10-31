@@ -28,7 +28,6 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
     private ActivityListFeedbackBinding binding;  // ViewBinding reference
     private FeedBackListAdapter feedbackAdapter;
     private List<FeedBack> feedbackList;
-    List<User> userItems;
     private DatabaseReference databaseReference;
     private FirebaseDatabase database;
     String currentUserId = "u1";

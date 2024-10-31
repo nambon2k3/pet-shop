@@ -1,14 +1,13 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +17,6 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.Adapter.FeedBackAdapter;
 import com.example.petshopapplication.Adapter.ListProductAdapter;
-import com.example.petshopapplication.Adapter.ListProductCategoryAdapter;
 import com.example.petshopapplication.Adapter.ProductImageAdapter;
 import com.example.petshopapplication.databinding.ActivityProductDetailBinding;
 import com.example.petshopapplication.model.Category;
@@ -65,6 +63,13 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
         binding.tvEmptyFeedback.setVisibility(View.GONE);
 
         getIntend();
+
+        binding.tvViewListProductFeedback.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ListFeedbackActivity.class);
+            intent.putExtra("productId", productId); // Pass product ID
+            startActivity(intent);
+        });
+
         //initCategory();
         initProductDetail(productId);
 
@@ -191,6 +196,8 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             }
         });
     }
+
+
 
     private void fetchUserData(List<FeedBack> feedbackItems) {
         reference = database.getReference(getString(R.string.tbl_user_name));

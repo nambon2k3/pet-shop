@@ -91,7 +91,7 @@ public class ViewFeedBackItemActivity extends AppCompatActivity {
                             if (feedback != null && feedback.getUserId().equals(userId) && !feedback.isDeleted()) {
                                 switch (func) {
                                     case "":
-                                        updateFeedback(feedback);
+                                        displayFeedback(feedback);
                                         break;
                                     case "Edit":
                                         updateFeedback(feedback);
