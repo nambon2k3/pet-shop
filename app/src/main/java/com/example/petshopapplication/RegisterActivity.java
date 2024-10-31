@@ -69,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             //Validate input data
             String errorMessage = Validate.isRegisterValid(this ,phone, password, fullName);
-            if(errorMessage != null || !errorMessage.isBlank()) {
+            if(errorMessage != null && !errorMessage.isBlank()) {
                 Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             }
             //Checking if password and re-password match

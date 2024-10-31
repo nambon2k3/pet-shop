@@ -13,7 +13,7 @@ public class Validate {
 
     public static boolean isPasswordValid(String password) {
         // Regex pattern for password validation
-        return password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
+        return password.matches("^.{8,}$");
     }
 
     public static boolean isFullNameValid(String fullName) {
