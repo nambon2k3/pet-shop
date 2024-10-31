@@ -20,7 +20,7 @@ import com.example.petshopapplication.API_model.District;
 import com.example.petshopapplication.API_model.DistrictResponse;
 import com.example.petshopapplication.API_model.Ward;
 import com.example.petshopapplication.API_model.WardResponse;
-import com.example.petshopapplication.model.Address;
+import com.example.petshopapplication.model.UAddress;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -218,7 +218,7 @@ public class AddressAddActivity extends AppCompatActivity {
 
         String addressId = UUID.randomUUID().toString(); // Tạo ID ngẫu nhiên
 
-        Address address = new Address(
+        UAddress UAddress = new UAddress(
                 addressId,                                   // ID địa chỉ
                 fullName,                                   // Họ và tên
                 phone,                                      // Số điện thoại
@@ -232,7 +232,7 @@ public class AddressAddActivity extends AppCompatActivity {
         );
 
         // Lưu địa chỉ vào Firebase
-        addressesRef.child(addressId).setValue(address)
+        addressesRef.child(addressId).setValue(UAddress)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(this, "Địa chỉ đã được lưu!", Toast.LENGTH_SHORT).show();

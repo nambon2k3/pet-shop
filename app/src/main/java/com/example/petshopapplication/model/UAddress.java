@@ -1,5 +1,7 @@
 package com.example.petshopapplication.model;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +15,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Address {
+public class UAddress implements Serializable {
     private String addressId;
     private String fullName;
     private String phone;
@@ -24,6 +26,5 @@ public class Address {
     private String ward;        // Tên phường
     private boolean isDefault;   // Địa chỉ mặc định hay không
     private String userId;      // ID người dùng
-
 
 }

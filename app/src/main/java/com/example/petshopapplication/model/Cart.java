@@ -12,7 +12,7 @@ public class Cart implements Serializable {
     private String cartId;
     private String userId;
     private String productId;
-    private String quantity;
+    private int quantity;
     private String selectedColorId;
     private String selectedVariantId;
 }
