@@ -52,12 +52,19 @@ public class HomeActivity extends AppCompatActivity {
         initCategory();
         initFeedback();
 
-        binding.tvViewListProduct.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.btnHomeSearch.setOnClickListener(v -> {
+            String searchText = binding.tvSearch.getText().toString().trim();
+            if(!searchText.isEmpty()) {
                 Intent intent = new Intent(HomeActivity.this, ListProductActivity.class);
+                intent.putExtra("searchText", searchText);
+                intent.putExtra("isSearch", true);
                 startActivity(intent);
             }
+        });
+
+        binding.tvViewListProduct.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, ListProductActivity.class);
+            startActivity(intent);
         });
 
     }

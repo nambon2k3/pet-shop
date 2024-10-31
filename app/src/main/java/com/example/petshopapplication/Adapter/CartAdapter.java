@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Cart;
+import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Size;
@@ -50,6 +51,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
         this.context = context;
         this.listener = listener;
     }
+
+
 
 
     @NonNull
