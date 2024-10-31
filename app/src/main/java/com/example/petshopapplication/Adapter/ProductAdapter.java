@@ -111,10 +111,10 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
     private void fetchFeedback(Product product, @NonNull ProductHolder holder) {
         List<FeedBack> feedbackItems = new ArrayList<>();
         database = FirebaseDatabase.getInstance();
-        reference = database.getReference(String.valueOf(((R.string.tbl_feedback_name))));
+        reference = database.getReference("feedbacks");
 
         Query query = reference.orderByChild("productId").equalTo(product.getId());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
                 feedbackItems.clear();
@@ -130,7 +130,7 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
                     if (feedbackCount > 0){
                         double averageRating = (double) totalRating / feedbackCount;
                         holder.tv_rating.setText(String.valueOf(averageRating));
-                        holder.tv_rated_num.setText(feedbackCount);
+                        holder.tv_rated_num.setText(String.valueOf(feedbackCount));
                     }
                 }
             }

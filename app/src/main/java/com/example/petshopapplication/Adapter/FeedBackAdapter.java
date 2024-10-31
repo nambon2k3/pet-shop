@@ -27,6 +27,7 @@ public class FeedBackAdapter extends RecyclerView.Adapter<FeedBackAdapter.Feedba
     List<User> userItems;
     Context context;
 
+
     public FeedBackAdapter(List<FeedBack> feedBackItems, List<User> userItems) {
         this.feedBackItems = feedBackItems;
         this.userItems = userItems;
@@ -57,6 +58,7 @@ public class FeedBackAdapter extends RecyclerView.Adapter<FeedBackAdapter.Feedba
     }
 
     public User getUser(String userId) {
+        userId = "Ko9B1selclMHLfa2PBZxSrYL2qG3";
         for (User user : userItems) {
             if (user.getId().equals(userId)) {
                 return user;

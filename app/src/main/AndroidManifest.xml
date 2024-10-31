@@ -28,7 +28,15 @@
 
         <activity
             android:name=".HomeActivity"
-            android:exported="false" />
+            android:exported="true">
+
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".AddressAddActivity"
@@ -36,12 +44,12 @@
 
         <activity
             android:name=".ListProductActivity"
-            android:exported="false" />
+            android:exported="false"></activity>
         <activity
             android:name=".AddFeedbackActivity"
             android:exported="false"></activity>
         <activity
-            android:name=".FeedbackListActivity"
+            android:name=".ListFeedbackActivity"
             android:exported="false"></activity>
 
 
@@ -61,19 +69,19 @@
             android:name=".UpdateFeedbackActivity"
             android:exported="false" />
         <activity
-            android:name=".FeedbackListUserActivity"
+            android:name=".ListUserFeedbackActivity"
             android:exported="false"></activity>
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="false">
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+            <!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".MainActivity"

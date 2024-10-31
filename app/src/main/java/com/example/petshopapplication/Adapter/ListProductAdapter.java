@@ -130,18 +130,16 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
         List<FeedBack> feedbackItems = new ArrayList<>();
         database = FirebaseDatabase.getInstance();
         reference = database.getReference("feedbacks");
-        System.out.println("id: " + product.getId());
+
         Query query = reference.orderByChild("productId").equalTo(product.getId());
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
-                System.out.println("onDataChange");
                 feedbackItems.clear();
                 int totalRating = 0;
                 int feedbackCount = 0;
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
-                    System.out.println(feedback);
                     if (!feedback.isDeleted()) {
                         System.out.println();
                         feedbackItems.add(feedback);
