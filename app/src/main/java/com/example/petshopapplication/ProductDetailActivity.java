@@ -2,6 +2,7 @@ package com.example.petshopapplication;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
@@ -186,6 +187,11 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             }
         });
 
+        binding.tvViewListProductFeedback.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ListFeedbackActivity.class);
+            intent.putExtra("productId", productId); // Pass product ID
+            startActivity(intent);
+        });
     }
 
     private void initProductDetail(String productID) {
