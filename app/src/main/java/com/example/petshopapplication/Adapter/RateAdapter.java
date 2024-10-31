@@ -23,9 +23,11 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
     private Context context;
     private OnRateSelectListener listener;
     private int selectedPosition = -1; // Chỉ số của `CheckBox` được chọn
+    private String selectedRateID; // Biến lưu ID của rate được chọn
 
+    // Cập nhật giao diện để nhận ID của phí được chọn
     public interface OnRateSelectListener {
-        void onRateSelected(double fee);
+        void onRateSelected(double fee, String rateID);
     }
 
     public RateAdapter(List<Rate> rateList, Context context, OnRateSelectListener listener) {
@@ -59,7 +61,8 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
         holder.selectCheckBox.setOnClickListener(v -> {
             if (position != selectedPosition) {
                 selectedPosition = position; // Cập nhật vị trí đã chọn
-                listener.onRateSelected(rate.getTotalAmount()); // Gửi giá trị phí được chọn
+                selectedRateID = rate.getId(); // Lưu ID của rate được chọn
+                listener.onRateSelected(rate.getTotalAmount(), selectedRateID); // Gửi giá trị phí và ID được chọn
                 notifyDataSetChanged(); // Cập nhật lại tất cả các `CheckBox` trong danh sách
             }
         });
