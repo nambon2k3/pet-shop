@@ -74,7 +74,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
                     .placeholder(R.drawable.icon) // Optional placeholder image
                     .into(holder.imv_feedback_user_avatar);
         }
-        holder.tv_feedback_user_name.setText(user.getUsername());
+        holder.tv_feedback_user_name.setText(user.getFullName());
         holder.tv_feedback_content.setText(feedback.getContent());
         holder.tv_feedback_created_at.setText(feedback.getCreatedAt().replace("T", " "));
         holder.rtb_feedback_rating.setRating(feedback.getRating());
