@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-//        Intent intent1 = new Intent(LoginActivity.this, AddFeedbackActivity.class);
+//        Intent intent1 = new Intent(LoginActivity.this, CartActivity.class);
 //        startActivity(intent1);
         //Binding views
         edt_email = findViewById(R.id.edt_login_email);

@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.AddressAdapter;
 import com.example.petshopapplication.model.UAddress;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +34,8 @@ public class AddressSelectionActivity extends AppCompatActivity implements Addre
     private AddressAdapter addressAdapter;
     private List<UAddress> UAddressList;
     private DatabaseReference addressRef;
-
+    FirebaseAuth auth;
+    FirebaseUser user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +51,7 @@ public class AddressSelectionActivity extends AppCompatActivity implements Addre
         addressRef = FirebaseDatabase.getInstance().getReference("addresses");
 
         // Lấy tất cả địa chỉ của người dùng
-        fetchUserAddresses("u1");
+        fetchUserAddresses(user.getUid());
 
         // Thiết lập sự kiện cho việc thêm địa chỉ mới
         LinearLayout addAddressLayout = findViewById(R.id.add_address_layout);

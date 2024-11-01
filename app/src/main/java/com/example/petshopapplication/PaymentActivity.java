@@ -33,6 +33,8 @@ import com.example.petshopapplication.model.Cart;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Variant;
 import com.example.petshopapplication.model.Dimension;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -73,12 +75,18 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private RadioButton checkboxPaymentOnDelivery;
     private Button payButton;
     private String selectedRateID;
-
+    FirebaseAuth auth;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.payment);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        String userId = user.getUid();
+
         Intent intent1 = getIntent();
         selectedCartItems = (ArrayList<Cart>) intent1.getSerializableExtra("selectedItems");
         double totalAmount = intent1.getDoubleExtra("totalAmount", 0.0);
@@ -105,7 +113,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         rateRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         rateRecyclerView.setAdapter(rateAdapter);
 
-        getDefaultAddress();
+        getDefaultAddress(userId);
         loadProductDetails();
         checkboxPaymentOnDelivery = findViewById(R.id.checkboxPaymentOnDelivery);
         payButton = findViewById(R.id.payButton);
@@ -184,7 +192,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         // Tạo đơn hàng với UUID
         Order order = new Order();
         order.setId(UUID.randomUUID().toString()); // Tạo ID tự động bằng UUID
-        order.setUserId("u1"); // Gán ID người dùng thực tế
+        order.setUserId(user.getUid()); // Gán ID người dùng thực tế
         order.setTotalAmount(totalAmount); // Tổng số tiền
         order.setShipmentId(""); // ID vận chuyển
         order.setRateId(selectedRateID); // Sử dụng selectedRateID đã lưu
@@ -403,9 +411,9 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         });
     }
 
-    private void getDefaultAddress() {
+    private void getDefaultAddress(String userId) {
         DatabaseReference addressReference = database.getReference("addresses");
-        String userId = "u1"; // Thay đổi với ID người dùng thực tế
+        // Thay đổi với ID người dùng thực tế
 
         addressReference.orderByChild("userId").equalTo(userId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {

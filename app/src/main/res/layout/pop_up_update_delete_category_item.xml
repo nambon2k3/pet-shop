@@ -60,15 +60,15 @@
                 android:layout_gravity="center"
                 android:backgroundTint="@color/textColorHint" />
 
-            <!--            <Button-->
-            <!--                android:id="@+id/btn_category_remove_image"-->
-            <!--                android:layout_width="60dp"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_gravity="center"-->
-            <!--                android:text="X"-->
-            <!--                android:layout_marginStart="16dp"-->
-            <!--                android:backgroundTint="@color/button_background"-->
-            <!--                android:visibility="gone" /> &lt;!&ndash; Initially hidden, only show if there's an image &ndash;&gt;-->
+<!--            <Button-->
+<!--                android:id="@+id/btn_category_remove_image"-->
+<!--                android:layout_width="60dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:text="X"-->
+<!--                android:layout_marginStart="16dp"-->
+<!--                android:backgroundTint="@color/button_background"-->
+<!--                android:visibility="gone" /> &lt;!&ndash; Initially hidden, only show if there's an image &ndash;&gt;-->
 
         </LinearLayout>
 

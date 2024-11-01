@@ -21,6 +21,8 @@ import com.example.petshopapplication.API_model.DistrictResponse;
 import com.example.petshopapplication.API_model.Ward;
 import com.example.petshopapplication.API_model.WardResponse;
 import com.example.petshopapplication.model.UAddress;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -43,7 +45,8 @@ public class AddressAddActivity extends AppCompatActivity {
     private TextView wardSelectButton;
     private EditText fullNameEditText;
     private EditText phoneEditText;
-
+    FirebaseAuth auth;
+    FirebaseUser user;
     // Khai báo biến addressesRef
     private DatabaseReference addressesRef;
 
@@ -228,7 +231,7 @@ public class AddressAddActivity extends AppCompatActivity {
                 selectedDistrictId,                         // ID quận
                 wardSelectButton.getText().toString(),      // Tên phường
                 false,                                      // isDefault (ví dụ: false cho địa chỉ không mặc định)
-                "u1"                                        // ID người dùng
+                user.getUid()                                       // ID người dùng
         );
 
         // Lưu địa chỉ vào Firebase
