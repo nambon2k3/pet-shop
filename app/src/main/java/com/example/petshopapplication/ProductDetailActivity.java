@@ -228,6 +228,7 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
                 .quantity(quantity)
                 .selectedColorId(selectedColorId)
                 .selectedVariantId(selectedVariantId)
+                .isChecked(true)
                 .build();
 
 
