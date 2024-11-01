@@ -75,6 +75,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
         String selectedColor = "", selectedSize = "", item_type = "";
         Double oldPrice = 0.;
         int stock = 0;
+        StringBuilder typebuilder = new StringBuilder();
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
         Cart cart = cartList.get(position);
@@ -85,40 +86,58 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
         for (Variant variant: variantList){
             if(cart.getSelectedVariantId().equals(variant.getId())){
                 oldPrice = variant.getPrice();
-                selectedSize = variant.getSize().getName();
+                if(variant.getSize() != null){
+                    selectedSize = variant.getSize().getName();
+                } else {
+                    selectedSize = null;
+                }
+
                 colorList = variant.getListColor();
+                stock = variant.getStock();
             }
         }
 
-        //Get list size of product
-        //(use for user chose size again)
-        for (Variant variant: variantList){
-            sizeList.add(variant.getSize());
-        }
+//        //Get list size of product
+//        //(use for user chose size again)
+//        for (Variant variant: variantList){
+//            sizeList.add(variant.getSize());
+//        }
 
-        //Get list color of product base on size
-        for (Variant variant: variantList){
-            sizeListMap.put(variant.getSize(), variant.getListColor());
-        }
+//        //Get list color of product base on size
+//        for (Variant variant: variantList){
+//            sizeListMap.put(variant.getSize(), variant.getListColor());
+//        }
 
         //Get product color has been selected
-        for (Color color : colorList){
-            if(color.getId().equals(cart.getSelectedColorId())){
-                selectedColor = color.getName();
+        if(colorList != null){
+            for (Color color : colorList){
+                if(color.getId().equals(cart.getSelectedColorId())){
+                    selectedColor = color.getName();
+                }
             }
+        } else {
+            selectedColor = null;
         }
 
 
 
         //Check if product has color and size
-        if(selectedColor == null && size == null){
+        if(selectedColor==null && selectedSize==null){
             holder.tv_item_type.setVisibility(View.GONE);
-        } else if (selectedColor != null) {
-            item_type += selectedColor;
-            if(size != null){
-                item_type += ", " + selectedSize;
-            }
         }
+
+        if(selectedColor!=null){
+            typebuilder.append(selectedColor);
+        }
+
+        if(selectedSize!=null){
+            if(typebuilder.length() > 0){
+                typebuilder.append(", ");
+            }
+            typebuilder.append(selectedSize);
+        }
+        item_type = typebuilder.toString();
+
 
         holder.tv_item_name.setText(product.getName());
         holder.tv_item_type.setText(item_type);
@@ -142,11 +161,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
 
 
         //Get product stock of product has been selected
-        for (Color color : colorList){
-            if(selectedColor.equals(color.getName())){
-                stock = color.getStock();
+        if(colorList != null){
+            for (Color color : colorList){
+                if(selectedColor.equals(color.getName())){
+                    stock = color.getStock();
+                }
             }
         }
+
 
         //Handler the event of quantity button
             holder.btn_increase.setOnClickListener(new View.OnClickListener() {
@@ -154,7 +176,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
                 public void onClick(View view) {
                     int quantity = cart.getQuantity();
 
-
+                    Log.e("btn_increase", ""+ quantity);
+                    Log.e("btn_increase", ""+ cart.getCartId());
                     quantity++;
                     updateQuantityToDb(quantity, cart.getCartId());
                 }

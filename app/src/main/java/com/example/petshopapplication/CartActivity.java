@@ -44,14 +44,10 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
+        //Get Id of current User
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-
-        Log.e("CART ACTIVITY", "hhehhehheheheh");
-
-        //Get Id of current User
         String userId = user.getUid();
-        Log.e("CART ACTIVITY", userId);
 
         //Initialize firebase
         database = FirebaseDatabase.getInstance();
