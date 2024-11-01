@@ -2,6 +2,7 @@ package com.example.petshopapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,7 +31,7 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
     private List<FeedBack> feedbackList;
     private DatabaseReference databaseReference;
     private FirebaseDatabase database;
-    String currentUserId = "u1";
+    String currentUserId = "Ko9B1selclMHLfa2PBZxSrYL2qG3";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +45,16 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
 
         // Set title for feedback list
         binding.tvFeedbackTitle.setText("My Feedbacks");
+        binding.tvFeedbackRatingValue.setVisibility(View.GONE);
+        binding.rbFeedbackAverageRating.setVisibility(View.GONE);
+        binding.tvFeedbackRatingTotal.setVisibility(View.GONE);
 
         feedbackList = new ArrayList<>();
         binding.rcvFeedback.setAdapter(feedbackAdapter);
 
         // Firebase Realtime Database reference
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("feedbacks");
+        databaseReference = database.getReference(getString(R.string.tbl_feedback_name));
 
         // Fetch feedbacks from Firebase
         fetchFeedbacks();
