@@ -1,6 +1,5 @@
 package com.example.petshopapplication;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -19,7 +18,9 @@ import com.example.petshopapplication.API_model.District;
 import com.example.petshopapplication.API_model.DistrictResponse;
 import com.example.petshopapplication.API_model.Ward;
 import com.example.petshopapplication.API_model.WardResponse;
-import com.example.petshopapplication.model.Address;
+import com.example.petshopapplication.model.UAddress;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -42,13 +43,15 @@ public class AddressUpdateActivity extends AppCompatActivity {
     private DatabaseReference addressRef;
     private String addressId; // ID của địa chỉ
     private String AUTH_TOKEN;
-
+    FirebaseAuth auth;
+    FirebaseUser user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.address_update);
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
-
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         fullNameEditText = findViewById(R.id.fullNameEditText);
         phoneEditText = findViewById(R.id.phoneEditText);
         citySelectButton = findViewById(R.id.citySelectButton);
@@ -76,13 +79,13 @@ public class AddressUpdateActivity extends AppCompatActivity {
         addressRef.child(addressId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Address address = snapshot.getValue(Address.class);
-                if (address != null) {
-                    fullNameEditText.setText(address.getFullName());
-                    phoneEditText.setText(address.getPhone());
-                    citySelectButton.setText(address.getCity());
-                    districtSelectButton.setText(address.getDistrict());
-                    wardSelectButton.setText(address.getWard());
+                UAddress UAddress = snapshot.getValue(UAddress.class);
+                if (UAddress != null) {
+                    fullNameEditText.setText(UAddress.getFullName());
+                    phoneEditText.setText(UAddress.getPhone());
+                    citySelectButton.setText(UAddress.getCity());
+                    districtSelectButton.setText(UAddress.getDistrict());
+                    wardSelectButton.setText(UAddress.getWard());
                 }
             }
 
@@ -232,7 +235,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
             return;
         }
 
-        Address updatedAddress = new Address(
+        UAddress updatedUAddress = new UAddress(
                 addressId,                                   // ID địa chỉ
                 fullName,                                   // Họ và tên
                 phone,                                      // Số điện thoại
@@ -241,10 +244,11 @@ public class AddressUpdateActivity extends AppCompatActivity {
                 districtSelectButton.getText().toString(),  // Tên quận
                 selectedDistrictId,                         // ID quận
                 wardSelectButton.getText().toString(),      // Tên phường
-                false,                                      // isDefault (ví dụ: false cho địa chỉ không mặc định)
-                "u1"                                        // ID người dùng
+                false,
+                user.getUid()// isDefault (ví dụ: false cho địa chỉ không mặc định)
+                                                       // ID người dùng
         );
-        addressRef.child(addressId).setValue(updatedAddress)
+        addressRef.child(addressId).setValue(updatedUAddress)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(AddressUpdateActivity.this, "Cập nhật địa chỉ thành công", Toast.LENGTH_SHORT).show();
                     finish(); // Quay lại màn hình trước đó

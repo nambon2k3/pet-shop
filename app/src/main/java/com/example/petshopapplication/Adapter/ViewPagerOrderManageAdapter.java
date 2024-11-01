@@ -1,65 +1,59 @@
 package com.example.petshopapplication.Adapter;
 
+import android.util.Log;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.petshopapplication.ProcessingTablayoutFragment;
 import com.example.petshopapplication.R;
+import com.example.petshopapplication.ShippingTablayoutFragment;
 import com.example.petshopapplication.WaitingTablayoutFragment;
 
-import java.util.HashMap;
 
 import lombok.NonNull;
 
 public class ViewPagerOrderManageAdapter extends FragmentStateAdapter {
-    private final HashMap<String, Fragment> fragmentMap = new HashMap<>();
-    private String[] tabTitles;
 
+    private final String[] tabTitles;
     public ViewPagerOrderManageAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
-
-        String[] tabInfo = fragmentActivity.getResources().getStringArray(R.array.tab_order_manage_titles);
-        tabTitles = new String[tabInfo.length];
-
-        // Duyệt qua từng phần tử trong tabInfo và tách tên tab và Fragment
-        for (int i = 0; i < tabInfo.length; i++) {
-            String[] parts = tabInfo[i].split("\\|"); // Tách tên tab và tên Fragment bằng ký tự |
-            String tabTitle = parts[0];
-            String fragmentName = parts[1];
-            tabTitles[i] = tabTitle;
-
-            // Ánh xạ tên Fragment với đối tượng Fragment tương ứng
-            fragmentMap.put(tabTitle, createFragmentByName(fragmentName));
-        }
+        tabTitles = fragmentActivity.getResources().getStringArray(R.array.tab_order_manage_titles);
     }
-
-    // Method to create fragments based on their names:
-    private Fragment createFragmentByName(String fragmentName) {
-//        switch (fragmentName) {
-//            case "ProcessingTablayoutFragment":
-//                return new ProcessingTablayoutFragment();
-//            case "WaitingTablayoutFragment":
-//                return new WaitingTablayoutFragment();
-//            case "ShippingFragment":
-//                return new ShippingFragment();
-//            case "DeliveredFragment":
-//                return new DeliveredFragment();
-//            case "CanceledFragment":
-//                return new CanceledFragment();
-//            default:
-//                return new ProcessingTablayoutFragment();
-//        }
-
-        // Dùng cùng một Fragment (ProcessingTablayoutFragment) cho tất cả các tab
-        return new ProcessingTablayoutFragment();    }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        // Lấy tên tab từ mảng và trả về Fragment tương ứng từ fragmentMap
-        String tabTitle = tabTitles[position];
-        return fragmentMap.getOrDefault(tabTitle, new ProcessingTablayoutFragment());
+        switch (position) {
+            case 0:
+            {
+                Log.d("createFragment", "ProcessingTablayoutFragment");
+                return new ProcessingTablayoutFragment(); // Chờ xác nhận
+            }
+            case 1:
+            {
+                Log.d("createFragment", "WaitingTablayoutFragment");
+                return new WaitingTablayoutFragment(); // Chờ lấy hàng
+            }
+            case 2:
+            {
+                Log.d("createFragment", "WaitingTablayoutFragment");
+                return new ShippingTablayoutFragment(); // Chờ lấy hàng
+            }
+//            case 2:
+//                return new InTransitFragment(); // Đang giao
+//            case 3:
+//                return new DeliveredFragment(); // Đã giao
+//            case 4:
+//                return new CanceledFragment(); // Đơn hủy
+//            case 5:
+//                return new ReturnedRefundedFragment(); // Trả hàng/Hoàn tiền
+//            case 6:
+//                return new FailedDeliveryFragment(); // Giao không thành công
+            default:
+                return new ProcessingTablayoutFragment(); // Default
+        }
     }
 
     @Override

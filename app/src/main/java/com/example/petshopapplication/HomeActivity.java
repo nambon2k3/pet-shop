@@ -19,6 +19,7 @@ import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,6 +37,8 @@ public class HomeActivity extends AppCompatActivity {
     DatabaseReference reference;
     RecyclerView.Adapter productAdapter, categoryAdapter, feedbackAdapter;
 
+    //Authentication with firebase
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,17 @@ public class HomeActivity extends AppCompatActivity {
                 intent.putExtra("isSearch", true);
                 startActivity(intent);
             }
+        });
+
+        binding.btnHomeCart.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CartActivity.class);
+            startActivity(intent);
+        });
+
+        binding.btnHomeLogout.setOnClickListener(v -> {
+            firebaseAuth.signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         });
 
         binding.tvViewListProduct.setOnClickListener(v -> {

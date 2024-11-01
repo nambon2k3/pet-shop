@@ -2,6 +2,7 @@ package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +13,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.AddressUpdateActivity;
 import com.example.petshopapplication.R;
-import com.example.petshopapplication.model.Address;
+import com.example.petshopapplication.model.UAddress;
 
 import java.util.List;
 
 public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressViewHolder> {
-    private List<Address> addressList;
+    private List<UAddress> UAddressList;
     private Context context;
     private OnAddressClickListener listener;
+    private static final String TAG = "AddressAdapter";
 
-    public AddressAdapter(List<Address> addressList, Context context, OnAddressClickListener listener) {
-        this.addressList = addressList;
+    public AddressAdapter(List<UAddress> UAddressList, Context context, OnAddressClickListener listener) {
+        this.UAddressList = UAddressList;
         this.context = context;
         this.listener = listener;
     }
@@ -36,32 +38,33 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
 
     @Override
     public void onBindViewHolder(@NonNull AddressViewHolder holder, int position) {
-        Address address = addressList.get(position);
-        holder.fullNameTextView.setText(address.getFullName());
-        holder.phoneTextView.setText(address.getPhone());
-        holder.addressTextView.setText(address.getWard() + ", " + address.getDistrict() + ", " + address.getCity());
+        UAddress UAddress = UAddressList.get(position);
+        holder.fullNameTextView.setText(UAddress.getFullName());
+        holder.phoneTextView.setText(UAddress.getPhone());
+        holder.addressTextView.setText(UAddress.getWard() + ", " + UAddress.getDistrict() + ", " + UAddress.getCity());
 
-        // Set RadioButton based on whether the address is the default one
-        holder.radioButton.setChecked(address.isDefault());
+        Log.d(TAG, "Binding address: " + UAddress.getFullName() + " - " + UAddress.getPhone());
 
-        // Set click listener for the entire item view to open AddressUpdateActivity
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, AddressUpdateActivity.class);
-            intent.putExtra("addressId", address.getAddressId());
+            intent.putExtra("addressId", UAddress.getAddressId());
             context.startActivity(intent);
+            Log.d(TAG, "Opening AddressUpdateActivity for addressId: " + UAddress.getAddressId());
         });
 
-        // Set listener for RadioButton
         holder.radioButton.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onAddressSelected(address); // Trigger the listener callback when a RadioButton is clicked
+                listener.onAddressSelected(UAddress);
+                Log.d(TAG, "Selected address: " + UAddress.getFullName() + " - " + UAddress.getPhone());
+            } else {
+                Log.d(TAG, "Listener is null, address selection failed.");
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return addressList.size();
+        return UAddressList.size();
     }
 
     public static class AddressViewHolder extends RecyclerView.ViewHolder {
@@ -77,8 +80,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         }
     }
 
-    // Interface for address selection
     public interface OnAddressClickListener {
-        void onAddressSelected(Address address);
+        void onAddressSelected(UAddress UAddress);
     }
 }

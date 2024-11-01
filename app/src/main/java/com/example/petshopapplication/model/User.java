@@ -17,11 +17,11 @@ import lombok.ToString;
 @ToString
 public class User {
     private String id;
-    private String username;
+    private String email;
     private String password;
     private String fullName;
     private String phoneNumber;
-    private String address;
+    private String dateOfBirth;
     private boolean isDeleted;
     private int roleId;
     private Date createdAt;

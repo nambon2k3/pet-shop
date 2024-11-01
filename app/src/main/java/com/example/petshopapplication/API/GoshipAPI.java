@@ -1,6 +1,8 @@
 package com.example.petshopapplication.API;
 
 import com.example.petshopapplication.API_model.CityResponse;
+import com.example.petshopapplication.API_model.CreateOrderRequest;
+import com.example.petshopapplication.API_model.CreateOrderResponse;
 import com.example.petshopapplication.API_model.DistrictResponse;
 import com.example.petshopapplication.API_model.RateRequest;
 import com.example.petshopapplication.API_model.RateResponse;
@@ -39,5 +41,13 @@ public interface GoshipAPI {
             @Header("Content-Type") String contentType,
             @Header("Authorization") String authToken,
             @Body RateRequest rateRequest
+    );
+
+    @POST("/api/v2/shipments")
+    Call<CreateOrderResponse> createOrder(
+            @Header("Accept") String accept,
+            @Header("Content-Type") String contentType,
+            @Header("Authorization") String authToken,
+            @Body CreateOrderRequest createOrderRequest
     );
 }
