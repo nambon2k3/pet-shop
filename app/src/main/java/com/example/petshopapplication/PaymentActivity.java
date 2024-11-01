@@ -219,7 +219,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                                         ordersRef.child(orderId).setValue(order) // Cập nhật đơn hàng với paymentId
                                                 .addOnCompleteListener(updateTask -> {
                                                     if (updateTask.isSuccessful()) {
-                                                        Toast.makeText(this, "Đơn hàng và thanh toán đã được tạo thành công!", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(this, "Đơn hàng đã được tạo thành công!", Toast.LENGTH_SHORT).show();
                                                         // Chuyển đến màn hình xác nhận đơn hàng
                                                         Intent intent = new Intent(PaymentActivity.this, OrderingActivity.class);
                                                         intent.putExtra("orderId", orderId);

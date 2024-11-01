@@ -48,6 +48,7 @@
 
 
     <Button
+        android:id="@+id/button_continue_shopping"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="Tiếp tục shopping"
