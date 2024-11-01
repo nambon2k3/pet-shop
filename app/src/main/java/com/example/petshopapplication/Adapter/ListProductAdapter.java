@@ -79,7 +79,7 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
             holder.tv_discount.setText(String.valueOf("-" + product.getDiscount()) + "%");
             holder.tv_old_price.setText(String.format("%,.0fđ", oldPrice));
             holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.tv_new_price.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
+            holder.tv_new_price.setText(String.format("%,.0f$", oldPrice * (1 - product.getDiscount()/100.0)));
 
         } else {
             holder.tv_discount.setVisibility(View.GONE);
