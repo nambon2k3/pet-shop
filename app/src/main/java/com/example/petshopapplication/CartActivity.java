@@ -42,7 +42,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
 
 
         //Get Id of current User (Fake Id)
-        String userId = "u1";
+        String userId = "CnuZxJdbenOp1snTnBu9k8eBlZF3";
 
         //Initialize firebase
         database = FirebaseDatabase.getInstance();
