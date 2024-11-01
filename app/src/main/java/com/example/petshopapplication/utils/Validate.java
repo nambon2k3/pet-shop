@@ -34,4 +34,16 @@ public class Validate {
         return null;
     }
 
+    public static String isValidFeedback(Context context, String comment) {
+        // not comment = valid
+        if (comment == null || comment.isEmpty()) {
+            return null;
+        }
+
+        // if has content -> validate
+        if (comment.trim().isEmpty() || comment.length() > 200) {
+            return context.getString(R.string.valid_feedback_fail);
+        }
+        return null;
+    }
 }

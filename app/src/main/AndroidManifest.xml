@@ -29,19 +29,18 @@
             android:exported="false" />
         <activity
             android:name=".ProductDetailActivity"
-            android:exported="false" />
-
+            android:exported="false"/>
         <activity
             android:name=".HomeActivity"
-            android:exported="false" />
-
+            android:exported="false" >
+        </activity>
         <activity
             android:name=".AddressAddActivity"
             android:exported="false" />
-
         <activity
             android:name=".ListProductActivity"
-            android:exported="false" />
+            android:exported="false">
+        </activity>
         <activity
             android:name=".AddFeedbackActivity"
             android:exported="false" />
@@ -57,8 +56,6 @@
         <activity
             android:name=".AddressUpdateActivity"
             android:exported="false" />
-
-
         <activity
             android:name=".UpdateFeedbackActivity"
             android:exported="false" />

@@ -73,13 +73,9 @@ public class ListFeedbackActivity extends AppCompatActivity {
                     double averageRating = (double) totalRating / feedbackCount;
                     binding.tvFeedbackRatingValue.setText(String.valueOf(averageRating));
                     binding.rbFeedbackAverageRating.setRating((float) averageRating);
-
-                    // Display the average rating (example: in the Activity’s title or in a TextView)
-                    Toast.makeText(ListFeedbackActivity.this, "Average Rating: " + averageRating, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(ListFeedbackActivity.this, "No feedback available for this product.", Toast.LENGTH_SHORT).show();
                 }
-
                 fetchUserData(feedbackList);
             }
 
