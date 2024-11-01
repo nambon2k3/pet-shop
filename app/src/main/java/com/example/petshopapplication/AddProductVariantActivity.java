@@ -208,10 +208,8 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
 
     }
     Size currentSize = null;
-    @Override
-    public void onSizeClickEvent(Size size) {
-        currentSize = size;
-    }
+
+
 
     private void initColor(Dialog dialog)
     {
@@ -244,5 +242,9 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
                 binding2.editTextText.setText(colors.stream().filter(x->x.getId() == currentColor.getId()).findFirst().get().getStock());
             }
             }
+    }
+    @Override
+    public void onSizeClickEvent(Size size, Product product) {
+            currentSize = size;
     }
 }

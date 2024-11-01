@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.UUID;
 
 import androidx.appcompat.app.AlertDialog;
@@ -19,7 +20,7 @@ import com.example.petshopapplication.API_model.District;
 import com.example.petshopapplication.API_model.DistrictResponse;
 import com.example.petshopapplication.API_model.Ward;
 import com.example.petshopapplication.API_model.WardResponse;
-import com.example.petshopapplication.model.Address;
+import com.example.petshopapplication.model.UAddress;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -46,7 +47,6 @@ public class AddressAddActivity extends AppCompatActivity {
     // Khai báo biến addressesRef
     private DatabaseReference addressesRef;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +72,11 @@ public class AddressAddActivity extends AppCompatActivity {
         districtSelectButton.setOnClickListener(v -> loadDistricts(selectedCityId));
         wardSelectButton.setOnClickListener(v -> loadWards(selectedDistrictId));
 
-        completeButton.setOnClickListener(v -> saveAddress());
+        completeButton.setOnClickListener(v -> {
+            Log.d(TAG, "Complete button clicked");
+            saveAddress();
+        });
+
     }
 
     private void loadCities() {
@@ -203,38 +207,42 @@ public class AddressAddActivity extends AppCompatActivity {
     }
 
     private void saveAddress() {
+        Log.d(TAG, "saveAddress() called");
         String fullName = fullNameEditText.getText().toString().trim();
         String phone = phoneEditText.getText().toString().trim();
-        String city = citySelectButton.getText().toString();
-        String district = districtSelectButton.getText().toString();
-        String ward = wardSelectButton.getText().toString();
 
-        // Tạo đối tượng Address
-        Address address = Address.builder()
-                .addressId(UUID.randomUUID().toString()) // Tạo một ID duy nhất cho địa chỉ
-                .fullName(fullName)
-                .phone(phone)
-                .city(city)
-                .cityId(selectedCityId)
-                .district(district)
-                .districtId(selectedDistrictId)
-                .ward(ward)
-                .isDefault(false)
-                .userId("userId")
-                .build();
+        if (fullName.isEmpty() || phone.isEmpty() || selectedCityId == null || selectedDistrictId == null || selectedWardId == 0) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String addressId = UUID.randomUUID().toString(); // Tạo ID ngẫu nhiên
+
+        UAddress UAddress = new UAddress(
+                addressId,                                   // ID địa chỉ
+                fullName,                                   // Họ và tên
+                phone,                                      // Số điện thoại
+                citySelectButton.getText().toString(),     // Tên thành phố
+                selectedCityId,                             // ID thành phố
+                districtSelectButton.getText().toString(),  // Tên quận
+                selectedDistrictId,                         // ID quận
+                wardSelectButton.getText().toString(),      // Tên phường
+                false,                                      // isDefault (ví dụ: false cho địa chỉ không mặc định)
+                "u1"                                        // ID người dùng
+        );
 
         // Lưu địa chỉ vào Firebase
-        addressesRef.child(address.getAddressId()).setValue(address)
+        addressesRef.child(addressId).setValue(UAddress)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(this, "Địa chỉ đã được lưu!", Toast.LENGTH_SHORT).show();
+                        setResult(RESULT_OK); // Trả kết quả thành công về AddressSelectionActivity
+                        finish(); // Kết thúc Activity
                     } else {
                         Log.e(TAG, "Failed to save address: " + task.getException().getMessage());
                         Toast.makeText(this, "Lỗi khi lưu địa chỉ", Toast.LENGTH_SHORT).show();
                     }
                 });
-
     }
 
 }
-

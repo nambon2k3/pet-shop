@@ -17,7 +17,16 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Category;
+import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.Product;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.ProductHolder>{
@@ -25,6 +34,8 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
     List<Product> productItems;
     List<Category> categoryItems;
     Context context;
+    FirebaseDatabase database;
+    DatabaseReference reference;
 
     public ProductAdapter(List<Product> productItems, List<Category> categoryItems) {
         this.productItems = productItems;
@@ -84,6 +95,7 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
                 .transform(new CenterCrop(), new RoundedCorners(30))
                 .into(holder.imv_product_image);
 
+        fetchFeedback(product, holder);
 
     }
 
@@ -96,6 +108,40 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
         return null;  // Return null if category not found
     }
 
+    private void fetchFeedback(Product product, @NonNull ProductHolder holder) {
+        List<FeedBack> feedbackItems = new ArrayList<>();
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference("feedbacks");
+
+        Query query = reference.orderByChild("productId").equalTo(product.getId());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                feedbackItems.clear();
+                int totalRating = 0;
+                int feedbackCount = 0;
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
+                    if (feedback != null && !feedback.isDeleted() && feedback.getProductId().equals(product.getId())) {
+                        feedbackItems.add(feedback);
+                        totalRating += feedback.getRating();
+                        feedbackCount++;
+                    }
+                    if (feedbackCount > 0){
+                        double averageRating = (double) totalRating / feedbackCount;
+                        holder.tv_rating.setText(String.valueOf(averageRating));
+                        holder.tv_rated_num.setText(String.valueOf(feedbackCount));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     @Override
     public int getItemCount() {
         return productItems.size();
@@ -105,7 +151,7 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
 
     public class ProductHolder extends RecyclerView.ViewHolder {
 
-        TextView txt_product_name, tv_new_price, txt_star, tv_discount, tv_old_price, tv_category;
+        TextView txt_product_name, tv_new_price, tv_rating, tv_discount, tv_old_price, tv_category, tv_rated_num;
         ImageView imv_product_image;
 
 
@@ -114,10 +160,11 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
             tv_discount = itemView.findViewById(R.id.tv_discount);
             txt_product_name = itemView.findViewById(R.id.txt_product_name);
             tv_new_price = itemView.findViewById(R.id.txt_price);
-            txt_star = itemView.findViewById(R.id.txt_star);
+            tv_rating = itemView.findViewById(R.id.tv_rating);
             imv_product_image = itemView.findViewById(R.id.imv_product_image);
             tv_old_price = itemView.findViewById(R.id.tv_old_price);
             tv_category = itemView.findViewById(R.id.tv_category);
+            tv_rated_num = itemView.findViewById(R.id.tv_rated_num);
         }
     }
 }

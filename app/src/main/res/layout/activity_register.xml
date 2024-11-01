@@ -50,14 +50,29 @@
             android:textColorHint="@color/textColorHint" />
 
         <EditText
-            android:id="@+id/edt_register_username"
+            android:id="@+id/edt_register_email"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/rounded_edt"
-            android:drawableLeft="@drawable/baseline_person_24"
+            android:drawableLeft="@drawable/baseline_email_24"
             android:drawablePadding="8dp"
-            android:hint="Username"
+            android:hint="Email"
+            android:padding="15dp"
+            android:textColor="@color/textColorHint"
+            android:textColorHint="@color/textColorHint" />
+
+        <EditText
+            android:id="@+id/edt_register_dob"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_edt"
+            android:drawableLeft="@drawable/baseline_date_range_24"
+            android:drawablePadding="8dp"
+            android:hint="Date of birth"
+            android:focusable="false"
+            android:inputType="none"
             android:padding="15dp"
             android:textColor="@color/textColorHint"
             android:textColorHint="@color/textColorHint" />
@@ -72,19 +87,6 @@
             android:drawableLeft="@drawable/baseline_phone_24"
             android:drawablePadding="8dp"
             android:hint="Phone Number"
-            android:padding="15dp"
-            android:textColor="@color/textColorHint"
-            android:textColorHint="@color/textColorHint" />
-
-        <EditText
-            android:id="@+id/edt_register_address"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rounded_edt"
-            android:drawableLeft="@drawable/baseline_edit_location_24"
-            android:drawablePadding="8dp"
-            android:hint="Address"
             android:padding="15dp"
             android:textColor="@color/textColorHint"
             android:textColorHint="@color/textColorHint" />

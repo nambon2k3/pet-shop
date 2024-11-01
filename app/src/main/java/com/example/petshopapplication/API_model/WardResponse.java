@@ -1,7 +1,5 @@
 package com.example.petshopapplication.API_model;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 import lombok.AllArgsConstructor;
