@@ -1,7 +1,5 @@
 package com.example.petshopapplication.API_model;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,8 +13,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class WardResponse {
-    private int code;
-    private String status;
-    private List<Ward> data;
+public class AddressCO {
+    private String name;
+    private String phone;
+    private String street;
+    private String ward;
+    private String district;
+    private String city;
 }
