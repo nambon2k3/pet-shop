@@ -41,6 +41,8 @@ public class AddressSelectionActivity extends AppCompatActivity implements Addre
         super.onCreate(savedInstanceState);
         setContentView(R.layout.address_manage);
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         recyclerView = findViewById(R.id.address_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -85,7 +87,7 @@ public class AddressSelectionActivity extends AppCompatActivity implements Addre
         super.onActivityResult(requestCode, resultCode, data);
         if ((requestCode == REQUEST_CODE_ADD_ADDRESS || requestCode == REQUEST_CODE_UPDATE_ADDRESS) && resultCode == RESULT_OK) {
             Log.d(TAG, "onActivityResult: Triggered for requestCode " + requestCode);
-            fetchUserAddresses("u1"); // Tải lại danh sách địa chỉ sau khi thêm hoặc cập nhật
+            fetchUserAddresses(user.getUid()); // Tải lại danh sách địa chỉ sau khi thêm hoặc cập nhật
         }
     }
 

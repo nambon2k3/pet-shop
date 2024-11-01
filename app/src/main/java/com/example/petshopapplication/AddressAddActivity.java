@@ -58,7 +58,8 @@ public class AddressAddActivity extends AppCompatActivity {
         // Khởi tạo Firebase Database và reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         addressesRef = database.getReference("addresses");
-
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
 
         // Find views by ID
