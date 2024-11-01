@@ -13,6 +13,8 @@ import com.example.petshopapplication.Adapter.CartAdapter;
 import com.example.petshopapplication.model.Cart;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Variant;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +35,8 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     List<Cart> cartList = new ArrayList<>();
     List<Product> productList = new ArrayList<>();
     List<String> cartProductId = new ArrayList<>();
+    FirebaseAuth auth;
+    FirebaseUser user ;
 
 
     @Override
@@ -40,9 +44,14 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
 
-        //Get Id of current User (Fake Id)
-        String userId = "u1";
+        Log.e("CART ACTIVITY", "hhehhehheheheh");
+
+        //Get Id of current User
+        String userId = user.getUid();
+        Log.e("CART ACTIVITY", userId);
 
         //Initialize firebase
         database = FirebaseDatabase.getInstance();

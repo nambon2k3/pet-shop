@@ -22,6 +22,8 @@ import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Size;
 import com.example.petshopapplication.model.Variant;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +45,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
     FirebaseDatabase database;
     DatabaseReference reference;
     OnCartItemCheckedListener listener;
+
 
 
     public CartAdapter(List<Product> productList, List<Cart> cartList, Context context, OnCartItemCheckedListener listener) {
