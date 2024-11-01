@@ -164,5 +164,6 @@ public class UpdateFeedbackActivity extends AppCompatActivity {
                 Toast.makeText(UpdateFeedbackActivity.this, "Failed to update feedback", Toast.LENGTH_SHORT).show();
             }
         });
+        finish();
     }
 }
