@@ -45,6 +45,12 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
 
         Log.d(TAG, "Binding address: " + UAddress.getFullName() + " - " + UAddress.getPhone());
 
+
+        if (UAddress.isDefault()) {
+            holder.defaultTextView.setVisibility(View.VISIBLE); // Hiện TextView nếu là mặc định
+        } else {
+            holder.defaultTextView.setVisibility(View.GONE); // Ẩn TextView nếu không phải
+        }
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, AddressUpdateActivity.class);
             intent.putExtra("addressId", UAddress.getAddressId());
@@ -68,7 +74,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
     }
 
     public static class AddressViewHolder extends RecyclerView.ViewHolder {
-        TextView fullNameTextView, phoneTextView, addressTextView;
+        TextView fullNameTextView, phoneTextView, addressTextView,defaultTextView;
         RadioButton radioButton;
 
         public AddressViewHolder(@NonNull View itemView) {
@@ -77,6 +83,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
             phoneTextView = itemView.findViewById(R.id.phoneTextView);
             addressTextView = itemView.findViewById(R.id.addressTextView);
             radioButton = itemView.findViewById(R.id.radioButton);
+            defaultTextView = itemView.findViewById(R.id.defaultTextView);
         }
     }
 
