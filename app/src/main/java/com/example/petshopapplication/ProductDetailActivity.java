@@ -1,32 +1,20 @@
 package com.example.petshopapplication;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,7 +25,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.Adapter.ColorAdapter;
 import com.example.petshopapplication.Adapter.FeedBackAdapter;
 import com.example.petshopapplication.Adapter.ListProductAdapter;
-import com.example.petshopapplication.Adapter.ListProductCategoryAdapter;
 import com.example.petshopapplication.Adapter.ProductImageAdapter;
 import com.example.petshopapplication.Adapter.SizeAdapter;
 import com.example.petshopapplication.databinding.ActivityProductDetailBinding;
@@ -252,7 +239,7 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             for (Variant variant : product.getListVariant()) {
                 sizeItems.add(variant.getSize());
             }
-            sizeAdapter = new SizeAdapter(sizeItems, ProductDetailActivity.this, product);
+            sizeAdapter = new SizeAdapter(sizeItems,ProductDetailActivity.this,null);
             sizeCartRecyclerView = dialog.findViewById(R.id.rcv_size);
             sizeCartRecyclerView.setLayoutManager(new GridLayoutManager(ProductDetailActivity.this, 2));
             sizeCartRecyclerView.setAdapter(sizeAdapter);
@@ -518,4 +505,6 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
     public void onColorClick(Color color) {
         fillColorInformation(color);
     }
+
+
 }

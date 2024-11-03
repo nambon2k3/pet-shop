@@ -9,43 +9,39 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.petshopapplication.ProductDetailActivity;
 import com.example.petshopapplication.R;
-import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Size;
 import com.example.petshopapplication.model.Variant;
 
 import java.util.List;
 
-public class SizeAdapter extends RecyclerView.Adapter<SizeAdapter.SizeViewHolder>{
+public class SizeAdapter2 extends RecyclerView.Adapter<SizeAdapter2.SizeViewHolder2>{
 
     List<Size> sizeItems;
 
     Context context;
     private int selectedPosition = RecyclerView.NO_POSITION;
     private OnSizeClickEventListener onSizeClickEventListener;
-    Product product;
-    public SizeAdapter(List<Size> sizeItems, OnSizeClickEventListener onSizeClickEventListener,Product product) {
+
+    public SizeAdapter2(List<Size> sizeItems, OnSizeClickEventListener onSizeClickEventListener) {
         this.sizeItems = sizeItems;
         this.onSizeClickEventListener = onSizeClickEventListener;
-        this.product = product;
     }
 
     public interface OnSizeClickEventListener{
-        void onSizeClickEvent(Size size, Product product);
-
+        void onSizeClickEvent(Size size);
     }
 
     @NonNull
     @Override
-    public SizeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SizeViewHolder2 onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
         View inflate = LayoutInflater.from(context).inflate(R.layout.view_holder_size, parent, false);
-        return new SizeViewHolder(inflate);
+        return new SizeViewHolder2(inflate);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SizeViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SizeViewHolder2 holder, int position) {
         if (position == selectedPosition) {
             holder.itemView.setBackground(context.getDrawable(R.drawable.rounded_corners));
         } else {
@@ -63,7 +59,7 @@ public class SizeAdapter extends RecyclerView.Adapter<SizeAdapter.SizeViewHolder
             notifyItemChanged(selectedPosition);
             selectedPosition = position;
             notifyItemChanged(selectedPosition);
-            onSizeClickEventListener.onSizeClickEvent(size,product);
+            onSizeClickEventListener.onSizeClickEvent(size);
         });
 
     }
@@ -73,9 +69,9 @@ public class SizeAdapter extends RecyclerView.Adapter<SizeAdapter.SizeViewHolder
         return sizeItems.size();
     }
 
-    public class SizeViewHolder extends RecyclerView.ViewHolder {
+    public class SizeViewHolder2 extends RecyclerView.ViewHolder {
         TextView tv_size;
-        public SizeViewHolder(@NonNull View itemView) {
+        public SizeViewHolder2(@NonNull View itemView) {
             super(itemView);
             tv_size = itemView.findViewById(R.id.tv_size);
         }
