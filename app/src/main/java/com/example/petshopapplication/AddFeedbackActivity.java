@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.petshopapplication.databinding.ActivityAddFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
+import com.example.petshopapplication.utils.Validate;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -68,11 +69,12 @@ public class AddFeedbackActivity extends AppCompatActivity {
     private void uploadFeedback() {
         final String userId = "u1";
         final String productId = "p1";
-        final String comment = binding.edtFeedbackComment.getText().toString().trim();
+        final String comment = binding.edtFeedbackComment.getText().toString();
         final int rating = (int) binding.rbFeedbackRating.getRating();
 
-        if (comment.isEmpty() || rating == 0) {
-            Toast.makeText(this, "Please provide a comment and rating", Toast.LENGTH_SHORT).show();
+        String errorMessage = Validate.isValidFeedback(this, comment);
+        if(errorMessage != null && !errorMessage.isBlank()) {
+            Toast.makeText(AddFeedbackActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -115,5 +117,6 @@ public class AddFeedbackActivity extends AppCompatActivity {
         feedbackRef.child(feedbackId).setValue(feedback)
                 .addOnSuccessListener(aVoid -> Toast.makeText(AddFeedbackActivity.this, "Feedback submitted successfully!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(AddFeedbackActivity.this, "Failed to submit feedback.", Toast.LENGTH_SHORT).show());
+        finish();
     }
 }

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.petshopapplication.model.FeedBack;
+import com.example.petshopapplication.utils.Validate;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -117,6 +118,12 @@ public class UpdateFeedbackActivity extends AppCompatActivity {
         String updatedComment = edt_feedback_comment.getText().toString();
         float updatedRating = rb_feedback_rating.getRating();
 
+        String errorMessage = Validate.isValidFeedback(this, updatedComment);
+        if(errorMessage != null && !errorMessage.isBlank()) {
+            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Update feedback object with new data
         feedback.setContent(updatedComment);
         feedback.setRating((int) updatedRating);
@@ -164,5 +171,6 @@ public class UpdateFeedbackActivity extends AppCompatActivity {
                 Toast.makeText(UpdateFeedbackActivity.this, "Failed to update feedback", Toast.LENGTH_SHORT).show();
             }
         });
+        finish();
     }
 }
