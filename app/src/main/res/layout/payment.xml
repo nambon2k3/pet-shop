@@ -185,6 +185,7 @@
                         android:textColor="@android:color/black" />
 
                     <RadioButton
+                        android:id="@+id/checkboxPaymentOnDelivery"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Thanh toán ngay khi nhận hàng"
@@ -232,7 +233,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="17dp"
                         android:layout_gravity="end"
-                        android:text="tt"
+                        android:text=""
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -253,10 +254,11 @@
 
 
                     <TextView
+                        android:id="@+id/fee_ship"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
-                        android:text="₫50.000"
+                        android:text="0 VND"
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -275,10 +277,11 @@
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/purchasedMoney"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
-                        android:text="₫500.000"
+                        android:text=""
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -327,6 +330,7 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/payButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

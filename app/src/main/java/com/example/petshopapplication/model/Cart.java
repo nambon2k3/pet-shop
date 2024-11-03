@@ -8,6 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
+@Builder
 public class Cart implements Serializable {
     private String cartId;
     private String userId;
@@ -15,4 +16,6 @@ public class Cart implements Serializable {
     private int quantity;
     private String selectedColorId;
     private String selectedVariantId;
+    private boolean isChecked;
+
 }

@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,20 +24,29 @@ import com.example.petshopapplication.API_model.Shipment;
 import com.example.petshopapplication.Adapter.PaymentAdapter;
 import com.example.petshopapplication.API_model.Address;
 import com.example.petshopapplication.Adapter.RateAdapter;
+import com.example.petshopapplication.model.Order;
+import com.example.petshopapplication.model.OrderDetail;
+import com.example.petshopapplication.model.Payment;
 import com.example.petshopapplication.model.ShippingMethod;
 import com.example.petshopapplication.model.UAddress;
 import com.example.petshopapplication.model.Cart;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Variant;
 import com.example.petshopapplication.model.Dimension;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,19 +70,42 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private RateAdapter rateAdapter;
     private List<Rate> rateList = new ArrayList<>();
     private TextView priceReal;
+    private TextView feeShip;
+    private TextView purchasedMoney;
+    private RadioButton checkboxPaymentOnDelivery;
+    private Button payButton;
+    private String selectedRateID;
+    private String selectedCartierName;
+    private String selectedCartierLogo;
+    FirebaseAuth auth;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.payment);
 
-        selectedCartItems = (ArrayList<Cart>) getIntent().getSerializableExtra("selectedItems");
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        String userId = user.getUid();
+
+        Intent intent1 = getIntent();
+        selectedCartItems = (ArrayList<Cart>) intent1.getSerializableExtra("selectedItems");
+        double totalAmount = intent1.getDoubleExtra("totalAmount", 0.0);
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
+        numberFormat.setMinimumFractionDigits(0);
+
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
         database = FirebaseDatabase.getInstance();
         tvTotalPrice = findViewById(R.id.totalPriceTextView);
         addressTextView = findViewById(R.id.addressTextView);
         changeAddressButton = findViewById(R.id.changeAddressButton);
         priceReal = findViewById(R.id.price_in_real);
+        priceReal.setText(String.format("%s VND", numberFormat.format(totalAmount)));
+        feeShip = findViewById(R.id.fee_ship);
+        purchasedMoney = findViewById(R.id.purchasedMoney);
+        purchasedMoney.setText(String.format("%s VND", numberFormat.format(totalAmount)));
+
         recyclerView = findViewById(R.id.recyclerViewProductList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -81,15 +115,28 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         rateRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         rateRecyclerView.setAdapter(rateAdapter);
 
-        getDefaultAddress();
+        getDefaultAddress(userId);
         loadProductDetails();
-
+        checkboxPaymentOnDelivery = findViewById(R.id.checkboxPaymentOnDelivery);
+        payButton = findViewById(R.id.payButton);
+        payButton.setOnClickListener(v -> {
+            if (selectedRateID == null || selectedRateID.isEmpty()) {
+                Toast.makeText(PaymentActivity.this, "Vui lòng chọn phương thức vận chuyển", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (checkboxPaymentOnDelivery.isChecked() ) {/* other payment method check */
+                createOrderAndPayment();
+            } else {
+                Toast.makeText(this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
+            }
+        });
         changeAddressButton.setOnClickListener(v -> {
             Intent intent = new Intent(PaymentActivity.this, AddressSelectionActivity.class);
             intent.putExtra("selectedAddress", selectedUAddress);
             startActivityForResult(intent, REQUEST_CODE);
         });
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -106,8 +153,131 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     }
 
 
+
+
+
+
+    private void createOrderAndPayment() {
+        // Tạo đơn hàng với UUID
+        Order order = new Order();
+        order.setId(UUID.randomUUID().toString()); // Tạo ID tự động bằng UUID
+        order.setUserId(user.getUid()); // Gán ID người dùng thực tế
+        order.setTotalAmount(totalAmount); // Tổng số tiền
+        order.setShipmentId(""); // ID vận chuyển
+        order.setRateId(selectedRateID); // Sử dụng selectedRateID đã lưu
+        order.setOrderDetails(getOrderDetailsList()); // Danh sách chi tiết đơn hàng
+        order.setOrderDate(new Date()); // Thời gian đặt hàng
+        order.setStatus("Processing"); // Trạng thái đơn hàng
+        order.setCityId(selectedUAddress.getCityId());
+        order.setDistrictId(selectedUAddress.getDistrictId());
+        order.setWardId(selectedUAddress.getWardId());
+        order.setCarrierName(selectedCartierName);
+        order.setCarrierLogo(selectedCartierLogo);
+
+        // Thêm vào Firebase
+        DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference("orders");
+        String orderId = order.getId(); // Lấy ID từ đơn hàng đã tạo
+
+        ordersRef.child(orderId).setValue(order)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Tạo thông tin thanh toán sau khi tạo đơn hàng thành công
+                        Payment payment = new Payment();
+                        payment.setId(UUID.randomUUID().toString()); // Tạo ID tự động cho thanh toán
+                        payment.setOrderId(orderId);
+                        payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Chuyển khoản"); // Gán phương thức thanh toán
+                        payment.setAmount(order.getTotalAmount()); // Số tiền thanh toán
+                        payment.setTransactionId(""); // Nếu có ID giao dịch, thêm vào đây
+
+                        // Thêm vào Firebase
+                        DatabaseReference paymentsRef = FirebaseDatabase.getInstance().getReference("payments");
+                        String paymentId = payment.getId(); // Lấy ID từ thanh toán đã tạo
+
+                        paymentsRef.child(paymentId).setValue(payment)
+                                .addOnCompleteListener(paymentTask -> {
+                                    if (paymentTask.isSuccessful()) {
+                                        // Cập nhật paymentId vào đơn hàng
+                                        order.setPaymentId(paymentId);
+                                        ordersRef.child(orderId).setValue(order) // Cập nhật đơn hàng với paymentId
+                                                .addOnCompleteListener(updateTask -> {
+                                                    if (updateTask.isSuccessful()) {
+                                                        Toast.makeText(this, "Đơn hàng đã được tạo thành công!", Toast.LENGTH_SHORT).show();
+                                                        // Chuyển đến màn hình xác nhận đơn hàng
+                                                        Intent intent = new Intent(PaymentActivity.this, OrderingActivity.class);
+                                                        intent.putExtra("orderId", orderId);
+                                                        startActivity(intent);
+                                                        finish();
+                                                    } else {
+                                                        Toast.makeText(this, "Lỗi khi cập nhật thông tin thanh toán vào đơn hàng!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    } else {
+                                        Toast.makeText(this, "Lỗi khi tạo thông tin thanh toán!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(this, "Lỗi khi tạo đơn hàng!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public List<OrderDetail> getOrderDetailsList() {
+        List<OrderDetail> orderDetailsList = new ArrayList<>();
+
+        // Giả sử selectedCartItems là danh sách các mặt hàng trong giỏ hàng
+        for (Cart cartItem : selectedCartItems) {
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setProductId(cartItem.getProductId());
+            orderDetail.setVariantId(cartItem.getSelectedVariantId());
+            orderDetail.setColorId(cartItem.getSelectedColorId());
+            orderDetail.setQuantity(cartItem.getQuantity());
+
+            // Tính giá sau khi trừ giảm giá (giả sử bạn đã có giá sản phẩm và thông tin giảm giá)
+            double price = getPriceForProduct(cartItem.getProductId(), cartItem.getSelectedVariantId());
+            double discountedPrice = price * (1 - getDiscountForProduct(cartItem.getProductId()) / 100.0);
+            orderDetail.setPurchased(discountedPrice); // Lưu giá đã giảm
+
+            orderDetailsList.add(orderDetail); // Thêm vào danh sách chi tiết đơn hàng
+        }
+        return orderDetailsList;
+    }
+
+
+    private double getPriceForProduct(String productId, String variantId) {
+        // Giả sử bạn có một danh sách sản phẩm đã được tải từ Firebase hoặc cơ sở dữ liệu
+        List<Product> productList = new ArrayList<>(); // Danh sách sản phẩm
+
+        // Lặp qua danh sách sản phẩm để tìm sản phẩm tương ứng
+        for (Product product : productList) {
+            if (product.getId().equals(productId)) {
+                // Lặp qua các variant của sản phẩm để tìm variant tương ứng
+                for (Variant variant : product.getListVariant()) {
+                    if (variant.getId().equals(variantId)) {
+                        return variant.getPrice(); // Trả về giá của variant tìm thấy
+                    }
+                }
+            }
+        }
+        return 0.0; // Trả về 0 nếu không tìm thấy
+    }
+
+    private double getDiscountForProduct(String productId) {
+        // Giả sử bạn có một danh sách sản phẩm đã được tải từ Firebase hoặc cơ sở dữ liệu
+        List<Product> productList = new ArrayList<>(); // Danh sách sản phẩm
+
+        // Lặp qua danh sách sản phẩm để tìm sản phẩm tương ứng
+        for (Product product : productList) {
+            if (product.getId().equals(productId)) {
+                return product.getDiscount(); // Trả về mức giảm giá của sản phẩm tìm thấy
+            }
+        }
+        return 0.0; // Trả về 0 nếu không tìm thấy
+    }
+
+
+
     private void loadProductDetails() {
-         List<Product> productList = new ArrayList<>();
+        List<Product> productList = new ArrayList<>();
 
         reference = database.getReference(getString(R.string.tbl_product_name));
         List<String> productIds = new ArrayList<>();
@@ -146,7 +316,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                         }
                     }
 
-                    priceReal.setText("" + totalAmount);
                     PaymentAdapter paymentAdapter = new PaymentAdapter(productList, selectedCartItems, PaymentActivity.this);
                     recyclerView.setAdapter(paymentAdapter);
 
@@ -195,7 +364,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                     List<Rate> rates = response.body().getData();
                     rateAdapter.setRateList(rates);
                     for (Rate rate : rates) {
-                        Log.d(TAG, "Rate ID: " + rate.getId() + ", Rate Value: " + rate.getCarrierName());
+                        Log.d(TAG, "Rate ID: " + rate.getId() + ", Rate Value: " + rate.getTotalAmount());
                     }
                 } else {
                     Log.e(TAG, "Request failed: " + response.message());
@@ -216,9 +385,9 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         });
     }
 
-    private void getDefaultAddress() {
+    private void getDefaultAddress(String userId) {
         DatabaseReference addressReference = database.getReference("addresses");
-        String userId = "u1"; // Thay đổi với ID người dùng thực tế
+        // Thay đổi với ID người dùng thực tế
 
         addressReference.orderByChild("userId").equalTo(userId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -246,9 +415,26 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     }
 
 
-
     @Override
-    public void onRateSelected(double fee, boolean isSelected) {
+    public void onRateSelected(double fee, String rateID, String cartierName, String cartierLogo) {
+        double finalTotalAmount = totalAmount + fee; // Cập nhật tổng giá
 
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
+        numberFormat.setMinimumFractionDigits(0);
+
+        // Cập nhật hiển thị phí giao hàng
+        feeShip.setText(String.format("%s VND", numberFormat.format(fee)));
+
+        // Cập nhật hiển thị số tiền đã mua
+        purchasedMoney.setText(String.format("%s VND", numberFormat.format(finalTotalAmount)));
+
+        // Cập nhật hiển thị tổng giá
+        tvTotalPrice.setText(String.format("%s VND", numberFormat.format(finalTotalAmount)));
+        this.selectedRateID = rateID;
+        this.selectedCartierName = cartierName;
+        this.selectedCartierLogo = cartierLogo;
+        // Bạn có thể thực hiện các hành động khác với rateID nếu cần
+        Log.d(TAG, "Selected Fee: " + fee + ", Selected Rate ID: " + selectedRateID);
     }
+
 }
