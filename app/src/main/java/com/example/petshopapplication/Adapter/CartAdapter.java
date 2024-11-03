@@ -122,9 +122,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
 
 
         //Check if product has color and size
-//        if(selectedColor==null && selectedSize==null){
-//            holder.tv_item_type.setVisibility(View.GONE);
-//        }
+        if(selectedColor==null && selectedSize==null){
+            holder.tv_item_type.setVisibility(View.GONE);
+        }
 
         if(selectedColor!=null){
             typebuilder.append(selectedColor);
@@ -136,19 +136,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
             }
             typebuilder.append(selectedSize);
         }
-
-        //Check to avoid error when Recycler View reuse ViewHolder
-        if(typebuilder.length() > 0){
-            holder.tv_item_type.setVisibility(View.VISIBLE);
-        } else {
-            holder.tv_item_type.setVisibility(View.GONE);
-        }
         item_type = typebuilder.toString();
 
 
         holder.tv_item_name.setText(product.getName());
-
-
         holder.tv_item_type.setText(item_type);
 
         //check if product is discounted
@@ -166,7 +157,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
             holder.tv_item_quatity.setText(String.valueOf(cart.getQuantity()));
         Glide.with(context)
                 .load(product.getBaseImageURL())
-                .override(holder.imv_item.getWidth(), holder.imv_item.getHeight())
                 .into(holder.imv_item);
 
 
@@ -186,13 +176,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
                 public void onClick(View view) {
                     int quantity = cart.getQuantity();
 
+                    Log.e("btn_increase", ""+ quantity);
+                    Log.e("btn_increase", ""+ cart.getCartId());
                     quantity++;
                     updateQuantityToDb(quantity, cart.getCartId());
                 }
 
-
             });
-
 
 
 
@@ -210,8 +200,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
         });
 
         //Handle the event checkbox of cart item
-        holder.checkBox.setOnCheckedChangeListener(null);
-        holder.checkBox.setChecked(cart.isChecked());
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

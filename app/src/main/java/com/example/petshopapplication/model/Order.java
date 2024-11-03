@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import java.text.SimpleDateFormat;
 
 @Setter
 @Getter
@@ -31,5 +32,6 @@ public class Order {
     private Date orderDate;
     private String paymentId; // Thông tin thanh toán
     private String status;
+    private boolean isShipmentCreated = false;
 
 }

@@ -75,6 +75,8 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private RadioButton checkboxPaymentOnDelivery;
     private Button payButton;
     private String selectedRateID;
+    private String selectedCartierName;
+    private String selectedCartierLogo;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -163,9 +165,15 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         order.setTotalAmount(totalAmount); // Tổng số tiền
         order.setShipmentId(""); // ID vận chuyển
         order.setRateId(selectedRateID); // Sử dụng selectedRateID đã lưu
-        order.setOrderDetails(getOrderDetailsList()); // Danh sách chi tiết đơn hàng
+        order.setOrderDetails(getOrderDetailsList());
+        // Danh sách chi tiết đơn hàng
         order.setOrderDate(new Date()); // Thời gian đặt hàng
-        order.setStatus("Đang chờ"); // Trạng thái đơn hàng
+        order.setStatus("Processing"); // Trạng thái đơn hàng
+        order.setCityId(selectedUAddress.getCityId());
+        order.setDistrictId(selectedUAddress.getDistrictId());
+        order.setWardId(selectedUAddress.getWardId());
+        order.setCarrierName(selectedCartierName);
+        order.setCarrierLogo(selectedCartierLogo);
 
         // Thêm vào Firebase
         DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference("orders");
@@ -409,7 +417,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
 
     @Override
-    public void onRateSelected(double fee, String rateID) {
+    public void onRateSelected(double fee, String rateID, String cartierName, String cartierLogo) {
         double finalTotalAmount = totalAmount + fee; // Cập nhật tổng giá
 
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
@@ -424,6 +432,8 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         // Cập nhật hiển thị tổng giá
         tvTotalPrice.setText(String.format("%s VND", numberFormat.format(finalTotalAmount)));
         this.selectedRateID = rateID;
+        this.selectedCartierName = cartierName;
+        this.selectedCartierLogo = cartierLogo;
         // Bạn có thể thực hiện các hành động khác với rateID nếu cần
         Log.d(TAG, "Selected Fee: " + fee + ", Selected Rate ID: " + selectedRateID);
     }

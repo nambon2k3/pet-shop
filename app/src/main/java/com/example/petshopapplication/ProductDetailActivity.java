@@ -455,25 +455,14 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
         List<FeedBack> feedbackItems = new ArrayList<>();
 
         Query query = reference.orderByChild("productId").equalTo(product.getId());
-        query.addValueEventListener(new ValueEventListener() {
+        query.limitToLast(2).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
-                    int totalRating = 0;
-                    int feedbackCount = 0;
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
-                        if (!feedback.isDeleted()) {
-                            feedbackItems.add(feedback); // Add feedback to the list
-                            totalRating += feedback.getRating(); // Sum up ratings
-                            feedbackCount++;
-                        }
+                        feedbackItems.add(dataSnapshot.getValue(FeedBack.class));
                     }
-                    if(feedbackCount > 0) {
-                        float averageRating = (float) totalRating / feedbackCount;
-                        binding.tvRating.setText(String.valueOf(averageRating));
-                        binding.rtbFeedbackRating.setRating(averageRating);
-                        binding.tvRating2.setText(String.valueOf(feedbackCount));
+                    if(feedbackItems.size() > 0) {
                         fetchUserData(feedbackItems);
                     } else {
                         binding.tvEmptyFeedback.setVisibility(View.VISIBLE);
