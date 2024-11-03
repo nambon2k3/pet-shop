@@ -128,6 +128,8 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             }
             if (checkboxPaymentOnDelivery.isChecked()) {/* other payment method check */
                 createOrderAndPayment();
+                deleteCartItem();
+
             } else {
                 Toast.makeText(this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
             }
@@ -153,6 +155,38 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             }
         }
     }
+
+    private void deleteCartItem() {
+        DatabaseReference cartsRef = FirebaseDatabase.getInstance().getReference("carts");
+
+        for (Cart cart : selectedCartItems) {
+            String cartId = cart.getCartId();
+
+            if (cartId != null) {
+                cartsRef.orderByChild("cartId").equalTo(cartId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            // Xóa mục giỏ hàng
+                            snapshot.getRef().removeValue()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firebase", "Xóa cart thành công: " + cartId);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firebase", "Xóa cart thất bại: " + cartId, e);
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("Firebase", "Lỗi khi tìm cart: " + databaseError.getMessage());
+                    }
+                });
+            }
+        }
+    }
+
 
 
     private void createOrderAndPayment() {
