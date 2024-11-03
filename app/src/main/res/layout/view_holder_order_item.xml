@@ -124,6 +124,17 @@
 
             <!-- Action button -->
             <Button
+                android:id="@+id/btn_view_order_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="@color/button_background"
+                android:text="View detail"
+                android:textColor="@android:color/white"
+                android:visibility="visible"
+                app:cornerRadius="5dp" />
+
+            <Button
                 android:id="@+id/btn_cancel_order"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

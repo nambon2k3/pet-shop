@@ -1,5 +1,6 @@
 package com.example.petshopapplication.Adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.petshopapplication.PrepareOrderActivity;
 import com.example.petshopapplication.R;
+import com.example.petshopapplication.ViewDetailOrderActivity;
 import com.example.petshopapplication.model.Order;
 import com.example.petshopapplication.model.OrderDetail;
 import com.example.petshopapplication.utils.Validate;
@@ -28,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder> {
-
+    private String TAG = "OrderAdapter";
     private List<Order> orderList;
     private boolean btnRate;
     private boolean isInventory;
@@ -108,9 +110,27 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             holder.btn_cancel_order.setVisibility(View.VISIBLE);
             holder.btn_feedback.setVisibility(View.GONE);
             holder.line3.setVisibility(View.VISIBLE);
+
+            if (orderStatus.equals("Canceled")) {
+                holder.btn_cancel_order.setVisibility(View.GONE);
+                holder.btn_prepare_order.setVisibility(View.GONE);
+                holder.btn_view_order_detail.setVisibility(View.VISIBLE);
+            } else if (orderStatus.equals("all")) {
+                if (order.getStatus().equals("Canceled")) {
+                    holder.btn_cancel_order.setVisibility(View.GONE);
+                    holder.btn_prepare_order.setVisibility(View.GONE);
+                    holder.btn_view_order_detail.setVisibility(View.VISIBLE);
+                } else {
+                    holder.btn_view_order_detail.setVisibility(View.GONE);
+                }
+            } else {
+                holder.btn_view_order_detail.setVisibility(View.GONE);
+            }
+        // User
         } else {
             holder.btn_prepare_order.setVisibility(View.GONE);
             holder.btn_cancel_order.setVisibility(View.GONE);
+            holder.btn_view_order_detail.setVisibility(View.GONE);
         }
 
         holder.btn_prepare_order.setOnClickListener(v -> {
@@ -122,7 +142,50 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             context.startActivity(intent);
         });
 
+        holder.btn_view_order_detail.setOnClickListener(v -> {
+            Context context = holder.itemView.getContext();
+            Intent intent = new Intent(context, ViewDetailOrderActivity.class);
+
+            intent.putExtra("order_id", order.getId());
+
+            context.startActivity(intent);
+        });
+
+        holder.btn_cancel_order.setOnClickListener(v -> {
+            new AlertDialog.Builder(context)
+                    .setTitle("Cancel Order")
+                    .setMessage("Are you sure you want to cancel this order?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // Cancel order
+                        cancelOrder(order.getId());
+                        Log.d(TAG, "Cancel Order ID: " + order.getId() + "| Order Total: " + order.getTotalAmount());
+                    })
+                    .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
+
+
     }
+
+    private void cancelOrder(String orderId) {
+        // Set the status of the order to "Canceled" in Firebase
+        DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("orders").child(orderId);
+        orderRef.child("status").setValue("Canceled").addOnSuccessListener(aVoid -> {
+            // Successfully updated status in Firebase
+            Log.d(TAG, "Order canceled successfully.");
+
+            // Remove the order from the local list
+//            orderList.removeIf(order -> order.getId().equals(orderId));
+
+            // Notify the adapter to update the RecyclerView
+            notifyDataSetChanged();
+
+        }).addOnFailureListener(e -> {
+            // Show an error message if the update fails
+            Log.d(TAG, "Failed to cancel order: " + e.getMessage());
+        });
+    }
+
 
     @Override
     public int getItemCount() {
@@ -133,7 +196,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
         TextView txt_status, txt_total_price, txt_total_price_title, txt_shipping_status;
         View line2, line3;
         RecyclerView rcv_order_details;
-        Button btn_feedback, btn_prepare_order, btn_cancel_order;
+        Button btn_feedback, btn_prepare_order, btn_cancel_order, btn_view_order_detail;
 
         public OrderHolder(@NonNull View itemView) {
             super(itemView);
@@ -147,6 +210,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             btn_feedback = itemView.findViewById(R.id.btn_feedback);
             btn_prepare_order = itemView.findViewById(R.id.btn_prepare_order);
             btn_cancel_order = itemView.findViewById(R.id.btn_cancel_order);
+            btn_view_order_detail = itemView.findViewById(R.id.btn_view_order_detail);
         }
     }
 }

@@ -50,7 +50,7 @@ public class ViewPagerOrderManageAdapter extends FragmentStateAdapter {
                 }
                 case 4: {
                     Log.d("createFragment", "DeliveredTablayoutFragment");
-                    return new CanceledTablayoutFragment(); // Delivered
+                    return new CanceledTablayoutFragment(isInventory); // Delivered
                 }
                 default:
                     return new AllOrdersTablayoutFragment(isInventory); // Default
@@ -75,7 +75,7 @@ public class ViewPagerOrderManageAdapter extends FragmentStateAdapter {
                 }
                 case 4: {
                     Log.d("createFragment", "CanceledTablayoutFragment");
-                    return new CanceledTablayoutFragment(); // Canceled
+                    return new CanceledTablayoutFragment(isInventory); // Canceled
                 }
                 default:
                     return new ProcessingTablayoutFragment(isInventory); // Default

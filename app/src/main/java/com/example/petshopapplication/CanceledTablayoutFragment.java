@@ -3,62 +3,110 @@ package com.example.petshopapplication;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CanceledTablayoutFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.petshopapplication.Adapter.OrderAdapter;
+import com.example.petshopapplication.databinding.FragmentCanceledTablayoutBinding;
+import com.example.petshopapplication.databinding.FragmentProcessingTablayoutBinding;
+import com.example.petshopapplication.model.Order;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class CanceledTablayoutFragment extends Fragment {
+    private String TAG = "ProcessingTablayoutFragment";
+    private FragmentCanceledTablayoutBinding binding;
+    private RecyclerView recyclerView;
+    private OrderAdapter adapter;
+    private List<Order> orderItems;
+    private FirebaseDatabase database;
+    private DatabaseReference reference;
+    private boolean isInventory;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public CanceledTablayoutFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CanceledTablayoutFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CanceledTablayoutFragment newInstance(String param1, String param2) {
-        CanceledTablayoutFragment fragment = new CanceledTablayoutFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    public CanceledTablayoutFragment(boolean isInventory) {
+        this.isInventory = isInventory;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_canceled_tablayout, container, false);
+        binding = FragmentCanceledTablayoutBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
+
+        orderItems = new ArrayList<>();
+        adapter = new OrderAdapter(orderItems, false, "Canceled", isInventory);
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerView.setAdapter(adapter);
+
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference("orders");
+        initOrdersProcessing();
+        return view;
     }
+
+    private void initOrdersProcessing() {
+        Log.d(TAG, "Start - load processing orders from Firebase");
+
+        // Get current User
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Log.e(TAG, "User is not logged in.");
+            return; // Stop if user is not logged in
+        }
+
+        String userId = currentUser.getUid();
+        Log.d(TAG, "Loading processing orders for user ID: " + userId);
+
+        // Get all orders of current user - status = "processing"
+        Query query = reference.orderByChild("userId").equalTo(userId);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "Start - onDataChange");
+                orderItems.clear(); // Clear old data
+
+                // Check snapshot has data
+                if (snapshot.exists()) {
+                    Log.d(TAG, "Data found in Firebase");
+
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Order order = dataSnapshot.getValue(Order.class);
+                        if (order != null && "Canceled".equals(order.getStatus())) { // Filter orders with status "Processing"
+                            Log.d(TAG, "Order ID: " + order.getId() + ", Status: " + order.getStatus());
+                            orderItems.add(order);
+                        }
+                    }
+
+                    Log.d(TAG, "Total processing orders retrieved: " + orderItems.size());
+                    adapter.notifyDataSetChanged(); // Update RecyclerView with new data
+
+                } else {
+                    Log.d(TAG, "No processing data found in Firebase for user ID: " + userId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+                Log.e(TAG, "Failed to load processing orders: " + error.getMessage());
+            }
+        });
+        Log.d(TAG, "End - load processing orders from Firebase");
+    }
+
 }

@@ -130,6 +130,13 @@
         app:layout_constraintBottom_toTopOf="@id/btn_confirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <!-- Products and Total Amount -->
         <LinearLayout
@@ -160,15 +167,31 @@
                 android:paddingEnd="8dp" />
         </LinearLayout>
 
-        <!-- Shipping Status -->
-        <TextView
-            android:id="@+id/tv_shipment_brand"
-            android:layout_width="wrap_content"
+        <!-- Shipping Status and Logo -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Shipping Status: In Transit"
-            android:textColor="@color/green"
-            android:textSize="14sp"
-            android:paddingBottom="8dp" />
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/img_shipment_logo"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp"
+                android:src="@color/green" />
+
+            <TextView
+                android:id="@+id/tv_shipment_brand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:text="Shipping Status: In Transit"
+                android:textColor="@color/green"
+                android:textSize="14sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Confirm Button -->
@@ -176,7 +199,6 @@
         android:id="@+id/btn_confirm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@android:color/holo_red_dark"
         android:text="Confirm"
