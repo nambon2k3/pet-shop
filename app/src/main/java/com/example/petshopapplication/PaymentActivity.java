@@ -151,40 +151,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     }
 
 
-    private List<OrderDetail> getOrderDetailsList(DataSnapshot dataSnapshot) {
-        List<OrderDetail> orderDetailsList = new ArrayList<>();
 
-        // Sử dụng selectedCartItems để lấy danh sách sản phẩm
-        for (Cart cartItem : selectedCartItems) {
-            // Tìm sản phẩm tương ứng trong dataSnapshot
-            for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
-                Product product = productSnapshot.getValue(Product.class);
-                if (product != null && cartItem.getProductId().equals(product.getId())) {
-                    // Lặp qua các variant của sản phẩm
-                    for (Variant variant : product.getListVariant()) {
-                        // Kiểm tra xem variant có tương ứng với variant được chọn trong giỏ hàng không
-                        if (cartItem.getSelectedVariantId().equals(variant.getId())) {
-                            OrderDetail orderDetail = new OrderDetail();
-                            orderDetail.setProductId(cartItem.getProductId());  // Lấy ID sản phẩm từ giỏ hàng
-                            orderDetail.setVariantId(cartItem.getSelectedVariantId());  // Lấy ID variant từ giỏ hàng
-                            orderDetail.setColorId(cartItem.getSelectedColorId());      // Lấy ID color từ giỏ hàng
-                            orderDetail.setQuantity(cartItem.getQuantity());     // Lấy số lượng từ giỏ hàng
-
-                            // Tính giá sau khi trừ giảm giá
-                            double discountedPrice = variant.getPrice() * (1 - product.getDiscount() / 100.0);
-                            orderDetail.setPurchased(discountedPrice); // Lưu giá đã giảm
-
-                            orderDetailsList.add(orderDetail);  // Thêm vào danh sách chi tiết đơn hàng
-                            break; // Thoát vòng lặp variant sau khi đã tìm thấy
-                        }
-                    }
-                    break; // Thoát vòng lặp sản phẩm sau khi đã tìm thấy
-                }
-            }
-        }
-
-        return orderDetailsList; // Trả về danh sách chi tiết đơn hàng
-    }
 
 
 

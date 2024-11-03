@@ -138,6 +138,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     @Override
     public void onCartItemCheckedChanged() {
         updateSelectedItemList();
+        Log.d("CartAdapter", "Selected items: " + selectedItemList.toString());
         calculateTotalPrice();
     }
 

@@ -23,7 +23,8 @@ public class UAddress implements Serializable {
     private String cityId;      // ID thành phố
     private String district;     // Tên quận
     private String districtId;   // ID quận
-    private String ward;        // Tên phường
+    private String ward;// Tên phường
+    private String wardId;   // ID quận
     private boolean isDefault;   // Địa chỉ mặc định hay không
     private String userId;      // ID người dùng
 

@@ -210,6 +210,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
                 //Inform to Activity about the changed of checkbox
                 //=> Calculate again the total of bill
                 listener.onCartItemCheckedChanged();
+
             }
         });
     }
