@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if(task.isSuccessful()) {
                 //User is authenticated, go to home activity
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                Intent intent = new Intent(LoginActivity.this, ListOrderActivity.class);
                 startActivity(intent);
             }
 
