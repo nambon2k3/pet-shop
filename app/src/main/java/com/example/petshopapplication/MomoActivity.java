@@ -36,6 +36,10 @@ public class MomoActivity extends AppCompatActivity {
 
         AppMoMoLib.getInstance().setEnvironment(AppMoMoLib.ENVIRONMENT.DEVELOPMENT);
 
+        findViewById(R.id.btn_momo).setOnClickListener(v ->{
+            requestPayment();
+        });
+
     }
 
     //Get token through MoMo app
@@ -51,7 +55,7 @@ public class MomoActivity extends AppCompatActivity {
         eventValue.put("merchantcode", merchantCode); //Mã đối tác, được cung cấp bởi MoMo tại https://business.momo.vn
         eventValue.put("amount", amount); //Kiểu integer
         eventValue.put("orderId", "orderId123456789"); //uniqueue id cho BillId, giá trị duy nhất cho mỗi BILL
-        eventValue.put("orderLabel", "Mã đơn hàng"); //gán nhãn
+        eventValue.put("orderLabel", "OHUHUHUHU"); //gán nhãn
 
         //client Optional - bill info
         eventValue.put("merchantnamelabel", "Dịch vụ");//gán nhãn
