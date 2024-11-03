@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class OrderingActivity extends AppCompatActivity {
     Button continueShoppingButton;
+    Button viewOrdersButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +25,17 @@ public class OrderingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Tạo Intent để chuyển hướng đến HomeActivity
                 Intent intent = new Intent(OrderingActivity.this, HomeActivity.class);
+                startActivity(intent);
+                finish(); // Kết thúc OrderConfirmationActivity nếu không cần quay lại
+            }
+        });
+
+        viewOrdersButton = findViewById(R.id.button_view_orders);
+        viewOrdersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Tạo Intent để chuyển hướng đến HomeActivity
+                Intent intent = new Intent(OrderingActivity.this, ListOrderActivity.class);
                 startActivity(intent);
                 finish(); // Kết thúc OrderConfirmationActivity nếu không cần quay lại
             }
