@@ -191,7 +191,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
             public void onClick(View view) {
                 int quantity = cart.getQuantity();
                 quantity--;
-
                 //If quantity equals 1 user can not decrease
                 if(quantity >= 1){
                     updateQuantityToDb(quantity, cart.getCartId());
