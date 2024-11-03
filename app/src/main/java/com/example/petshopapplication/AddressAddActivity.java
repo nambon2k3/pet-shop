@@ -215,11 +215,39 @@ public class AddressAddActivity extends AppCompatActivity {
                 })
                 .show();
     }
+    private boolean validateInput(String fullName, String phone) {
+        // Xác thực tên
+        if (fullName.isEmpty()) {
+            Toast.makeText(this, "Tên không được để trống", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Xác thực số điện thoại
+        if (phone.isEmpty()) {
+            Toast.makeText(this, "Số điện thoại không được để trống", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Kiểm tra định dạng số điện thoại (có thể điều chỉnh theo yêu cầu)
+        String phonePattern = "^[0-9]{10,15}$"; // Định dạng cho số điện thoại có từ 10 đến 15 chữ số
+        if (!phone.matches(phonePattern)) {
+            Toast.makeText(this, "Số điện thoại không hợp lệ. Vui lòng nhập lại.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true; // Nếu tất cả các điều kiện xác thực đều hợp lệ
+    }
+
+
 
     private void saveAddress() {
         Log.d(TAG, "saveAddress() called");
         String fullName = fullNameEditText.getText().toString().trim();
         String phone = phoneEditText.getText().toString().trim();
+
+        if (!validateInput(fullName, phone)) {
+            return; // Nếu không hợp lệ, dừng lại
+        }
 
         if (fullName.isEmpty() || phone.isEmpty() || selectedCityId == null || selectedDistrictId == null || selectedWardId == 0) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();

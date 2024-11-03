@@ -77,6 +77,8 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private String selectedRateID;
     private String selectedCartierName;
     private String selectedCartierLogo;
+    private List<Product> productList = new ArrayList<>();
+
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -124,7 +126,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                 Toast.makeText(PaymentActivity.this, "Vui lòng chọn phương thức vận chuyển", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (checkboxPaymentOnDelivery.isChecked() ) {/* other payment method check */
+            if (checkboxPaymentOnDelivery.isChecked()) {/* other payment method check */
                 createOrderAndPayment();
             } else {
                 Toast.makeText(this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
@@ -151,10 +153,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             }
         }
     }
-
-
-
-
 
 
     private void createOrderAndPayment() {
@@ -232,9 +230,10 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             orderDetail.setColorId(cartItem.getSelectedColorId());
             orderDetail.setQuantity(cartItem.getQuantity());
 
-            // Tính giá sau khi trừ giảm giá (giả sử bạn đã có giá sản phẩm và thông tin giảm giá)
             double price = getPriceForProduct(cartItem.getProductId(), cartItem.getSelectedVariantId());
-            double discountedPrice = price * (1 - getDiscountForProduct(cartItem.getProductId()) / 100.0);
+            double discountPercentage = getDiscountForProduct(cartItem.getProductId());
+            double discountedPrice = price * (1 - discountPercentage / 100.0);
+
             orderDetail.setPurchased(discountedPrice); // Lưu giá đã giảm
 
             orderDetailsList.add(orderDetail); // Thêm vào danh sách chi tiết đơn hàng
@@ -242,42 +241,40 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         return orderDetailsList;
     }
 
-
     private double getPriceForProduct(String productId, String variantId) {
-        // Giả sử bạn có một danh sách sản phẩm đã được tải từ Firebase hoặc cơ sở dữ liệu
-        List<Product> productList = new ArrayList<>(); // Danh sách sản phẩm
-
-        // Lặp qua danh sách sản phẩm để tìm sản phẩm tương ứng
-        for (Product product : productList) {
-            if (product.getId().equals(productId)) {
-                // Lặp qua các variant của sản phẩm để tìm variant tương ứng
-                for (Variant variant : product.getListVariant()) {
-                    if (variant.getId().equals(variantId)) {
-                        return variant.getPrice(); // Trả về giá của variant tìm thấy
-                    }
+        // Retrieve product details from your database or data structure
+        // Assuming you have a method to find the product by ID and variant ID
+        Product product = findProductById(productId); // Implement this method
+        if (product != null) {
+            for (Variant variant : product.getListVariant()) {
+                if (variant.getId().equals(variantId)) {
+                    return variant.getPrice(); // Return the price of the variant
                 }
             }
         }
-        return 0.0; // Trả về 0 nếu không tìm thấy
+        return 0; // Return 0 if product or variant not found
     }
 
     private double getDiscountForProduct(String productId) {
-        // Giả sử bạn có một danh sách sản phẩm đã được tải từ Firebase hoặc cơ sở dữ liệu
-        List<Product> productList = new ArrayList<>(); // Danh sách sản phẩm
-
-        // Lặp qua danh sách sản phẩm để tìm sản phẩm tương ứng
-        for (Product product : productList) {
+        // Retrieve product details to get discount
+        Product product = findProductById(productId); // Implement this method
+        if (product != null) {
+            return product.getDiscount(); // Return the discount percentage of the product
+        }
+        return 0; // Return 0 if product not found
+    }
+    public Product findProductById(String productId) {
+        for (Product product : productList) { // productList là danh sách sản phẩm
             if (product.getId().equals(productId)) {
-                return product.getDiscount(); // Trả về mức giảm giá của sản phẩm tìm thấy
+                return product; // Trả về sản phẩm nếu tìm thấy
             }
         }
-        return 0.0; // Trả về 0 nếu không tìm thấy
+        return null; // Trả về null nếu không tìm thấy sản phẩm
     }
 
 
 
     private void loadProductDetails() {
-        List<Product> productList = new ArrayList<>();
 
         reference = database.getReference(getString(R.string.tbl_product_name));
         List<String> productIds = new ArrayList<>();
@@ -318,9 +315,10 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
                     PaymentAdapter paymentAdapter = new PaymentAdapter(productList, selectedCartItems, PaymentActivity.this);
                     recyclerView.setAdapter(paymentAdapter);
-
+                    Log.d(TAG, selectedUAddress.toString());
                     if (selectedUAddress != null) {
                         loadRates(selectedUAddress.getDistrictId(), selectedUAddress.getCityId(), 1, (int) totalAmount, totalWidth, totalHeight, totalLength, totalWeight);
+
                     } else {
                         Toast.makeText(PaymentActivity.this, "Địa chỉ chưa được chọn", Toast.LENGTH_SHORT).show();
                     }
@@ -398,6 +396,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                             if (isDefault != null && isDefault) {
                                 selectedUAddress = addressSnapshot.getValue(UAddress.class);
                                 displayAddress(selectedUAddress);
+                                Log.d(TAG, selectedUAddress.toString());
                                 break;
                             }
                         }

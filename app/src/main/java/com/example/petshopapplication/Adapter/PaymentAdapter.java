@@ -70,19 +70,19 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
                 // Hiển thị giá cũ và giá mới
                 double oldPrice = selectedVariant.getPrice();
                 if (holder.tv_item_old_price != null) {
-                    holder.tv_item_old_price.setText(String.format("%.0f$", oldPrice)); // Giá cũ
+                    holder.tv_item_old_price.setText(String.format("%.0fđ", oldPrice)); // Giá cũ
                     holder.tv_item_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
                 }
 
                 if (product.getDiscount() > 0) {
                     double newPrice = oldPrice * (1 - product.getDiscount() / 100.0); // Giá mới
                     if (holder.tv_item_new_price != null) {
-                        holder.tv_item_new_price.setText(String.format("%.0f$", newPrice));
+                        holder.tv_item_new_price.setText(String.format("%.0fđ", newPrice));
                         Log.d(TAG, "Giá mới sau giảm giá: " + newPrice); // Ghi log giá mới
                     }
                 } else {
                     if (holder.tv_item_new_price != null) {
-                        holder.tv_item_new_price.setText(String.format("%.0f$", oldPrice)); // Hiển thị giá gốc
+                        holder.tv_item_new_price.setText(String.format("%.0fđ", oldPrice)); // Hiển thị giá gốc
                         Log.d(TAG, "Giá gốc: " + oldPrice); // Ghi log giá gốc
                     }
                 }
@@ -116,7 +116,7 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
                     if (itemTypeBuilder.length() > 0) {
                         holder.tv_item_type.setText(itemTypeBuilder.toString()); // Hiển thị màu sắc và kích thước
                     } else {
-                        holder.tv_item_type.setText(""); // Hiển thị thông báo nếu không có thông tin
+                        holder.tv_item_type.setVisibility(View.INVISIBLE); // Hiển thị thông báo nếu không có thông tin
                     }
                     Log.d(TAG, "Màu sắc và kích thước: " + itemTypeBuilder.toString()); // Ghi log thông tin màu sắc và kích thước
                 }
