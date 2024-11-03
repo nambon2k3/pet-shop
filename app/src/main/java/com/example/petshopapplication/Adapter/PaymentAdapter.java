@@ -2,6 +2,7 @@ package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.util.Log; // Import Log class
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
     private List<Cart> selectedCartItems; // Danh sách sản phẩm đã chọn
     private List<Product> productList; // Danh sách tất cả sản phẩm
     private Context context;
+    private static final String TAG = "PaymentAdapter"; // Tạo một TAG cho log
 
     public PaymentAdapter(List<Product> productList, List<Cart> selectedCartItems, Context context) {
         this.productList = productList;
@@ -41,15 +43,18 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
     @Override
     public void onBindViewHolder(@NonNull PaymentHolder holder, int position) {
         Cart cart = selectedCartItems.get(position);
+        Log.d(TAG, "Cart: " + cart.getSelectedColorId());
         Product product = getProductById(cart.getProductId());
 
         if (product != null) {
             // Hiển thị tên sản phẩm
             if (holder.tv_item_name != null) {
                 holder.tv_item_name.setText(product.getName());
+                Log.d(TAG, "Tên sản phẩm: " + product.getName()); // Ghi log tên sản phẩm
             }
             if (holder.tv_item_quantity != null) {
                 holder.tv_item_quantity.setText(String.valueOf(cart.getQuantity())); // Chuyển đổi số lượng thành chuỗi
+                Log.d(TAG, "Số lượng: " + cart.getQuantity()); // Ghi log số lượng
             }
 
             // Lấy variant đã chọn của sản phẩm
@@ -67,28 +72,32 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
                 if (holder.tv_item_old_price != null) {
                     holder.tv_item_old_price.setText(String.format("%.0f$", oldPrice)); // Giá cũ
                     holder.tv_item_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-
                 }
 
                 if (product.getDiscount() > 0) {
                     double newPrice = oldPrice * (1 - product.getDiscount() / 100.0); // Giá mới
                     if (holder.tv_item_new_price != null) {
                         holder.tv_item_new_price.setText(String.format("%.0f$", newPrice));
+                        Log.d(TAG, "Giá mới sau giảm giá: " + newPrice); // Ghi log giá mới
                     }
                 } else {
                     if (holder.tv_item_new_price != null) {
                         holder.tv_item_new_price.setText(String.format("%.0f$", oldPrice)); // Hiển thị giá gốc
+                        Log.d(TAG, "Giá gốc: " + oldPrice); // Ghi log giá gốc
                     }
                 }
 
                 // Hiển thị màu sắc và kích thước đã chọn
                 String selectedColor = null;
                 String selectedSize = selectedVariant.getSize() != null ? selectedVariant.getSize().getName() : null;
-
-                for (Color color : selectedVariant.getListColor()) {
-                    if (color.getId().equals(cart.getSelectedColorId())) {
-                        selectedColor = color.getName();
-                        break;
+                if (cart.getSelectedColorId() == null) {
+                    selectedColor="";
+                } else {
+                    for (Color color : selectedVariant.getListColor()) {
+                        if (color.getId().equals(cart.getSelectedColorId())) {
+                            selectedColor = color.getName();
+                            break;
+                        }
                     }
                 }
 
@@ -104,7 +113,12 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
                 }
 
                 if (holder.tv_item_type != null) {
-                    holder.tv_item_type.setText(itemTypeBuilder.toString()); // Hiển thị màu sắc và kích thước
+                    if (itemTypeBuilder.length() > 0) {
+                        holder.tv_item_type.setText(itemTypeBuilder.toString()); // Hiển thị màu sắc và kích thước
+                    } else {
+                        holder.tv_item_type.setText("Chưa chọn"); // Hiển thị thông báo nếu không có thông tin
+                    }
+                    Log.d(TAG, "Màu sắc và kích thước: " + itemTypeBuilder.toString()); // Ghi log thông tin màu sắc và kích thước
                 }
 
                 Glide.with(context)
