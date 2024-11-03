@@ -154,7 +154,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
             holder.tv_item_new_price.setText(currencyFormatter.format(oldPrice));
         }
 
-            holder.tv_item_quatity.setText(String.valueOf(cart.getQuantity()));
+            holder.tv_item_quantity.setText(String.valueOf(cart.getQuantity()));
         Glide.with(context)
                 .load(product.getBaseImageURL())
                 .into(holder.imv_item);
@@ -222,7 +222,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
     }
 
     public class CartHolder extends RecyclerView.ViewHolder {
-        TextView tv_item_name, tv_item_type, tv_item_old_price, tv_item_new_price, tv_item_quatity;
+        TextView tv_item_name, tv_item_type, tv_item_old_price, tv_item_new_price, tv_item_quantity;
         ImageView imv_item, btn_increase, btn_decrease;
         CheckBox checkBox;
 
@@ -232,7 +232,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
             tv_item_type = itemView.findViewById(R.id.tv_item_type);
             tv_item_old_price = itemView.findViewById(R.id.tv_item_old_price);
             tv_item_new_price = itemView.findViewById(R.id.tv_item_new_price);
-            tv_item_quatity = itemView.findViewById(R.id.tv_item_quatity);
+            tv_item_quantity = itemView.findViewById(R.id.tv_item_quantity);
             imv_item = itemView.findViewById(R.id.imv_item);
             btn_decrease = itemView.findViewById(R.id.btn_decrease);
             btn_increase = itemView.findViewById(R.id.btn_increase);

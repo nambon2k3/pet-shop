@@ -165,8 +165,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         order.setTotalAmount(totalAmount); // Tổng số tiền
         order.setShipmentId(""); // ID vận chuyển
         order.setRateId(selectedRateID); // Sử dụng selectedRateID đã lưu
-        order.setOrderDetails(getOrderDetailsList());
-        // Danh sách chi tiết đơn hàng
+        order.setOrderDetails(getOrderDetailsList()); // Danh sách chi tiết đơn hàng
         order.setOrderDate(new Date()); // Thời gian đặt hàng
         order.setStatus("Processing"); // Trạng thái đơn hàng
         order.setCityId(selectedUAddress.getCityId());

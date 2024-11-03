@@ -2,7 +2,6 @@ package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Cart;
+import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.Product;
+import com.example.petshopapplication.model.Variant;
 
 import java.util.List;
 
@@ -44,39 +45,82 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
 
         if (product != null) {
             // Hiển thị tên sản phẩm
-            holder.tv_item_name.setText(product.getName());
-            holder.tv_item_quantity.setText(String.valueOf(cart.getQuantity())); // Chuyển đổi số lượng thành chuỗi
-
-            // Hiển thị giá cũ và giá mới
-            double oldPrice = product.getListVariant().get(0).getPrice();
-            if (product.getDiscount() > 0) {
-                holder.tv_item_new_price.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount() / 100.0))); // Giá mới
-            } else {
-                holder.tv_item_new_price.setText(String.format("%.1f$", oldPrice)); // Hiển thị giá gốc
+            if (holder.tv_item_name != null) {
+                holder.tv_item_name.setText(product.getName());
+            }
+            if (holder.tv_item_quantity != null) {
+                holder.tv_item_quantity.setText(String.valueOf(cart.getQuantity())); // Chuyển đổi số lượng thành chuỗi
             }
 
-            // Tải hình ảnh sản phẩm
-            loadProductImage(holder.imv_item, product.getBaseImageURL());
+            // Lấy variant đã chọn của sản phẩm
+            Variant selectedVariant = null;
+            for (Variant variant : product.getListVariant()) {
+                if (variant.getId().equals(cart.getSelectedVariantId())) {
+                    selectedVariant = variant;
+                    break;
+                }
+            }
+
+            if (selectedVariant != null) {
+                // Hiển thị giá cũ và giá mới
+                double oldPrice = selectedVariant.getPrice();
+                if (holder.tv_item_old_price != null) {
+                    holder.tv_item_old_price.setText(String.format("%.0f$", oldPrice)); // Giá cũ
+                    holder.tv_item_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+
+                }
+
+                if (product.getDiscount() > 0) {
+                    double newPrice = oldPrice * (1 - product.getDiscount() / 100.0); // Giá mới
+                    if (holder.tv_item_new_price != null) {
+                        holder.tv_item_new_price.setText(String.format("%.0f$", newPrice));
+                    }
+                } else {
+                    if (holder.tv_item_new_price != null) {
+                        holder.tv_item_new_price.setText(String.format("%.0f$", oldPrice)); // Hiển thị giá gốc
+                    }
+                }
+
+                // Hiển thị màu sắc và kích thước đã chọn
+                String selectedColor = null;
+                String selectedSize = selectedVariant.getSize() != null ? selectedVariant.getSize().getName() : null;
+
+                for (Color color : selectedVariant.getListColor()) {
+                    if (color.getId().equals(cart.getSelectedColorId())) {
+                        selectedColor = color.getName();
+                        break;
+                    }
+                }
+
+                StringBuilder itemTypeBuilder = new StringBuilder();
+                if (selectedColor != null) {
+                    itemTypeBuilder.append(selectedColor);
+                }
+                if (selectedSize != null) {
+                    if (itemTypeBuilder.length() > 0) {
+                        itemTypeBuilder.append(", ");
+                    }
+                    itemTypeBuilder.append(selectedSize);
+                }
+
+                if (holder.tv_item_type != null) {
+                    holder.tv_item_type.setText(itemTypeBuilder.toString()); // Hiển thị màu sắc và kích thước
+                }
+
+                Glide.with(context)
+                        .load(product.getBaseImageURL())
+                        .into(holder.imv_item);
+            }
         }
     }
 
-    private Product getProductById(String productId) {
+    public Product getProductById(String productId) {
         for (Product product : productList) {
             if (product.getId().equals(productId)) {
                 return product;
             }
         }
-        return null; // Không tìm thấy sản phẩm
-    }
-
-    private void loadProductImage(ImageView imageView, String imageUrl) {
-        if (context != null) {
-            Glide.with(context)
-                    .load(imageUrl)
-                    .into(imageView);
-        } else {
-            Log.e("PaymentAdapter", "Context is null");
-        }
+        return null;
     }
 
     @Override
@@ -86,14 +130,16 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
 
     public static class PaymentHolder extends RecyclerView.ViewHolder {
         ImageView imv_item;
-        TextView tv_item_name, tv_item_old_price, tv_item_new_price, tv_item_quantity;
+        TextView tv_item_name, tv_item_old_price, tv_item_new_price, tv_item_quantity, tv_item_type;
 
         public PaymentHolder(@NonNull View itemView) {
             super(itemView);
             imv_item = itemView.findViewById(R.id.imv_item);
-            tv_item_name = itemView.findViewById(R.id.tv_item_name);tv_item_old_price = itemView.findViewById(R.id.tv_item_old_price);
+            tv_item_name = itemView.findViewById(R.id.tv_item_name);
+            tv_item_old_price = itemView.findViewById(R.id.tv_item_old_price);
             tv_item_new_price = itemView.findViewById(R.id.tv_item_new_price);
-            tv_item_quantity = itemView.findViewById(R.id.tv_item_quatity);
+            tv_item_quantity = itemView.findViewById(R.id.tv_item_quantity); // Check the ID here
+            tv_item_type = itemView.findViewById(R.id.tv_item_type);
         }
     }
 }
