@@ -116,7 +116,7 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
                     if (itemTypeBuilder.length() > 0) {
                         holder.tv_item_type.setText(itemTypeBuilder.toString()); // Hiển thị màu sắc và kích thước
                     } else {
-                        holder.tv_item_type.setText("Chưa chọn"); // Hiển thị thông báo nếu không có thông tin
+                        holder.tv_item_type.setText(""); // Hiển thị thông báo nếu không có thông tin
                     }
                     Log.d(TAG, "Màu sắc và kích thước: " + itemTypeBuilder.toString()); // Ghi log thông tin màu sắc và kích thước
                 }
