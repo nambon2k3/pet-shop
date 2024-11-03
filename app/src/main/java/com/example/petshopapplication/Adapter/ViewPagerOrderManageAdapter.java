@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.example.petshopapplication.AllOrdersTablayoutFragment;
+import com.example.petshopapplication.CanceledTablayoutFragment;
+import com.example.petshopapplication.DeliveredTablayoutFragment;
 import com.example.petshopapplication.ProcessingTablayoutFragment;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.ShippingTablayoutFragment;
@@ -15,44 +18,68 @@ import com.example.petshopapplication.WaitingTablayoutFragment;
 import lombok.NonNull;
 
 public class ViewPagerOrderManageAdapter extends FragmentStateAdapter {
-
     private final String[] tabTitles;
-    public ViewPagerOrderManageAdapter(@NonNull FragmentActivity fragmentActivity) {
+    private boolean isInventory;
+
+    public ViewPagerOrderManageAdapter(@NonNull FragmentActivity fragmentActivity, boolean isInventory) {
         super(fragmentActivity);
         tabTitles = fragmentActivity.getResources().getStringArray(R.array.tab_order_manage_titles);
+        this.isInventory = true;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position) {
-            case 0:
-            {
-                Log.d("createFragment", "ProcessingTablayoutFragment");
-                return new ProcessingTablayoutFragment(); // Chờ xác nhận
+        if (isInventory) {
+            switch (position) {
+                case 0: {
+                    Log.d("createFragment", "All orders tablayout fragment");
+                    return new AllOrdersTablayoutFragment(isInventory); // All orders
+                }
+                case 1: {
+                    Log.d("createFragment", "ProcessingTablayoutFragment");
+                    return new ProcessingTablayoutFragment(isInventory); // Processing - waiting confirm of inventory
+                }
+                case 2: {
+                    Log.d("createFragment", "ShippingTablayoutFragment");
+                    return new ShippingTablayoutFragment(); // Shipping
+                }
+                case 3: {
+                    Log.d("createFragment", "Return goods");
+                    return new DeliveredTablayoutFragment(isInventory); // Returning
+                }
+                case 4: {
+                    Log.d("createFragment", "DeliveredTablayoutFragment");
+                    return new CanceledTablayoutFragment(); // Delivered
+                }
+                default:
+                    return new AllOrdersTablayoutFragment(isInventory); // Default
             }
-            case 1:
-            {
-                Log.d("createFragment", "WaitingTablayoutFragment");
-                return new WaitingTablayoutFragment(); // Chờ lấy hàng
+        } else {
+            switch (position) {
+                case 0: {
+                    Log.d("createFragment", "ProcessingTablayoutFragment");
+                    return new ProcessingTablayoutFragment(isInventory); // Processing - waiting confirm of inventory
+                }
+                case 1: {
+                    Log.d("createFragment", "ShippingTablayoutFragment");
+                    return new ShippingTablayoutFragment(); // Shipping
+                }
+                case 2: {
+                    Log.d("createFragment", "Return goods");
+                    return new ShippingTablayoutFragment(); // Returning
+                }
+                case 3: {
+                    Log.d("createFragment", "DeliveredTablayoutFragment");
+                    return new DeliveredTablayoutFragment(isInventory); // Delivered
+                }
+                case 4: {
+                    Log.d("createFragment", "CanceledTablayoutFragment");
+                    return new CanceledTablayoutFragment(); // Canceled
+                }
+                default:
+                    return new ProcessingTablayoutFragment(isInventory); // Default
             }
-            case 2:
-            {
-                Log.d("createFragment", "WaitingTablayoutFragment");
-                return new ShippingTablayoutFragment(); // Chờ lấy hàng
-            }
-//            case 2:
-//                return new InTransitFragment(); // Đang giao
-//            case 3:
-//                return new DeliveredFragment(); // Đã giao
-//            case 4:
-//                return new CanceledFragment(); // Đơn hủy
-//            case 5:
-//                return new ReturnedRefundedFragment(); // Trả hàng/Hoàn tiền
-//            case 6:
-//                return new FailedDeliveryFragment(); // Giao không thành công
-            default:
-                return new ProcessingTablayoutFragment(); // Default
         }
     }
 
