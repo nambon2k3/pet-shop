@@ -149,6 +149,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
                 selectedItemList.add(cart);
             }
         }
+        Log.d("CartActivity", "Updated selected items: " + selectedItemList.toString());
     }
     public double calculateTotalPrice() { // Đổi kiểu trả về thành double
         double totalPrice = 0.;
