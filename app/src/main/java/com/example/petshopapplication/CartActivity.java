@@ -145,7 +145,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     private void updateSelectedItemList() {
         selectedItemList.clear();  // Xóa danh sách cũ để cập nhật lại
         for (Cart cart : cartList) {
-            if (cart.isChecked()) { // Chỉ thêm các Cart được chọn
+            if (cart.getIsChecked() != null && cart.getIsChecked()) { // Chỉ thêm các Cart được chọn
                 selectedItemList.add(cart);
             }
         }

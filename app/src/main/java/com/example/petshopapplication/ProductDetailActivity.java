@@ -221,14 +221,16 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
         int quantity = Integer.parseInt(tv_quantity.getText().toString());
         int stock = Integer.parseInt(tv_cart_stock.getText().toString().replace("Stock: ", ""));
 
+        reference = database.getReference(getString(R.string.tbl_cart_name));
+        String cartId =  reference.push().getKey(); // Generate a unique ID
         //Create cart item
         cartItem = Cart.builder()
+                .cartId(cartId)
                 .productId(productId)
                 .userId(user.getUid())
                 .quantity(quantity)
                 .selectedColorId(selectedColorId)
                 .selectedVariantId(selectedVariantId)
-                .isChecked(true)
                 .build();
 
 
