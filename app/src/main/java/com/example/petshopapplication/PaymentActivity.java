@@ -171,6 +171,9 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         order.setWardId(selectedUAddress.getWardId());
         order.setCarrierName(selectedCartierName);
         order.setCarrierLogo(selectedCartierLogo);
+        order.setCity(selectedUAddress.getCity());
+        order.setDistrict(selectedUAddress.getDistrict());
+        order.setWard(selectedUAddress.getWard());
 
         // Thêm vào Firebase
         DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference("orders");

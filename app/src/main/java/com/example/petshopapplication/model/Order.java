@@ -25,8 +25,11 @@ public class Order {
     private String carrierLogo;
     private String carrierName;
     private String districtId;   // ID quận
+    private String district;   //  quận
     private String cityId;      // ID thành phố
+    private String city;      //  thành phố
     private String wardId;   // ID quận
+    private String ward;   //  quận
     private double totalAmount; // Tổng số tiền của đơn hàng
     private List<OrderDetail> orderDetails; // Chi tiết các sản phẩm trong đơn hàng
     private Date orderDate;
