@@ -78,7 +78,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private String selectedCartierName;
     private String selectedCartierLogo;
     private List<Product> productList = new ArrayList<>();
-
+    private double finalTotalAmount;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -128,6 +128,8 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             }
             if (checkboxPaymentOnDelivery.isChecked()) {/* other payment method check */
                 createOrderAndPayment();
+                deleteCartItem();
+
             } else {
                 Toast.makeText(this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
             }
@@ -153,6 +155,38 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             }
         }
     }
+
+    private void deleteCartItem() {
+        DatabaseReference cartsRef = FirebaseDatabase.getInstance().getReference("carts");
+
+        for (Cart cart : selectedCartItems) {
+            String cartId = cart.getCartId();
+
+            if (cartId != null) {
+                cartsRef.orderByChild("cartId").equalTo(cartId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            // Xóa mục giỏ hàng
+                            snapshot.getRef().removeValue()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firebase", "Xóa cart thành công: " + cartId);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firebase", "Xóa cart thất bại: " + cartId, e);
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("Firebase", "Lỗi khi tìm cart: " + databaseError.getMessage());
+                    }
+                });
+            }
+        }
+    }
+
 
 
     private void createOrderAndPayment() {
@@ -187,7 +221,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                         payment.setId(UUID.randomUUID().toString()); // Tạo ID tự động cho thanh toán
                         payment.setOrderId(orderId);
                         payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Chuyển khoản"); // Gán phương thức thanh toán
-                        payment.setAmount(order.getTotalAmount()); // Số tiền thanh toán
+                        payment.setAmount(finalTotalAmount); // Số tiền thanh toán
                         payment.setTransactionId(""); // Nếu có ID giao dịch, thêm vào đây
 
                         // Thêm vào Firebase
@@ -266,6 +300,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         }
         return 0; // Return 0 if product not found
     }
+
     public Product findProductById(String productId) {
         for (Product product : productList) { // productList là danh sách sản phẩm
             if (product.getId().equals(productId)) {
@@ -274,7 +309,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         }
         return null; // Trả về null nếu không tìm thấy sản phẩm
     }
-
 
 
     private void loadProductDetails() {
@@ -417,7 +451,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
     @Override
     public void onRateSelected(double fee, String rateID, String cartierName, String cartierLogo) {
-        double finalTotalAmount = totalAmount + fee; // Cập nhật tổng giá
+        finalTotalAmount = totalAmount + fee; // Cập nhật tổng giá
 
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
         numberFormat.setMinimumFractionDigits(0);

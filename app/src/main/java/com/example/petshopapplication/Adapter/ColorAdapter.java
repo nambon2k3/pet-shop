@@ -21,11 +21,12 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorViewHol
     List<Color> colorItems;
     Context context;
     private int selectedPosition = RecyclerView.NO_POSITION;
-    private OnColorClickEventListener onColorClickEventListener;
+    private ColorAdapter.OnColorClickEventListener onColorClickEventListener;
 
-    public ColorAdapter(List<Color> colorItems, OnColorClickEventListener onColorClickEventListener) {
+    public ColorAdapter(List<Color> colorItems,OnColorClickEventListener onColorClickEventListener) {
         this.colorItems = colorItems;
         this.onColorClickEventListener = onColorClickEventListener;
+
     }
 
     public interface OnColorClickEventListener {
@@ -60,6 +61,7 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorViewHol
             notifyItemChanged(selectedPosition);
             selectedPosition = position;
             notifyItemChanged(selectedPosition);
+
             onColorClickEventListener.onColorClick(color);
         });
     }
