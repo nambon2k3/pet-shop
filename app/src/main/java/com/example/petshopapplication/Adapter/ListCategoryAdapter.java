@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,11 +24,13 @@ import java.util.Map;
 public class ListCategoryAdapter extends RecyclerView.Adapter<ListCategoryAdapter.CategoryHolder> {
     List<Category> categoryList = new ArrayList<>();
     Context context;
+    OnItemClickedListener listener;
 
 
-    public ListCategoryAdapter(List<Category> categoryList, Context context) {
+    public ListCategoryAdapter(List<Category> categoryList, Context context, OnItemClickedListener listener) {
         this.categoryList = categoryList;
         this.context = context;
+        this.listener = listener;
     }
 
     @NonNull
@@ -46,7 +49,9 @@ public class ListCategoryAdapter extends RecyclerView.Adapter<ListCategoryAdapte
                 .load(category.getImage())
                 .into(holder.imv_category);
         holder.tv_category_name.setText(category.getName());
+        holder.bind(category, listener);
         //holder.tv_product_quantity.setText(categoryIntegerMap.get(category).toString());
+
 
     }
 
@@ -64,6 +69,21 @@ public class ListCategoryAdapter extends RecyclerView.Adapter<ListCategoryAdapte
             imv_category = itemView.findViewById(R.id.imv_category);
             tv_category_name = itemView.findViewById(R.id.tv_category_name);
             tv_product_quantity = itemView.findViewById(R.id.tv_product_quantity);
+
+
         }
+
+        public void bind(Category category, OnItemClickedListener listener) {
+            itemView.setOnClickListener(v -> {
+                // Gọi phương thức onItemClick khi item được click
+                listener.onItemClicked(category);
+            });
+        }
+    }
+
+
+    //Interface communicate between Activity and Adapter
+    public interface OnItemClickedListener{
+        void onItemClicked(Category category);
     }
 }

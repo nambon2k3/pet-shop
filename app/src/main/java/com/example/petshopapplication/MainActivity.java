@@ -22,10 +22,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Kiểm tra nếu Activity này được khởi tạo lần đầu tiên, hiển thị Fragment ban đầu
-        if (savedInstanceState == null) {
-            // Đặt Fragment cần hiển thị sau khi đăng nhập
-            replaceFragment(new ProcessingTablayoutFragment());
-        }
+//        if (savedInstanceState == null) {
+//            // Đặt Fragment cần hiển thị sau khi đăng nhập
+//            replaceFragment(new ProcessingTablayoutFragment());
+//        }
     }
 
     // Phương thức để thay thế Fragment

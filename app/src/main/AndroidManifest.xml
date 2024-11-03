@@ -17,6 +17,24 @@
         tools:targetApi="31">
 
         <activity
+            android:name=".ViewDetailOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".VNPayPaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CategoryListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PrepareOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ListOrderManageActivity"
+            android:exported="false" />
+        <activity
             android:name=".ListOrderActivity"
             android:exported="false" />
         <activity
@@ -50,11 +68,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FeedbackListActivity"
-            android:exported="false"></activity>
-
-
-
+            android:name=".ListFeedbackActivity"
+            android:exported="false" />
         <activity
             android:name=".PaymentActivity"
             android:exported="false" />
@@ -72,15 +87,22 @@
             android:name=".UpdateFeedbackActivity"
             android:exported="false" />
         <activity
-            android:name=".FeedbackListUserActivity"
-            android:exported="false"></activity>
+            android:name=".OrderingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ListUserFeedbackActivity"
+            android:exported="false" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"

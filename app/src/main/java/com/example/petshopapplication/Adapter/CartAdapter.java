@@ -22,6 +22,8 @@ import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Size;
 import com.example.petshopapplication.model.Variant;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +45,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
     FirebaseDatabase database;
     DatabaseReference reference;
     OnCartItemCheckedListener listener;
+
 
 
     public CartAdapter(List<Product> productList, List<Cart> cartList, Context context, OnCartItemCheckedListener listener) {
@@ -72,6 +75,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
         String selectedColor = "", selectedSize = "", item_type = "";
         Double oldPrice = 0.;
         int stock = 0;
+        StringBuilder typebuilder = new StringBuilder();
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
         Cart cart = cartList.get(position);
@@ -82,40 +86,58 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
         for (Variant variant: variantList){
             if(cart.getSelectedVariantId().equals(variant.getId())){
                 oldPrice = variant.getPrice();
-                selectedSize = variant.getSize().getName();
+                if(variant.getSize() != null){
+                    selectedSize = variant.getSize().getName();
+                } else {
+                    selectedSize = null;
+                }
+
                 colorList = variant.getListColor();
+                stock = variant.getStock();
             }
         }
 
-        //Get list size of product
-        //(use for user chose size again)
-        for (Variant variant: variantList){
-            sizeList.add(variant.getSize());
-        }
+//        //Get list size of product
+//        //(use for user chose size again)
+//        for (Variant variant: variantList){
+//            sizeList.add(variant.getSize());
+//        }
 
-        //Get list color of product base on size
-        for (Variant variant: variantList){
-            sizeListMap.put(variant.getSize(), variant.getListColor());
-        }
+//        //Get list color of product base on size
+//        for (Variant variant: variantList){
+//            sizeListMap.put(variant.getSize(), variant.getListColor());
+//        }
 
         //Get product color has been selected
-        for (Color color : colorList){
-            if(color.getId().equals(cart.getSelectedColorId())){
-                selectedColor = color.getName();
+        if(colorList != null){
+            for (Color color : colorList){
+                if(color.getId().equals(cart.getSelectedColorId())){
+                    selectedColor = color.getName();
+                }
             }
+        } else {
+            selectedColor = null;
         }
 
 
 
         //Check if product has color and size
-        if(selectedColor == null && size == null){
+        if(selectedColor==null && selectedSize==null){
             holder.tv_item_type.setVisibility(View.GONE);
-        } else if (selectedColor != null) {
-            item_type += selectedColor;
-            if(size != null){
-                item_type += ", " + selectedSize;
-            }
         }
+
+        if(selectedColor!=null){
+            typebuilder.append(selectedColor);
+        }
+
+        if(selectedSize!=null){
+            if(typebuilder.length() > 0){
+                typebuilder.append(", ");
+            }
+            typebuilder.append(selectedSize);
+        }
+        item_type = typebuilder.toString();
+
 
         holder.tv_item_name.setText(product.getName());
         holder.tv_item_type.setText(item_type);
@@ -132,18 +154,21 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
             holder.tv_item_new_price.setText(currencyFormatter.format(oldPrice));
         }
 
-            holder.tv_item_quatity.setText(String.valueOf(cart.getQuantity()));
+            holder.tv_item_quantity.setText(String.valueOf(cart.getQuantity()));
         Glide.with(context)
                 .load(product.getBaseImageURL())
                 .into(holder.imv_item);
 
 
         //Get product stock of product has been selected
-        for (Color color : colorList){
-            if(selectedColor.equals(color.getName())){
-                stock = color.getStock();
+        if(colorList != null){
+            for (Color color : colorList){
+                if(selectedColor.equals(color.getName())){
+                    stock = color.getStock();
+                }
             }
         }
+
 
         //Handler the event of quantity button
             holder.btn_increase.setOnClickListener(new View.OnClickListener() {
@@ -151,7 +176,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
                 public void onClick(View view) {
                     int quantity = cart.getQuantity();
 
-
+                    Log.e("btn_increase", ""+ quantity);
+                    Log.e("btn_increase", ""+ cart.getCartId());
                     quantity++;
                     updateQuantityToDb(quantity, cart.getCartId());
                 }
@@ -184,6 +210,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
                 //Inform to Activity about the changed of checkbox
                 //=> Calculate again the total of bill
                 listener.onCartItemCheckedChanged();
+
             }
         });
     }
@@ -195,7 +222,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
     }
 
     public class CartHolder extends RecyclerView.ViewHolder {
-        TextView tv_item_name, tv_item_type, tv_item_old_price, tv_item_new_price, tv_item_quatity;
+        TextView tv_item_name, tv_item_type, tv_item_old_price, tv_item_new_price, tv_item_quantity;
         ImageView imv_item, btn_increase, btn_decrease;
         CheckBox checkBox;
 
@@ -205,7 +232,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartHolder> {
             tv_item_type = itemView.findViewById(R.id.tv_item_type);
             tv_item_old_price = itemView.findViewById(R.id.tv_item_old_price);
             tv_item_new_price = itemView.findViewById(R.id.tv_item_new_price);
-            tv_item_quatity = itemView.findViewById(R.id.tv_item_quatity);
+            tv_item_quantity = itemView.findViewById(R.id.tv_item_quantity);
             imv_item = itemView.findViewById(R.id.imv_item);
             btn_decrease = itemView.findViewById(R.id.btn_decrease);
             btn_increase = itemView.findViewById(R.id.btn_increase);

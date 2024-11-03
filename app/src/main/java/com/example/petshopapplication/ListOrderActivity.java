@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -40,6 +41,7 @@ import com.example.petshopapplication.Adapter.ProductAdapter;
 import com.example.petshopapplication.Adapter.ViewPagerOrderManageAdapter;
 import com.example.petshopapplication.databinding.ActivityHomeBinding;
 import com.example.petshopapplication.databinding.ActivityListOrderBinding;
+import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Order;
 import com.example.petshopapplication.model.Product;
 import com.google.android.material.tabs.TabLayout;
@@ -63,6 +65,9 @@ public class ListOrderActivity extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference reference;
     RecyclerView.Adapter orderAdapter;
+    private List<Order> orderList;
+    private ProgressBar progressBar;
+
     private String[] tabTitles;
     // START - Test API
     private String TAG = "CityActivity";
@@ -87,38 +92,48 @@ public class ListOrderActivity extends AppCompatActivity {
 //        initOrder();
 
 
+        // Set up RecyclerView
+//        binding .recyclerViewOrders.setLayoutManager(new LinearLayoutManager(this));
+//        orderList = new ArrayList<>();
+//        orderAdapter = new OrderAdapter(orderList);
+//        binding.recyclerViewOrders.setAdapter(orderAdapter);
+//
+//        // Load orders from Firebase
+
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
         if (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
             // Mạng sẵn sàng cho kết nối
             Log.e(TAG, "Internet connection available.");
             Log.d(TAG, "Start load city:");
-
+//        loadOrders();
+//            initCategory();
+//            initOrders();
 //            loadCities();
 
             // START - Create Order
-            String rate = "MTFfMjFfMTk0OA==";
-            String fromName = "New Order";
-            String fromPhone = "1111111111";
-            String fromStreet = "102 Thái Thịnh";
-            String fromWard = "113";
-            String fromDistrict = "100900";
-            String fromCity = "100000";
-            String toName = "Lai Dao";
-            String toPhone = "0909876543";
-            String toStreet = "51 Lê Đại Hành";
-            String toWard = "79";
-            String toDistrict = "100200";
-            String toCity = "100000";
-            int cod = 500000;
-            int weight = 220;
-            int width = 15;
-            int height = 15;
-            int length = 15;
-            String metadata = "Hàng dễ vỡ, vui lòng nhẹ tay. (new)";
-
-            createOrder(rate, fromName, fromPhone, fromStreet, fromWard, fromDistrict, fromCity,
-                    toName, toPhone, toStreet, toWard, toDistrict, toCity, cod, weight, width, height, length, metadata);
+//            String rate = "MTFfMjFfMTk0OA==";
+//            String fromName = "New Order";
+//            String fromPhone = "1111111111";
+//            String fromStreet = "102 Thái Thịnh";
+//            String fromWard = "113";
+//            String fromDistrict = "100900";
+//            String fromCity = "100000";
+//            String toName = "Lai Dao";
+//            String toPhone = "0909876543";
+//            String toStreet = "51 Lê Đại Hành";
+//            String toWard = "79";
+//            String toDistrict = "100200";
+//            String toCity = "100000";
+//            int cod = 500000;
+//            int weight = 220;
+//            int width = 15;
+//            int height = 15;
+//            int length = 15;
+//            String metadata = "Hàng dễ vỡ, vui lòng nhẹ tay. (new)";
+//
+//            createOrder(rate, fromName, fromPhone, fromStreet, fromWard, fromDistrict, fromCity,
+//                    toName, toPhone, toStreet, toWard, toDistrict, toCity, cod, weight, width, height, length, metadata);
 
             // END - End Order
 
@@ -150,25 +165,23 @@ public class ListOrderActivity extends AppCompatActivity {
     }
 
     private void initTablayouts() {
-        // Tìm kiếm TabLayout và ViewPager2 trong layout
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
-        ViewPager2 viewPager = findViewById(R.id.view_pager);
+        // Find TabLayout and ViewPager2 in the layout
+        TabLayout tabLayout = binding.tabLayout;
+        ViewPager2 viewPager = binding.viewPager;
 
-        // Tạo ViewPagerAdapter và gán cho ViewPager2
-        ViewPagerOrderManageAdapter viewPagerAdapter = new ViewPagerOrderManageAdapter(this);
+        // Create ViewPagerAdapter and set it to ViewPager2
+        ViewPagerOrderManageAdapter viewPagerAdapter = new ViewPagerOrderManageAdapter(this, false);
         viewPager.setAdapter(viewPagerAdapter);
 
-        // Kết nối TabLayout với ViewPager2
+        // Connect TabLayout with ViewPager2
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            // Kiểm tra để đảm bảo vị trí hợp lệ
+            // Check if the position is valid
             if (position >= 0 && position < tabTitles.length) {
                 tab.setText(tabTitles[position]);
             } else {
-                tab.setText("Tab " + position); // Tên mặc định nếu ngoài phạm vi
+                tab.setText("Tab " + position); // default name if out of range
             }
         }).attach();
-
-
     }
 
     private void loadCities() {
@@ -442,4 +455,170 @@ public class ListOrderActivity extends AppCompatActivity {
 //        binding.rcvOrders.setAdapter(orderAdapter);
 //        binding.prgListOrder.setVisibility(View.INVISIBLE);
     }
+
+    private List<Order> orderItems;
+
+    private void loadOrders() {
+        Log.d(TAG, "Start - load orders from Firebase");
+
+        DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference("orders");
+
+        ordersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Xóa danh sách cũ để không bị trùng lặp dữ liệu khi Firebase cập nhật
+                orderItems.clear();
+
+                // Duyệt qua từng order trong node orders
+                for (DataSnapshot orderSnapshot : snapshot.getChildren()) {
+                    // Lấy dữ liệu từ DataSnapshot và chuyển thành đối tượng Order
+                    Order order = orderSnapshot.getValue(Order.class);
+
+                    if (order != null) {
+                        // Log thông tin của order
+                        Log.d(TAG, "Order ID: " + order.getId());
+                        Log.d(TAG, "User ID: " + order.getUserId());
+                        Log.d(TAG, "Payment ID: " + order.getPaymentId());
+                        Log.d(TAG, "Rate ID: " + order.getRateId());
+                        Log.d(TAG, "Status: " + order.getStatus());
+                        Log.d(TAG, "Total Amount: " + order.getTotalAmount());
+
+                        // Thêm order vào danh sách
+                        orderItems.add(order);
+                    } else {
+                        Log.e(TAG, "Order data is null for snapshot: " + orderSnapshot.getKey());
+                    }
+                }
+
+                // Cập nhật RecyclerView sau khi dữ liệu được tải về
+//                orderAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Failed to load orders: " + error.getMessage());
+            }
+        });
+        Log.d(TAG, "End - load orders from Firebase");
+
+    }
+
+    private void initCategory() {
+        Log.d(TAG, "Start - load category from Firebase");
+
+        // Lấy tham chiếu tới Firebase Database với node categories
+        reference = database.getReference(getString(R.string.tbl_category_name));
+
+        // Khởi tạo danh sách category
+        List<Category> categoryItems = new ArrayList<>();
+
+        // Tạo truy vấn Firebase để lấy dữ liệu và sắp xếp theo "isDeleted"
+        Query query = reference.orderByChild("isDeleted");
+
+        // Thêm listener để lấy dữ liệu từ Firebase
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Kiểm tra xem snapshot có dữ liệu hay không
+                if (snapshot.exists()) {
+                    Log.d(TAG, "Data found in Firebase");
+
+                    // Duyệt qua từng phần tử trong snapshot
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        // Chuyển dữ liệu từng phần tử thành đối tượng Category và thêm vào danh sách
+                        Category category = dataSnapshot.getValue(Category.class);
+
+                        // Log chi tiết từng category
+                        if (category != null) {
+                            Log.d(TAG, "Category: " + category.getName() + ", ID: " + category.getId());
+                            categoryItems.add(category);
+                        } else {
+                            Log.e(TAG, "Category data is null for snapshot: " + dataSnapshot.getKey());
+                        }
+                    }
+
+                    // Log tổng số category lấy được
+                    Log.d(TAG, "Total categories retrieved: " + categoryItems.size());
+
+                    // Kiểm tra lại dữ liệu đã được thêm vào categoryItems
+                    for (Category category : categoryItems) {
+                        Log.d(TAG, "Category Name: " + category.getName() + ", ID: " + category.getId());
+                    }
+                } else {
+                    Log.d(TAG, "No data found in Firebase");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Log lỗi nếu việc kết nối bị hủy
+                Log.e(TAG, "Failed to load categories: " + error.getMessage());
+            }
+        });
+        Log.d(TAG, "End - load category from Firebase");
+
+    }
+
+
+    private void initOrders() {
+        Log.d(TAG, "Start - load orders from Firebase");
+
+        // Lấy tham chiếu tới Firebase Database với node orders
+        reference = database.getReference("orders");
+
+        // Khởi tạo danh sách order
+        List<Order> orderItems = new ArrayList<>();
+
+        // Tạo truy vấn Firebase để lấy dữ liệu từ node orders
+        Query query = reference;
+
+        // Thêm listener để lấy dữ liệu từ Firebase
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Kiểm tra xem snapshot có dữ liệu hay không
+                if (snapshot.exists()) {
+                    Log.d(TAG, "Data found in Firebase");
+
+                    // Duyệt qua từng phần tử trong snapshot
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        // Chuyển dữ liệu từng phần tử thành đối tượng Order và thêm vào danh sách
+                        Order order = dataSnapshot.getValue(Order.class);
+
+                        // Log chi tiết từng order
+                        if (order != null) {
+                            Log.d(TAG, "Order ID: " + order.getId() + ", User ID: " + order.getUserId());
+                            Log.d(TAG, "Payment ID: " + order.getPaymentId() + ", Total Amount: " + order.getTotalAmount());
+                            Log.d(TAG, "Status: " + order.getStatus());
+                            orderItems.add(order);
+                        } else {
+                            Log.e(TAG, "Order data is null for snapshot: " + dataSnapshot.getKey());
+                        }
+                    }
+
+                    // Log tổng số orders lấy được
+                    Log.d(TAG, "Total orders retrieved: " + orderItems.size());
+
+                    // Kiểm tra lại dữ liệu đã được thêm vào orderItems
+                    for (Order order : orderItems) {
+                        Log.d(TAG, "Order ID: " + order.getId() + ", Status: " + order.getStatus());
+                    }
+
+
+                } else {
+                    Log.d(TAG, "No data found in Firebase");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Log lỗi nếu việc kết nối bị hủy
+                Log.e(TAG, "Failed to load orders: " + error.getMessage());
+            }
+        });
+        Log.d(TAG, "End - load orders from Firebase");
+    }
+
 }

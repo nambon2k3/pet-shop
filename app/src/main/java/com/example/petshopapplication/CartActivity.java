@@ -1,7 +1,9 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,8 @@ import com.example.petshopapplication.Adapter.CartAdapter;
 import com.example.petshopapplication.model.Cart;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Variant;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,21 +37,38 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     List<Cart> cartList = new ArrayList<>();
     List<Product> productList = new ArrayList<>();
     List<String> cartProductId = new ArrayList<>();
-
+    List<Cart> selectedItemList = new ArrayList<>();
+    FirebaseAuth auth;
+    FirebaseUser user;
+    Button purchaseButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
-
-        //Get Id of current User (Fake Id)
-        String userId = "u1";
+        //Get Id of current User
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        String userId = user.getUid();
 
         //Initialize firebase
         database = FirebaseDatabase.getInstance();
 
         initCart(userId);
+
+
+        purchaseButton = findViewById(R.id.btn_purchase); // Khởi tạo nút mua hàng
+
+        // Thiết lập sự kiện khi nút mua hàng được nhấn
+        purchaseButton.setOnClickListener(v -> {
+            double totalAmount =  calculateTotalPrice();
+            List<Cart> selectedItems = selectedItemList; // Lấy danh sách sản phẩm đã chọn
+            Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
+            intent.putExtra("selectedItems", (ArrayList<Cart>) selectedItems); // Chuyển danh sách sản phẩm đã chọn
+            intent.putExtra("totalAmount", totalAmount);
+            startActivity(intent); // Chuyển sang PaymentActivity
+        });
     }
 
     public void initCart(String userId) {
@@ -116,19 +137,29 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
 
     @Override
     public void onCartItemCheckedChanged() {
+        updateSelectedItemList();
+        Log.d("CartAdapter", "Selected items: " + selectedItemList.toString());
         calculateTotalPrice();
     }
 
-    public void calculateTotalPrice() {
+    private void updateSelectedItemList() {
+        selectedItemList.clear();  // Xóa danh sách cũ để cập nhật lại
+        for (Cart cart : cartList) {
+            if (cart.isChecked()) { // Chỉ thêm các Cart được chọn
+                selectedItemList.add(cart);
+            }
+        }
+    }
+    public double calculateTotalPrice() { // Đổi kiểu trả về thành double
         double totalPrice = 0.;
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
-        for (Cart cart : cartList) {
-            if (cart.isChecked()) {
-                totalPrice+= getPriceForSelectedProduct(cart) * cart.getQuantity();
-            }
+        for (Cart cart : selectedItemList) { // Duyệt qua selectedItemList để tính tổng giá
+            totalPrice += getPriceForSelectedProduct(cart) * cart.getQuantity();
         }
+
         ((TextView) findViewById(R.id.tv_total_price)).setText(currencyFormatter.format(totalPrice));
+        return totalPrice; // Trả về tổng số tiền
     }
 
     public Double getPriceForSelectedProduct(Cart cart) {
@@ -143,7 +174,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
                 for (Variant variant : variantList) {
                     if (cart.getSelectedVariantId().equals(variant.getId())) {
                         Double oldPrice = variant.getPrice();
-                        Double newPrice = oldPrice * (1 - product.getDiscount()/100.0);
+                        Double newPrice = oldPrice * (1 - product.getDiscount() / 100.0);
                         return newPrice;
 
                     }

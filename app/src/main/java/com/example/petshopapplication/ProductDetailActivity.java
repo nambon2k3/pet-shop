@@ -1,20 +1,32 @@
 package com.example.petshopapplication;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,9 +37,11 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.petshopapplication.Adapter.ColorAdapter;
 import com.example.petshopapplication.Adapter.FeedBackAdapter;
 import com.example.petshopapplication.Adapter.ListProductAdapter;
+import com.example.petshopapplication.Adapter.ListProductCategoryAdapter;
 import com.example.petshopapplication.Adapter.ProductImageAdapter;
 import com.example.petshopapplication.Adapter.SizeAdapter;
 import com.example.petshopapplication.databinding.ActivityProductDetailBinding;
+import com.example.petshopapplication.model.Cart;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.FeedBack;
@@ -35,6 +49,8 @@ import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Size;
 import com.example.petshopapplication.model.User;
 import com.example.petshopapplication.model.Variant;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,6 +69,7 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
     ActivityProductDetailBinding binding;
     FirebaseDatabase database;
     DatabaseReference reference;
+    FirebaseAuth auth;
 
     //Intent data
     private String productId;
@@ -82,13 +99,14 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
     //pop up view
     RecyclerView colorCartRecyclerView, sizeCartRecyclerView;
     ImageView imv_cart_product;
-    TextView tv_cart_new_price, tv_cart_old_price, tv_cart_stock, tv_quantity;
-    Button btn_plus, btn_minus;
+    TextView tv_cart_new_price, tv_cart_old_price, tv_cart_stock, tv_quantity, tv_color_text, tv_size_text;
+    Button btn_plus, btn_minus, btn_submit;
 
 
     //Add to cart data
     private String selectedColorId;
     private String selectedVariantId;
+    Cart cartItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +122,7 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
         database = FirebaseDatabase.getInstance();
         binding.tvEmptyFeedback.setVisibility(View.GONE);
         layout = binding.productDetails;
+        auth = FirebaseAuth.getInstance();
 
         //create dialog of pop up for add to cart
         dialog = new Dialog(ProductDetailActivity.this);
@@ -116,8 +135,11 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
         tv_cart_old_price = dialog.findViewById(R.id.tv_cart_old_price);
         tv_cart_stock = dialog.findViewById(R.id.tv_cart_stock);
         tv_quantity = dialog.findViewById(R.id.tv_quantity);
+        tv_color_text = dialog.findViewById(R.id.tv_color_text);
+        tv_size_text = dialog.findViewById(R.id.tv_size_text);
         btn_plus = dialog.findViewById(R.id.btn_plus);
         btn_minus = dialog.findViewById(R.id.btn_minus);
+        btn_submit = dialog.findViewById(R.id.btn_submit);
 
         //modify cart quantity function
         btn_plus.setOnClickListener(new View.OnClickListener() {
@@ -169,6 +191,11 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             }
         });
 
+        //Confirm add to cart
+        btn_submit.setOnClickListener(v -> {
+            confirmCart();
+        });
+
         getIntend();
         initProductDetail(productId);
         binding.btnAddCart.setOnClickListener(new View.OnClickListener() {
@@ -185,6 +212,92 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             startActivity(intent);
         });
     }
+
+    private void confirmCart() {
+        //Get current user
+        FirebaseUser user = auth.getCurrentUser();
+
+        //Get cart quantity
+        int quantity = Integer.parseInt(tv_quantity.getText().toString());
+        int stock = Integer.parseInt(tv_cart_stock.getText().toString().replace("Stock: ", ""));
+
+        //Create cart item
+        cartItem = Cart.builder()
+                .productId(productId)
+                .userId(user.getUid())
+                .quantity(quantity)
+                .selectedColorId(selectedColorId)
+                .selectedVariantId(selectedVariantId)
+                .isChecked(true)
+                .build();
+
+
+
+        checkCart(stock);
+    }
+
+
+    private void checkCart(int stock) {
+        //Get current user
+        FirebaseUser user = auth.getCurrentUser();
+
+        //Get cart reference
+        DatabaseReference cartRef = database.getReference(getString(R.string.tbl_cart_name));
+
+        //Check if cart item already exists
+        cartRef.orderByChild("userId").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    boolean isAdded = false;
+                    //Update cart item
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Cart cart = dataSnapshot.getValue(Cart.class);
+                        if (cart.getProductId().equals(productId) && cart.getSelectedVariantId().equals(selectedVariantId)) {
+                            if(cart.getSelectedColorId() != null && cart.getSelectedColorId().equals(selectedColorId)) {
+                                int newQuantity = cart.getQuantity() + cartItem.getQuantity();
+                                if(newQuantity <= stock) {
+                                    cart.setQuantity(newQuantity);
+                                }
+                                //Update cart item
+                                cartRef.child(dataSnapshot.getKey()).setValue(cart);
+                                isAdded = true;
+                            } else {
+                                int newQuantity = cart.getQuantity() + cartItem.getQuantity();
+                                if(newQuantity <= stock) {
+                                    cart.setQuantity(newQuantity);
+                                }
+                                //Update cart item
+                                cartRef.child(dataSnapshot.getKey()).setValue(cart);
+                                isAdded = true;
+                            }
+                            break;
+                        }
+
+                    }
+                    if(!isAdded) {
+                        String uniqueKey = "cart" + cartRef.push().getKey();
+                        //Create new cart item
+                        cartRef.child(uniqueKey).setValue(cartItem);
+                    }
+                } else {
+                    String uniqueKey = "cart" + cartRef.push().getKey();
+                    //Create new cart item
+                    cartRef.child(uniqueKey).setValue(cartItem);
+                }
+
+                Toast.makeText(ProductDetailActivity.this, "Add successfully", Toast.LENGTH_SHORT).show();
+
+
+            }
+
+            @Override
+            public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+                Toast.makeText(ProductDetailActivity.this, "Add failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void initProductDetail(String productID) {
         reference = database.getReference(getString(R.string.tbl_product_name));
@@ -203,8 +316,10 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
                         //Check if product have variants
                         if(!product.getListVariant().isEmpty()) {
                             Variant variant = product.getListVariant().get(0);
-                            if(!variant.getListColor().isEmpty()) {
+                            selectedVariantId = variant.getId();
+                            if(variant.getListColor() != null && !variant.getListColor().isEmpty()) {
                                 Color color = variant.getListColor().get(0);
+                                selectedColorId = color.getId();
                                 fillProductData(product, variant, color);
                             } else {
                                 fillProductData(product, variant, null);
@@ -237,16 +352,22 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             //file size information into dialog
             variantItems.addAll(product.getListVariant());
             for (Variant variant : product.getListVariant()) {
-                sizeItems.add(variant.getSize());
+                if(variant.getSize() != null) {
+                    sizeItems.add(variant.getSize());
+                }
             }
-            sizeAdapter = new SizeAdapter(sizeItems,ProductDetailActivity.this,null);
-            sizeCartRecyclerView = dialog.findViewById(R.id.rcv_size);
-            sizeCartRecyclerView.setLayoutManager(new GridLayoutManager(ProductDetailActivity.this, 2));
-            sizeCartRecyclerView.setAdapter(sizeAdapter);
+
+            if(!sizeItems.isEmpty()) {
+                sizeAdapter = new SizeAdapter(sizeItems, ProductDetailActivity.this, product);
+                sizeCartRecyclerView = dialog.findViewById(R.id.rcv_size);
+                sizeCartRecyclerView.setLayoutManager(new GridLayoutManager(ProductDetailActivity.this, 2));
+                sizeCartRecyclerView.setAdapter(sizeAdapter);
+            }
+
 
             //fill color information into dialog
             Variant variant = product.getListVariant().get(0);
-            if(!variant.getListColor().isEmpty()) {
+            if(variant.getListColor()!= null && !variant.getListColor().isEmpty()) {
                 colorItems.addAll(variant.getListColor());
                 colorAdapter = new ColorAdapter(colorItems, ProductDetailActivity.this);
                 colorCartRecyclerView = dialog.findViewById(R.id.rcv_color);
@@ -273,28 +394,31 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
             if(color != null) {
                 imageUrl = color.getImageUrl();
                 stock = color.getStock();
+                tv_color_text.setVisibility(View.VISIBLE);
+            } else {
+                tv_color_text.setVisibility(View.INVISIBLE);
             }
         }
 
         //check if product is discounted
         if(product.getDiscount() > 0) {
             //fill cart information
-            tv_cart_old_price.setText(String.format("%.1f$", oldPrice));
+            tv_cart_old_price.setText(String.format("%,.0fđ", oldPrice));
             tv_cart_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-            tv_cart_new_price.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
+            tv_cart_new_price.setText(String.format("%,.0fđ", oldPrice * (1 - product.getDiscount()/100.0)));
             //fill product information
             binding.tvDiscount.setText(String.valueOf("-" + product.getDiscount()) + "%");
-            binding.tvOldPrice.setText(String.format("%.1f$", oldPrice));
+            binding.tvOldPrice.setText(String.format("%,.0fđ", oldPrice));
             binding.tvOldPrice.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-            binding.tvNewPrice.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
+            binding.tvNewPrice.setText(String.format("%,.0fđ", oldPrice * (1 - product.getDiscount()/100.0)));
         } else {
             //fill cart information
             tv_cart_old_price.setVisibility(View.GONE);
-            tv_cart_new_price.setText(String.format("%.1f$", oldPrice));
+            tv_cart_new_price.setText(String.format("%,.0fđ", oldPrice));
             //fill product information
             binding.tvDiscount.setVisibility(View.GONE);
             binding.tvOldPrice.setVisibility(View.GONE);
-            binding.tvNewPrice.setText(String.format("%.1f$", oldPrice));
+            binding.tvNewPrice.setText(String.format("%,.0fđ", oldPrice));
         }
 
         binding.tvDescription.setText(product.getDescription());
@@ -460,26 +584,30 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
     @Override
     public void onSizeClickEvent(Size size, Product product) {
         Variant variant = getVariantBySize(size.getId());
+        selectedVariantId = variant.getId();
         colorItems.clear();
-        if(!variant.getListColor().isEmpty()) {
+        if(variant.getListColor()!= null && !variant.getListColor().isEmpty()) {
             colorItems.addAll(variant.getListColor());
             fillColorInformation(colorItems.get(0));
+            selectedColorId = colorItems.get(0).getId();
+            colorAdapter.notifyDataSetChanged();
         } else {
-            tv_cart_stock.setText(variant.getStock());
+            selectedColorId = null;
+            tv_cart_stock.setText("Stock: " + variant.getStock());
         }
-        colorAdapter.notifyDataSetChanged();
+
 
         double oldPrice = variant.getPrice();
 
         if(product.getDiscount() > 0) {
             //fill cart information
-            tv_cart_old_price.setText(String.format("%.1f$", oldPrice));
+            tv_cart_old_price.setText(String.format("%,.0fđ", oldPrice));
             tv_cart_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-            tv_cart_new_price.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
+            tv_cart_new_price.setText(String.format("%,.0fđ", oldPrice * (1 - product.getDiscount()/100.0)));
         }  else {
             //fill cart information
             tv_cart_old_price.setVisibility(View.GONE);
-            tv_cart_new_price.setText(String.format("%.1f$", oldPrice));
+            tv_cart_new_price.setText(String.format("%,.0fđ", oldPrice));
         }
     }
 
@@ -503,8 +631,7 @@ public class ProductDetailActivity extends AppCompatActivity implements ProductI
 
     @Override
     public void onColorClick(Color color) {
+        selectedColorId = color.getId();
         fillColorInformation(color);
     }
-
-
 }

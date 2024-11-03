@@ -19,6 +19,8 @@ import com.example.petshopapplication.API_model.DistrictResponse;
 import com.example.petshopapplication.API_model.Ward;
 import com.example.petshopapplication.API_model.WardResponse;
 import com.example.petshopapplication.model.UAddress;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -41,13 +43,15 @@ public class AddressUpdateActivity extends AppCompatActivity {
     private DatabaseReference addressRef;
     private String addressId; // ID của địa chỉ
     private String AUTH_TOKEN;
-
+    FirebaseAuth auth;
+    FirebaseUser user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.address_update);
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
-
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         fullNameEditText = findViewById(R.id.fullNameEditText);
         phoneEditText = findViewById(R.id.phoneEditText);
         citySelectButton = findViewById(R.id.citySelectButton);
@@ -240,8 +244,10 @@ public class AddressUpdateActivity extends AppCompatActivity {
                 districtSelectButton.getText().toString(),  // Tên quận
                 selectedDistrictId,                         // ID quận
                 wardSelectButton.getText().toString(),      // Tên phường
-                false,                                      // isDefault (ví dụ: false cho địa chỉ không mặc định)
-                "u1"                                        // ID người dùng
+                selectedWardId + "",
+                false,
+                user.getUid()// isDefault (ví dụ: false cho địa chỉ không mặc định)
+                                                       // ID người dùng
         );
         addressRef.child(addressId).setValue(updatedUAddress)
                 .addOnSuccessListener(aVoid -> {

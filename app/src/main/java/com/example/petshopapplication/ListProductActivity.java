@@ -1,5 +1,6 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -80,6 +81,16 @@ public class ListProductActivity extends AppCompatActivity implements ListProduc
 
         getIntentExtra();
         binding.tvSearch.setText(searchText);
+        binding.btnSearch.setOnClickListener(v -> {
+            searchText = binding.tvSearch.getText().toString();
+            isSearch = true;
+            initListProduct(categoryItems);
+        });
+
+        binding.btnCart.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CartActivity.class);
+            startActivity(intent);
+        });
 
         binding.tvAllCategory.setOnClickListener(v -> {
             categoryId = null;

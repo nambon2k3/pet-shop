@@ -21,5 +21,4 @@ public class OrderDetail {
     private String colorId;   // ID color đã chọn
     private int quantity;     // Số lượng sản phẩm
     private double purchased;     // Giá cho sản phẩm đã chọn
-
 }

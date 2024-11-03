@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,8 +23,13 @@ import com.example.petshopapplication.API_model.DistrictResponse;
 import com.example.petshopapplication.API_model.Ward;
 import com.example.petshopapplication.API_model.WardResponse;
 import com.example.petshopapplication.model.UAddress;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -42,8 +49,10 @@ public class AddressAddActivity extends AppCompatActivity {
     private TextView districtSelectButton;
     private TextView wardSelectButton;
     private EditText fullNameEditText;
+    private Switch defaultAddressSwitch;
     private EditText phoneEditText;
-
+    FirebaseAuth auth;
+    FirebaseUser user;
     // Khai báo biến addressesRef
     private DatabaseReference addressesRef;
 
@@ -55,7 +64,8 @@ public class AddressAddActivity extends AppCompatActivity {
         // Khởi tạo Firebase Database và reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         addressesRef = database.getReference("addresses");
-
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
 
         // Find views by ID
@@ -64,7 +74,7 @@ public class AddressAddActivity extends AppCompatActivity {
         wardSelectButton = findViewById(R.id.wardSelectButton);
         fullNameEditText = findViewById(R.id.fullNameEditText);
         phoneEditText = findViewById(R.id.phoneEditText);
-
+        defaultAddressSwitch = findViewById(R.id.defaultAddressSwitch);
         Button completeButton = findViewById(R.id.completeButton);
 
         // Set button click listeners
@@ -205,34 +215,107 @@ public class AddressAddActivity extends AppCompatActivity {
                 })
                 .show();
     }
+    private boolean validateInput(String fullName, String phone) {
+        // Xác thực tên
+        if (fullName.isEmpty()) {
+            Toast.makeText(this, "Tên không được để trống", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Xác thực số điện thoại
+        if (phone.isEmpty()) {
+            Toast.makeText(this, "Số điện thoại không được để trống", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Kiểm tra định dạng số điện thoại (có thể điều chỉnh theo yêu cầu)
+        String phonePattern = "^[0-9]{10,15}$"; // Định dạng cho số điện thoại có từ 10 đến 15 chữ số
+        if (!phone.matches(phonePattern)) {
+            Toast.makeText(this, "Số điện thoại không hợp lệ. Vui lòng nhập lại.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true; // Nếu tất cả các điều kiện xác thực đều hợp lệ
+    }
+
+
 
     private void saveAddress() {
         Log.d(TAG, "saveAddress() called");
         String fullName = fullNameEditText.getText().toString().trim();
         String phone = phoneEditText.getText().toString().trim();
 
+        if (!validateInput(fullName, phone)) {
+            return; // Nếu không hợp lệ, dừng lại
+        }
+
         if (fullName.isEmpty() || phone.isEmpty() || selectedCityId == null || selectedDistrictId == null || selectedWardId == 0) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        boolean isDefault = defaultAddressSwitch.isChecked();
         String addressId = UUID.randomUUID().toString(); // Tạo ID ngẫu nhiên
 
-        UAddress UAddress = new UAddress(
-                addressId,                                   // ID địa chỉ
-                fullName,                                   // Họ và tên
-                phone,                                      // Số điện thoại
-                citySelectButton.getText().toString(),     // Tên thành phố
-                selectedCityId,                             // ID thành phố
-                districtSelectButton.getText().toString(),  // Tên quận
-                selectedDistrictId,                         // ID quận
-                wardSelectButton.getText().toString(),      // Tên phường
-                false,                                      // isDefault (ví dụ: false cho địa chỉ không mặc định)
-                "u1"                                        // ID người dùng
+        // Tạo một đối tượng địa chỉ mới
+        UAddress newAddress = new UAddress(
+                addressId,
+                fullName,
+                phone,
+                citySelectButton.getText().toString(),
+                selectedCityId,
+                districtSelectButton.getText().toString(),
+                selectedDistrictId,
+                wardSelectButton.getText().toString(),
+                selectedWardId + "",
+                isDefault,
+                user.getUid()
         );
 
+        // Nếu địa chỉ mới được đánh dấu là mặc định, kiểm tra địa chỉ mặc định hiện tại
+        if (isDefault) {
+            // Truy vấn để tìm địa chỉ mặc định hiện tại
+            addressesRef.orderByChild("default").equalTo(true)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            boolean existingDefaultFound = false; // Cờ để kiểm tra xem đã tìm thấy địa chỉ mặc định hay chưa
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                UAddress existingAddress = snapshot.getValue(UAddress.class);
+                                if (existingAddress != null && existingAddress.getUserId().equals(user.getUid())) {
+                                    // Ghi log khi tìm thấy địa chỉ mặc định
+                                    Log.d(TAG, "Found existing default address: " + existingAddress.getAddressId());
+                                    // Cập nhật địa chỉ hiện tại thành không phải mặc định
+                                    snapshot.getRef().child("default").setValue(false)
+                                            .addOnCompleteListener(updateTask -> {
+                                                if (updateTask.isSuccessful()) {
+                                                    Log.d(TAG, "Updated existing default address to non-default.");
+                                                } else {
+                                                    Log.e(TAG, "Failed to update existing default address: " + updateTask.getException().getMessage());
+                                                }
+                                            });
+                                    existingDefaultFound = true; // Đánh dấu là đã tìm thấy địa chỉ mặc định
+                                    break; // Thoát vòng lặp sau khi cập nhật địa chỉ mặc định đầu tiên
+                                }
+                            }
+                            // Lưu địa chỉ mới sau khi cập nhật địa chỉ cũ
+                            saveNewAddress(newAddress);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e(TAG, "Error checking for existing default address: " + databaseError.getMessage());
+                        }
+                    });
+        } else {
+            // Nếu không phải địa chỉ mặc định, lưu địa chỉ bình thường
+            saveNewAddress(newAddress);
+        }
+    }
+
+    private void saveNewAddress(UAddress newAddress) {
         // Lưu địa chỉ vào Firebase
-        addressesRef.child(addressId).setValue(UAddress)
+        addressesRef.child(newAddress.getAddressId()).setValue(newAddress)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(this, "Địa chỉ đã được lưu!", Toast.LENGTH_SHORT).show();
@@ -244,5 +327,4 @@ public class AddressAddActivity extends AppCompatActivity {
                     }
                 });
     }
-
 }

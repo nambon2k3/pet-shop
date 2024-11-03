@@ -12,8 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.petshopapplication.Adapter.OrderAdapter;
+import com.example.petshopapplication.databinding.FragmentDeliveredTablayoutBinding;
 import com.example.petshopapplication.databinding.FragmentProcessingTablayoutBinding;
-import com.example.petshopapplication.databinding.FragmentShippingTablayoutBinding;
 import com.example.petshopapplication.model.Order;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,24 +28,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ShippingTablayoutFragment extends Fragment {
-    private String TAG = "ShippingTablayoutFragment";
-    private FragmentShippingTablayoutBinding binding;
+public class DeliveredTablayoutFragment extends Fragment {
+    private String TAG = "DeliveredTablayoutFragment";
+    private FragmentDeliveredTablayoutBinding binding;
     private RecyclerView recyclerView;
     private OrderAdapter adapter;
     private List<Order> orderItems;
     private FirebaseDatabase database;
     private DatabaseReference reference;
-    private boolean isInventory = true;
+    private boolean isInventory;
+
+    public DeliveredTablayoutFragment(boolean isInventory) {
+        this.isInventory = isInventory;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentShippingTablayoutBinding.inflate(inflater, container, false);
+        binding = FragmentDeliveredTablayoutBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         orderItems = new ArrayList<>();
-        adapter = new OrderAdapter(orderItems, true, "Shipping", isInventory);
+        adapter = new OrderAdapter(orderItems, true, "Delivered", isInventory);
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(adapter);
@@ -83,7 +87,7 @@ public class ShippingTablayoutFragment extends Fragment {
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Order order = dataSnapshot.getValue(Order.class);
-                        if (order != null && "Shipping".equals(order.getStatus())) { // Filter orders with status "Processing"
+                        if (order != null && "Delivered".equals(order.getStatus())) { // Filter orders with status "Delivered"
                             Log.d(TAG, "Order ID: " + order.getId() + ", Status: " + order.getStatus());
                             orderItems.add(order);
                         }

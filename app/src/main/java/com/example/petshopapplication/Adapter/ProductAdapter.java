@@ -66,10 +66,10 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
         String imageUrl = product.getBaseImageURL();
 
         //Check if product have variants
-        if(!product.getListVariant().isEmpty()) {
+        if(product.getListVariant() != null && !product.getListVariant().isEmpty()) {
             oldPrice = product.getListVariant().get(0).getPrice();
             //check if product have color variants
-            if(!product.getListVariant().get(0).getListColor().isEmpty()) {
+            if(product.getListVariant().get(0).getListColor() != null && !product.getListVariant().get(0).getListColor().isEmpty()) {
                 imageUrl = product.getListVariant().get(0).getListColor().get(0).getImageUrl();
             }
         }
@@ -77,14 +77,14 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
         //check if product is discounted
         if(product.getDiscount() > 0) {
             holder.tv_discount.setText(String.valueOf("-" + product.getDiscount()) + "%");
-            holder.tv_old_price.setText(String.format("%.1f$", oldPrice));
+            holder.tv_old_price.setText(String.format("%,.0fđ", oldPrice));
             holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.tv_new_price.setText(String.format("%.1f$", oldPrice * (1 - product.getDiscount()/100.0)));
+            holder.tv_new_price.setText(String.format("%,.0fđ", oldPrice * (1 - product.getDiscount()/100.0)));
 
         } else {
             holder.tv_discount.setVisibility(View.GONE);
             holder.tv_old_price.setVisibility(View.GONE);
-            holder.tv_new_price.setText(String.format("%.1f$", oldPrice));
+            holder.tv_new_price.setText(String.format("%,.0fđ", oldPrice));
         }
 
         //Set category
