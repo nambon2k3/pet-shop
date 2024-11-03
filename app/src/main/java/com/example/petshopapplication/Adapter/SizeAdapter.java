@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.R;
-import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Size;
 import com.example.petshopapplication.model.Variant;
 
@@ -19,24 +18,18 @@ import java.util.List;
 public class SizeAdapter extends RecyclerView.Adapter<SizeAdapter.SizeViewHolder>{
 
     List<Size> sizeItems;
-    Product product;
+
     Context context;
     private int selectedPosition = RecyclerView.NO_POSITION;
     private OnSizeClickEventListener onSizeClickEventListener;
 
-    public SizeAdapter(List<Size> sizeItems, Context context) {
-        this.sizeItems = sizeItems;
-        this.context = context;
-    }
-
-    public SizeAdapter(List<Size> sizeItems, OnSizeClickEventListener onSizeClickEventListener, Product product) {
+    public SizeAdapter(List<Size> sizeItems, OnSizeClickEventListener onSizeClickEventListener) {
         this.sizeItems = sizeItems;
         this.onSizeClickEventListener = onSizeClickEventListener;
-        this.product = product;
     }
 
     public interface OnSizeClickEventListener{
-        void onSizeClickEvent(Size size, Product product);
+        void onSizeClickEvent(Size size);
     }
 
     @NonNull
@@ -66,7 +59,7 @@ public class SizeAdapter extends RecyclerView.Adapter<SizeAdapter.SizeViewHolder
             notifyItemChanged(selectedPosition);
             selectedPosition = position;
             notifyItemChanged(selectedPosition);
-            onSizeClickEventListener.onSizeClickEvent(size, product);
+            onSizeClickEventListener.onSizeClickEvent(size);
         });
 
     }
