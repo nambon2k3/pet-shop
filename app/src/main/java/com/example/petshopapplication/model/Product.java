@@ -1,6 +1,7 @@
 package com.example.petshopapplication.model;
 
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Product {
+public class Product  implements Serializable {
     private String id;
     private String categoryId;
     private String name;
