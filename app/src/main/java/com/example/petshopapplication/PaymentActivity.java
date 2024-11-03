@@ -78,7 +78,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private String selectedCartierName;
     private String selectedCartierLogo;
     private List<Product> productList = new ArrayList<>();
-
+    private double finalTotalAmount;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -187,7 +187,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                         payment.setId(UUID.randomUUID().toString()); // Tạo ID tự động cho thanh toán
                         payment.setOrderId(orderId);
                         payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Chuyển khoản"); // Gán phương thức thanh toán
-                        payment.setAmount(order.getTotalAmount()); // Số tiền thanh toán
+                        payment.setAmount(finalTotalAmount); // Số tiền thanh toán
                         payment.setTransactionId(""); // Nếu có ID giao dịch, thêm vào đây
 
                         // Thêm vào Firebase
@@ -266,6 +266,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         }
         return 0; // Return 0 if product not found
     }
+
     public Product findProductById(String productId) {
         for (Product product : productList) { // productList là danh sách sản phẩm
             if (product.getId().equals(productId)) {
@@ -274,7 +275,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         }
         return null; // Trả về null nếu không tìm thấy sản phẩm
     }
-
 
 
     private void loadProductDetails() {
@@ -417,7 +417,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
     @Override
     public void onRateSelected(double fee, String rateID, String cartierName, String cartierLogo) {
-        double finalTotalAmount = totalAmount + fee; // Cập nhật tổng giá
+        finalTotalAmount = totalAmount + fee; // Cập nhật tổng giá
 
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
         numberFormat.setMinimumFractionDigits(0);
