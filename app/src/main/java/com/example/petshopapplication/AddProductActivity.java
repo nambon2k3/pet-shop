@@ -169,7 +169,6 @@ public class AddProductActivity extends AppCompatActivity {
         newProduct.setBaseImageURL(image);
         newProduct.setDescription(description);
 
-        System.out.println(newProduct);
         Intent intent= new Intent(this, AddProductVariantActivity.class);
         intent.putExtra("product",newProduct);
         startActivity(intent);
