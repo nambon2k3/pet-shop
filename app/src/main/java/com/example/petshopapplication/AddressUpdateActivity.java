@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,6 +44,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
     private DatabaseReference addressRef;
     private String addressId; // ID của địa chỉ
     private String AUTH_TOKEN;
+    private Switch  defaultAddressSwitch;
     FirebaseAuth auth;
     FirebaseUser user;
     @Override
@@ -57,6 +59,8 @@ public class AddressUpdateActivity extends AppCompatActivity {
         citySelectButton = findViewById(R.id.citySelectButton);
         districtSelectButton = findViewById(R.id.districtSelectButton);
         wardSelectButton = findViewById(R.id.wardSelectButton);
+        defaultAddressSwitch = findViewById(R.id.defaultAddressSwitch);
+
         updateButton = findViewById(R.id.updateButton);
         deleteButton = findViewById(R.id.deleteButton);
 
@@ -222,33 +226,93 @@ public class AddressUpdateActivity extends AppCompatActivity {
                 })
                 .show();
     }
+    private boolean validateInput(String fullName, String phone) {
+        // Xác thực tên
+        if (fullName.isEmpty()) {
+            Toast.makeText(this, "Tên không được để trống", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Xác thực số điện thoại
+        if (phone.isEmpty()) {
+            Toast.makeText(this, "Số điện thoại không được để trống", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Kiểm tra định dạng số điện thoại (có thể điều chỉnh theo yêu cầu)
+        String phonePattern = "^[0-9]{10,15}$"; // Định dạng cho số điện thoại có từ 10 đến 15 chữ số
+        if (!phone.matches(phonePattern)) {
+            Toast.makeText(this, "Số điện thoại không hợp lệ. Vui lòng nhập lại.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true; // Nếu tất cả các điều kiện xác thực đều hợp lệ
+    }
+
+
     private void updateAddress() {
         String fullName = fullNameEditText.getText().toString().trim();
         String phone = phoneEditText.getText().toString().trim();
         String city = citySelectButton.getText().toString().trim();
         String district = districtSelectButton.getText().toString().trim();
         String ward = wardSelectButton.getText().toString().trim();
-        boolean isDefault = false; // Hoặc lấy từ trạng thái của Switch nếu có
+        boolean isDefault = defaultAddressSwitch.isChecked(); // Lấy trạng thái từ Switch
+
+        if (!validateInput(fullName, phone)) {
+            return; // Nếu không hợp lệ, dừng lại
+        }
 
         if (fullName.isEmpty() || phone.isEmpty() || city.isEmpty() || district.isEmpty() || ward.isEmpty()) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Tạo một đối tượng địa chỉ đã cập nhật
         UAddress updatedUAddress = new UAddress(
-                addressId,                                   // ID địa chỉ
-                fullName,                                   // Họ và tên
-                phone,                                      // Số điện thoại
-                citySelectButton.getText().toString(),     // Tên thành phố
-                selectedCityId,                             // ID thành phố
-                districtSelectButton.getText().toString(),  // Tên quận
-                selectedDistrictId,                         // ID quận
-                wardSelectButton.getText().toString(),      // Tên phường
+                addressId,
+                fullName,
+                phone,
+                citySelectButton.getText().toString(),
+                selectedCityId,
+                districtSelectButton.getText().toString(),
+                selectedDistrictId,
+                wardSelectButton.getText().toString(),
                 selectedWardId + "",
-                false,
-                user.getUid()// isDefault (ví dụ: false cho địa chỉ không mặc định)
-                                                       // ID người dùng
+                isDefault,
+                user.getUid()
         );
+
+        // Nếu địa chỉ được đánh dấu là mặc định, cập nhật địa chỉ cũ thành không phải mặc định
+        if (isDefault) {
+            addressRef.orderByChild("default").equalTo(true)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                UAddress existingAddress = snapshot.getValue(UAddress.class);
+                                if (existingAddress != null && existingAddress.getUserId().equals(user.getUid())) {
+                                    // Cập nhật địa chỉ hiện tại thành không phải mặc định
+                                    snapshot.getRef().child("default").setValue(false);
+                                    break; // Chỉ cần cập nhật địa chỉ mặc định đầu tiên
+                                }
+                            }
+                            // Cập nhật địa chỉ mới
+                            updateNewAddress(updatedUAddress);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e(TAG, "Error checking for existing default address: " + databaseError.getMessage());
+                        }
+                    });
+        } else {
+            // Nếu không phải địa chỉ mặc định, chỉ cần cập nhật địa chỉ mới
+            updateNewAddress(updatedUAddress);
+        }
+    }
+
+    private void updateNewAddress(UAddress updatedUAddress) {
+        // Cập nhật địa chỉ vào Firebase
         addressRef.child(addressId).setValue(updatedUAddress)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(AddressUpdateActivity.this, "Cập nhật địa chỉ thành công", Toast.LENGTH_SHORT).show();
@@ -258,6 +322,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
                     Toast.makeText(AddressUpdateActivity.this, "Cập nhật địa chỉ thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void deleteAddress() {
         addressRef.child(addressId).removeValue()

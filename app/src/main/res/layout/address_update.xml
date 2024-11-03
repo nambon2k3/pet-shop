@@ -140,6 +140,7 @@
             android:text="Đặt làm địa chỉ mặc định" />
 
         <Switch
+            android:id="@+id/defaultAddressSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
