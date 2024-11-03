@@ -19,6 +19,9 @@
             android:name=".ViewDetailOrderActivity"
             android:exported="false" />
         <activity
+            android:name=".VNPayPaymentActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddCategoryActivity"
             android:exported="false" />
         <activity
@@ -26,9 +29,10 @@
             android:exported="false" />
         <activity
             android:name=".PrepareOrderActivity"
-            android:exported="false" /> <!-- <activity -->
-        <!-- android:name=".ListOrderManageActivity" -->
-        <!-- android:exported="false" /> -->
+            android:exported="false" />
+        <activity
+            android:name=".ListOrderManageActivity"
+            android:exported="false" />
         <activity
             android:name=".ListOrderActivity"
             android:exported="false" />
@@ -38,12 +42,15 @@
         <activity
             android:name=".ProductDetailActivity"
             android:exported="false" />
+
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
+
         <activity
             android:name=".AddressAddActivity"
             android:exported="false" />
+
         <activity
             android:name=".ListProductActivity"
             android:exported="false" />
@@ -62,6 +69,8 @@
         <activity
             android:name=".AddressUpdateActivity"
             android:exported="false" />
+
+
         <activity
             android:name=".UpdateFeedbackActivity"
             android:exported="false" />
@@ -73,16 +82,9 @@
             android:exported="false" />
         <activity
             android:name=".RegisterActivity"
-            android:exported="false" /> <!-- <activity -->
-        <!-- android:name=".LoginActivity" -->
-        <!-- android:exported="true"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.MAIN" /> -->
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
+            android:exported="false" />
         <activity
-            android:name=".ListOrderManageActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
