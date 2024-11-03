@@ -24,7 +24,7 @@ public class ViewPagerOrderManageAdapter extends FragmentStateAdapter {
     public ViewPagerOrderManageAdapter(@NonNull FragmentActivity fragmentActivity, boolean isInventory) {
         super(fragmentActivity);
         tabTitles = fragmentActivity.getResources().getStringArray(R.array.tab_order_manage_titles);
-        this.isInventory = true;
+        this.isInventory = isInventory;
     }
 
     @NonNull

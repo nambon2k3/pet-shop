@@ -59,7 +59,6 @@ public class ViewDetailOrderActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         reference = database.getReference("orders");
 
-
         loadOrderDetailById();
 
         // Set click listener for back button
