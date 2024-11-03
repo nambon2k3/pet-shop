@@ -93,7 +93,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
         Intent intent1 = getIntent();
         selectedCartItems = (ArrayList<Cart>) intent1.getSerializableExtra("selectedItems");
-        double totalAmount = intent1.getDoubleExtra("totalAmount", 0.0);
+        totalAmount = intent1.getDoubleExtra("totalAmount", 0.0);
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
         numberFormat.setMinimumFractionDigits(0);
 
@@ -286,7 +286,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    totalAmount = 0;
                     totalWidth = totalHeight = totalLength = totalWeight = 0;
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -300,7 +299,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                                     for (Cart cart : selectedCartItems) {
                                         if (cart.getProductId().equals(productId)) {
                                             int quantity = cart.getQuantity();
-                                            totalAmount += variant.getPrice() * (1 - product.getDiscount() / 100.0) * quantity;
                                             totalWidth += dimension.getWidth() * quantity;
                                             totalHeight += dimension.getHeight() * quantity;
                                             totalLength += dimension.getLength() * quantity;
@@ -429,11 +427,19 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
         // Cập nhật hiển thị tổng giá
         tvTotalPrice.setText(String.format("%s VND", numberFormat.format(finalTotalAmount)));
+
         this.selectedRateID = rateID;
         this.selectedCartierName = cartierName;
         this.selectedCartierLogo = cartierLogo;
-        // Bạn có thể thực hiện các hành động khác với rateID nếu cần
-        Log.d(TAG, "Selected Fee: " + fee + ", Selected Rate ID: " + selectedRateID);
+
+        // Ghi log tất cả thông tin
+        Log.d(TAG, "Selected Fee: " + fee + " VND");
+        Log.d(TAG, "Final Total Amount: " + finalTotalAmount + " VND");
+        Log.d(TAG, "Selected Rate ID: " + selectedRateID);
+        Log.d(TAG, "Selected Cartier Name: " + selectedCartierName);
+        Log.d(TAG, "Selected Cartier Logo: " + selectedCartierLogo);
+
     }
+
 
 }

@@ -52,10 +52,10 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentH
                 holder.tv_item_name.setText(product.getName());
                 Log.d(TAG, "Tên sản phẩm: " + product.getName()); // Ghi log tên sản phẩm
             }
-            if (holder.tv_item_quantity != null) {
+
                 holder.tv_item_quantity.setText(String.valueOf(cart.getQuantity())); // Chuyển đổi số lượng thành chuỗi
                 Log.d(TAG, "Số lượng: " + cart.getQuantity()); // Ghi log số lượng
-            }
+
 
             // Lấy variant đã chọn của sản phẩm
             Variant selectedVariant = null;
