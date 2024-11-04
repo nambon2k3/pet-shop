@@ -6,20 +6,19 @@
         android:title="Home"
         android:icon="@drawable/baseline_home_24"/>
     <item
-        android:id="@+id/ad_bottom_nav_short"
-        android:title="Shorts"
+        android:id="@+id/ad_bottom_nav_trend"
+        android:title="Trending Product"
         android:icon="@drawable/baseline_whatshot_24"
         />
     <item
-        android:title=""/>
+        android:id="@+id/ad_bottom_nav_stat"
+        android:title="View Statistic"
+        android:icon="@drawable/baseline_query_stats_24"
+        />
 
     <item
-        android:id="@+id/ad_bottom_nav_subscription"
-        android:title="Subscriptions"
-        android:icon="@drawable/baseline_subscriptions_24" />
-    <item
-        android:id="@+id/ad_bottom_nav_library"
-        android:title="Library"
-        android:icon="@drawable/baseline_video_library_24" />
+        android:id="@+id/ad_bottom_nav_manage_product"
+        android:title="Manage Product"
+        android:icon="@drawable/baseline_window_24" />
 
 </menu>

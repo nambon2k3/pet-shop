@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -41,6 +40,8 @@ public class ViewAdminDashBoardActivity extends AppCompatActivity implements Nav
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_view_admin_dash_board);
 
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        fab = findViewById(R.id.fab);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -51,7 +52,7 @@ public class ViewAdminDashBoardActivity extends AppCompatActivity implements Nav
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AdminDashBoardFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new AdminDashBoardFragment()).commit();
             navigationView.setCheckedItem(R.id.ad_bottom_nav_home);
         }
 
@@ -63,12 +64,12 @@ public class ViewAdminDashBoardActivity extends AppCompatActivity implements Nav
             int itemId = item.getItemId();
             if (itemId == R.id.ad_bottom_nav_home) {
                 replaceFragment(new AdminDashBoardFragment());
-            } else if (itemId == R.id.ad_bottom_nav_short) {
-                replaceFragment(new AdminShortFragment());
-            } else if (itemId == R.id.ad_bottom_nav_subscription) {
-                replaceFragment(new AdminSubscriptionFragment());
-            } else if (itemId == R.id.ad_bottom_nav_library) {
-                replaceFragment(new AdminLibraryFragment());
+            } else if (itemId == R.id.ad_bottom_nav_trend) {
+                replaceFragment(new AdminTrendFragment());
+            } else if (itemId == R.id.ad_bottom_nav_stat) {
+                replaceFragment(new AdminStatFragment());
+            } else if (itemId == R.id.ad_bottom_nav_manage_product) {
+                replaceFragment(new AdminManageProductFragment());
             }
 
 
