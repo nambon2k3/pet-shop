@@ -1,5 +1,7 @@
 package com.example.petshopapplication.model;
 
+import androidx.annotation.NonNull;
+
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -14,11 +16,17 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 public class Category {
     private String id;
     private String name;
     private String image;
     private String createdAt;
     private boolean isDeleted;
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
+    }
+
+
 }

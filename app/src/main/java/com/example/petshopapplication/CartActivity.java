@@ -138,13 +138,14 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     @Override
     public void onCartItemCheckedChanged() {
         updateSelectedItemList();
+        Log.d("CartAdapter", "Selected items: " + selectedItemList.toString());
         calculateTotalPrice();
     }
 
     private void updateSelectedItemList() {
         selectedItemList.clear();  // Xóa danh sách cũ để cập nhật lại
         for (Cart cart : cartList) {
-            if (cart.isChecked()) { // Chỉ thêm các Cart được chọn
+            if (cart.getIsChecked() != null && cart.getIsChecked()) { // Chỉ thêm các Cart được chọn
                 selectedItemList.add(cart);
             }
         }

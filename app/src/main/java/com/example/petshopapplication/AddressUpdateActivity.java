@@ -244,6 +244,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
                 districtSelectButton.getText().toString(),  // Tên quận
                 selectedDistrictId,                         // ID quận
                 wardSelectButton.getText().toString(),      // Tên phường
+                selectedWardId + "",
                 false,
                 user.getUid()// isDefault (ví dụ: false cho địa chỉ không mặc định)
                                                        // ID người dùng

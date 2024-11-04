@@ -24,10 +24,12 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
     private OnRateSelectListener listener;
     private int selectedPosition = -1; // Chỉ số của `CheckBox` được chọn
     private String selectedRateID; // Biến lưu ID của rate được chọn
+    private String selectedCartierName; // Biến lưu ID của rate được chọn
+    private String selectedCartierLogo; // Biến lưu ID của rate được chọn
 
     // Cập nhật giao diện để nhận ID của phí được chọn
     public interface OnRateSelectListener {
-        void onRateSelected(double fee, String rateID);
+        void onRateSelected(double fee, String rateID, String catierName, String cartierLogo);
     }
 
     public RateAdapter(List<Rate> rateList, Context context, OnRateSelectListener listener) {
@@ -62,7 +64,9 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
             if (position != selectedPosition) {
                 selectedPosition = position; // Cập nhật vị trí đã chọn
                 selectedRateID = rate.getId(); // Lưu ID của rate được chọn
-                listener.onRateSelected(rate.getTotalAmount(), selectedRateID); // Gửi giá trị phí và ID được chọn
+                selectedCartierName = rate.getCarrierName();
+                selectedCartierLogo = rate.getCarrierLogo();
+                listener.onRateSelected(rate.getTotalAmount(), selectedRateID, selectedCartierName, selectedCartierLogo); // Gửi giá trị phí và ID được chọn
                 notifyDataSetChanged(); // Cập nhật lại tất cả các `CheckBox` trong danh sách
             }
         });

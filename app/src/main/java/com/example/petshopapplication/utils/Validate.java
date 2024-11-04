@@ -4,6 +4,9 @@ import android.content.Context;
 
 import com.example.petshopapplication.R;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class Validate {
 
     public static boolean isPhoneNumberValid(String phoneNumber) {
@@ -34,16 +37,10 @@ public class Validate {
         return null;
     }
 
-    public static String isValidFeedback(Context context, String comment) {
-        // not comment = valid
-        if (comment == null || comment.isEmpty()) {
-            return null;
-        }
-
-        // if has content -> validate
-        if (comment.trim().isEmpty() || comment.length() > 200) {
-            return context.getString(R.string.valid_feedback_fail);
-        }
-        return null;
+    // Format Money VND
+    public static String formatVND(double amount) {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return formatter.format(amount);
     }
+
 }
