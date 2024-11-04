@@ -1,5 +1,6 @@
 package com.example.petshopapplication.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.text.SimpleDateFormat;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Order {
+public class Order implements Serializable {
     private String id;
     private String userId;
     private String shipmentId;  // ID từ đơn vận chuyển
