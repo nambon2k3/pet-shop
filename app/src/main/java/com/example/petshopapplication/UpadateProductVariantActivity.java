@@ -33,7 +33,6 @@ import com.example.petshopapplication.databinding.PopUpAddVariant1Binding;
 import com.example.petshopapplication.databinding.PopUpAddVariantDimnesionBinding;
 import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.Dimension;
-import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.ObjectPrinter;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Size;
@@ -53,15 +52,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 
-public class AddProductVariantActivity extends AppCompatActivity implements  SizeAdapter2.OnSizeClickEventListener,ColorAdapter.OnColorClickEventListener
+public class UpadateProductVariantActivity extends AppCompatActivity implements  SizeAdapter2.OnSizeClickEventListener,ColorAdapter.OnColorClickEventListener
 {
     Dialog dialog_dimension;
     Button btnShowAddSize;
@@ -77,6 +77,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
     private Dimension currentDimension = null;
     List<Variant> variants = new ArrayList<>();
     String productName = "";
+    String oldProductId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -100,6 +101,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
 
 
          model = (Product) getIntent().getSerializableExtra("product");
+
         if(model == null)
         {
            finish();
@@ -108,14 +110,21 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
         binding.addPvButtonAddSizeColor.setOnClickListener(view -> showAddSize());
         binding.addPvDimension.setOnClickListener(view -> showAddDimension());
         binding.addPvButton.setOnClickListener(view->addVariant());
+        variants = model.getListVariant();
+        if(variants!=null && variants.size()>0) currentDimension = variants.get(0).getDimension();
         initVariants();
+        oldProductId = (String) getIntent().getSerializableExtra("product_old");
+
+        System.out.println(oldProductId);
+
+        binding.addPvImportPrice.setText(String.valueOf(model.getBasePrice()));
     }
     Product model;
     private void addVariant()
     {
         if(currentDimension == null)
         {
-            Toast.makeText(AddProductVariantActivity.this, "Please set dimension", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UpadateProductVariantActivity.this, "Please set dimension", Toast.LENGTH_SHORT).show();
 
         }
         if(variants.isEmpty())
@@ -133,12 +142,18 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
             model.setListVariant(variants);
         }
         DatabaseReference productRef = database.getReference("products");
-
-        String feedbackId = "product-" + productRef.push().getKey(); // Generate a unique ID
+           String feedbackId = "product-" + productRef.push().getKey(); // Generate a unique ID
         model.setId(feedbackId);
 
         productRef.child(feedbackId).setValue(model)
-                .addOnSuccessListener(aVoid -> Toast.makeText(this, "Product submitted successfully!", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Product submitted successfully!", Toast.LENGTH_SHORT).show();
+                    Map<String, Object> updates = new HashMap<>();
+
+                    updates.put("isDeleted", true); // Hoặc false tùy theo yêu cầu
+                    productRef.child(oldProductId).updateChildren(updates);
+
+                })
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to submit product.", Toast.LENGTH_SHORT).show());
 
     }
@@ -170,7 +185,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
             for(Color color : variant.getListColor())
             {
                 itemList.add(new ItemModel(variant.getSize().getName(),
-                        R.drawable.arrow,color.getName(),color  .getStock()));
+                        R.drawable.arrow,color.getName(),color.getStock()));
             }
         }
         // Initialize the custom adapter and set it to the RecyclerView
@@ -192,7 +207,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
     }
 
     private void showAddDimension() {
-        dialog_dimension = new Dialog(AddProductVariantActivity.this);
+        dialog_dimension = new Dialog(UpadateProductVariantActivity.this);
 
 
         dialog_dimension.setContentView(R.layout.pop_up_add_variant_dimnesion);
@@ -207,6 +222,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
             bindingDimension.editWidth.setText(String.valueOf(currentDimension.getWidth()));
             bindingDimension.editLength.setText(String.valueOf(currentDimension.getLength()));
             bindingDimension.editWeight.setText(String.valueOf(currentDimension.getWeight()));
+
         }
         btnSubmit.setOnClickListener(viewCurrent ->
         {
@@ -216,14 +232,14 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
             currentDimension.setLength(Integer.parseInt(bindingDimension.editLength.getText().toString()));
             currentDimension.setWidth(Integer.parseInt(bindingDimension.editWidth.getText().toString()));
             currentDimension.setWeight(Integer.parseInt(bindingDimension.editWeight.getText().toString()));
-            Toast.makeText(AddProductVariantActivity.this, "Add successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UpadateProductVariantActivity.this, "Add successfully", Toast.LENGTH_SHORT).show();
             dialog_dimension.dismiss();
         });
         dialog_dimension.show();
 
     }
     private void showAddSize(){
-        dialog = new Dialog(AddProductVariantActivity.this);
+        dialog = new Dialog(UpadateProductVariantActivity.this);
         dialog.setContentView(R.layout.pop_up_add_variant1);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -239,9 +255,9 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
 
         binding2.btnSubmit.setOnClickListener(view -> {
             if (currentColor == null || currentSize == null) {
-                Toast.makeText(AddProductVariantActivity.this, "Please select color or size.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpadateProductVariantActivity.this, "Please select color or size.", Toast.LENGTH_SHORT).show();
             } else if (binding2.editTextText.getText().toString().equals("0")) {
-                Toast.makeText(AddProductVariantActivity.this, "Please enter stock size.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpadateProductVariantActivity.this, "Please enter stock size.", Toast.LENGTH_SHORT).show();
             } else {
                 List<Variant> found = variants.stream().filter(x -> x.getSize().getName().equals(currentSize.getName())).collect(Collectors.toList());
                 Color newColor = currentColor;
@@ -345,14 +361,14 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
                         variants.set(index, updateVar);
                     }
                 }
-                Toast.makeText(AddProductVariantActivity.this, "Submitting. Please wait...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpadateProductVariantActivity.this, "Submitting. Please wait...", Toast.LENGTH_SHORT).show();
 
                 // Wait for all asynchronous operations to complete before dismissing the dialog
                 new Thread(() -> {
                     try {
                         latch.await(); // Wait until latch count reaches zero
                         runOnUiThread(() -> {
-                            Toast.makeText(AddProductVariantActivity.this, "Submit color and size success", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UpadateProductVariantActivity.this, "Submit color and size success", Toast.LENGTH_SHORT).show();
                             currentColor = null;
                             currentSize = null;
                             dialog.dismiss();
@@ -366,7 +382,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
         });
 
         binding2.btnAddSize.setOnClickListener(view -> {
-            dialog2 = new Dialog(AddProductVariantActivity.this);
+            dialog2 = new Dialog(UpadateProductVariantActivity.this);
             dialog2.setContentView(R.layout.pop_up_add_variant2);
             dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             dialog2.show();
@@ -387,7 +403,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
                                         dialog2.dismiss();
                                         initSize(dialog);
 
-                                        Toast.makeText(AddProductVariantActivity.this, "Size submitted successfully!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(UpadateProductVariantActivity.this, "Size submitted successfully!", Toast.LENGTH_SHORT).show();
 
                                     })
                             .addOnFailureListener(e ->
@@ -395,7 +411,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
                                         dialog2.dismiss();
                                         initSize(dialog);
 
-                                        Toast.makeText(AddProductVariantActivity.this, "Failed to submit size.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(UpadateProductVariantActivity.this, "Failed to submit size.", Toast.LENGTH_SHORT).show();
                                     });
 
                 }
@@ -441,9 +457,9 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         sizeItems.add(dataSnapshot.getValue(Size.class));
                     }
-                    SizeAdapter2 sizeAdapter = new SizeAdapter2(sizeItems, AddProductVariantActivity.this);
+                    SizeAdapter2 sizeAdapter = new SizeAdapter2(sizeItems, UpadateProductVariantActivity.this);
                     sizeCartRecyclerView = dialog.findViewById(R.id.rcv_size);
-                    sizeCartRecyclerView.setLayoutManager(new GridLayoutManager(AddProductVariantActivity.this, 2));
+                    sizeCartRecyclerView.setLayoutManager(new GridLayoutManager(UpadateProductVariantActivity.this, 2));
                     sizeCartRecyclerView.setAdapter(sizeAdapter);
 
             }
@@ -480,9 +496,9 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
         color2.setImageUrl("https://firebasestorage.googleapis.com/v0/b/pet-shop-4a349.appspot.com/o/per-food-4.png?alt=media&token=2672b45a-80c6-4011-b28a-6fbd97806498");
         colorItems.add(color2);
 
-        ColorAdapter colorAdapter = new ColorAdapter(colorItems,AddProductVariantActivity.this);
+        ColorAdapter colorAdapter = new ColorAdapter(colorItems, UpadateProductVariantActivity.this);
         colorCartRecyclerView = dialog.findViewById(R.id.rcv_color);
-        colorCartRecyclerView.setLayoutManager(new GridLayoutManager(AddProductVariantActivity.this, 1));
+        colorCartRecyclerView.setLayoutManager(new GridLayoutManager(UpadateProductVariantActivity.this, 1));
         colorCartRecyclerView.setAdapter(colorAdapter);
     }
     private Color currentColor = null;

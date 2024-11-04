@@ -2,9 +2,13 @@ package com.example.petshopapplication;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,12 +19,10 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.example.petshopapplication.Adapter.CategoryAdapter;
-import com.example.petshopapplication.databinding.ActivityAddFeedbackBinding;
 import com.example.petshopapplication.databinding.ActivityAddProductBinding;
 import com.example.petshopapplication.model.Category;
+import com.example.petshopapplication.model.ObjectPrinter;
 import com.example.petshopapplication.model.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,20 +33,25 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 
-public class AddProductActivity extends AppCompatActivity {
+public class UpdateProductActivity extends AppCompatActivity {
     private ActivityAddProductBinding binding;
     private Uri selectedImageUri; // To store the selected image URI
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
     DatabaseReference reference;
     private Category selectedCategory;
+    String proid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,13 +62,20 @@ public class AddProductActivity extends AppCompatActivity {
 
         binding = ActivityAddProductBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
 
+        }
 
+         proid = (String) getIntent().getStringExtra("id");
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         initCategory();
-
 
         // Handle image selection
         binding.addProductButton.setOnClickListener(view -> addProduct());
@@ -69,12 +83,84 @@ public class AddProductActivity extends AppCompatActivity {
         // Handle feedback submission
         binding.addProductUploadImage.setOnClickListener(view -> chooseImage());
     }
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            Log.e("src",src);
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            Log.e("Bitmap","returned");
+            return myBitmap;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("Exception",e.getMessage());
+            return null;
+        }
+    }
+    Product current = null;
+    String old = "";
+    private void initProduct()
+    {reference = firebaseDatabase.getReference("products");
+
+        Query query = reference.orderByChild("id").equalTo(proid);
+        try {
+
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    System.out.println(proid);
+
+                    if (snapshot.exists()) {
+                        // Lặp qua các con của snapshot để lấy dữ liệu sản phẩm
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            current = child.getValue(Product.class);
+                            old = child.getKey();
+                        }
+
+                        if (current != null) {
+                            binding.addProductName.setText(current.getName());
+                            String cate = current.getCategoryId();
+                            Category select = categoryItems.stream().filter(x -> x.getId().equals(cate)).findFirst().get();
+                            binding.addProductCategory.setSelection(categoryItems.indexOf(select));
+                            binding.addProductBasePrice.setText(String.valueOf(current.getBasePrice()));
+                            binding.addProductDiscount.setText(String.valueOf(current.getDiscount()));
+                            binding.addProductDescription.setText(String.valueOf(current.getDescription()));
+                            binding.addProductUploadImage.setImageBitmap(getBitmapFromURL(current.getBaseImageURL()));
+                        } else {
+                            System.out.println("Failed to convert DataSnapshot to Product.");
+                        }
+
+                    } else {
+                        System.out.println("No product found with the specified ID.");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    System.out.println(error.getMessage());
+
+                    finish();
+                }
+            });
+        }catch (Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+
+    }
+    List<Category> categoryItems = new ArrayList<>();
     private void initCategory() {
         reference = firebaseDatabase.getReference(getString(R.string.tbl_category_name));
         //Display progress bar
         binding.prgHomeCategory2.setVisibility(View.VISIBLE);
 
-        List<Category> categoryItems = new ArrayList<>();
+         categoryItems = new ArrayList<>();
         Query query = reference.orderByChild("isDeleted").equalTo(false);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -83,22 +169,24 @@ public class AddProductActivity extends AppCompatActivity {
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         categoryItems.add(dataSnapshot.getValue(Category.class));
-                        System.out.println(categoryItems.size());
                     }
-                    ArrayAdapter<Category> adapter = new ArrayAdapter<>(AddProductActivity.this, android.R.layout.simple_spinner_item, categoryItems);
+                    ArrayAdapter<Category> adapter = new ArrayAdapter<>(UpdateProductActivity.this, android.R.layout.simple_spinner_item, categoryItems);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     binding.addProductCategory.setAdapter(adapter);
                     binding.addProductCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                             selectedCategory = (Category) parent.getSelectedItem();
+                            selectedCategory = (Category) parent.getSelectedItem();
                         }
 
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
                             // Do nothing
                         }
-                    });                }
+                    });
+                    initProduct();
+
+                }
             }
 
             @Override
@@ -129,8 +217,8 @@ public class AddProductActivity extends AppCompatActivity {
         String discount = binding.addProductDiscount.getText().toString();
         String description = binding.addProductDescription.getText().toString();
         if (productName.isEmpty()
-            || price.isEmpty() || discount.isEmpty()
-            || description.isEmpty()||selectedCategory == null)
+                || price.isEmpty() || discount.isEmpty()
+                || description.isEmpty()||selectedCategory == null)
         {
             Toast.makeText(this, "Please enter enough information", Toast.LENGTH_SHORT).show();
             return;
@@ -147,10 +235,10 @@ public class AddProductActivity extends AppCompatActivity {
                             submitProduct(productName,description, imageUrl,discount,price, LocalDateTime.now().toString(),false);
                         });
                     })
-                    .addOnFailureListener(e -> Toast.makeText(AddProductActivity.this, "Image upload failed!", Toast.LENGTH_SHORT).show());
+                    .addOnFailureListener(e -> Toast.makeText(UpdateProductActivity.this, "Image upload failed!", Toast.LENGTH_SHORT).show());
         } else {
             // If no image is selected, submit feedback without image
-            submitProduct(productName, description,null,discount,price, LocalDateTime.now().toString(),false);
+            submitProduct(productName, description,current.getBaseImageURL(),discount,price, LocalDateTime.now().toString(),false);
         }
 
     }
@@ -158,19 +246,20 @@ public class AddProductActivity extends AppCompatActivity {
     {
         DatabaseReference productref = firebaseDatabase.getReference("products");
         String productId = "product-" + productref.push().getKey(); // Generate a unique ID
+        Intent intent= new Intent(this, UpadateProductVariantActivity.class);
+        intent.putExtra("product_old",old);
 
-        Product newProduct = new Product();
-        newProduct.setId(productId);
-        newProduct.setDeleted(false);
-        newProduct.setName(name);
-        newProduct.setCategoryId(selectedCategory.getId());
-        newProduct.setDiscount(Integer.parseInt(discount));
-        newProduct.setBasePrice(Double.parseDouble(price));
-        newProduct.setBaseImageURL(image);
-        newProduct.setDescription(description);
+        current.setId(productId);
+        current.setDeleted(false);
+        current.setName(name);
+        current.setCategoryId(selectedCategory.getId());
+        current.setDiscount(Integer.parseInt(discount));
+        current.setBasePrice(Double.parseDouble(price));
+        current.setBaseImageURL(image);
+        current.setDescription(description);
+        intent.putExtra("product",current);
 
-        Intent intent= new Intent(this, AddProductVariantActivity.class);
-        intent.putExtra("product",newProduct);
+
         startActivity(intent);
 
     }

@@ -1,5 +1,6 @@
 package com.example.petshopapplication.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Size {
+public class Size implements Serializable {
     private String id;
     private String name;
 }
