@@ -1,5 +1,8 @@
 package com.example.petshopapplication.Adapter;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -17,8 +20,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.petshopapplication.ListFeedbackActivity;
+import com.example.petshopapplication.ListOrderActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.UpdateFeedbackActivity;
+import com.example.petshopapplication.databinding.ActivityListFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.User;
 import com.google.firebase.database.DatabaseReference;
@@ -101,7 +107,6 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
                     @Override
                     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                         String selectedAction = (String) parentView.getItemAtPosition(position);
-
                         switch (selectedAction) {
                             case "Edit":
                                 updateFeedback(feedback);
@@ -180,10 +185,12 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
         feedbackRef.setValue(feedback).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(context, "Feedback marked as deleted successfully", Toast.LENGTH_SHORT).show();
+                ((Activity) context).finish();
             } else {
                 Toast.makeText(context, "Failed to delete feedback", Toast.LENGTH_SHORT).show();
             }
         });
+        return;
     }
 
     private void unbanFeedback(FeedBack feedback) {

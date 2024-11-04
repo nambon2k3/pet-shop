@@ -113,6 +113,7 @@ public class ListFeedbackActivity extends AppCompatActivity {
                     }
                 }
 
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
 
@@ -124,5 +125,6 @@ public class ListFeedbackActivity extends AppCompatActivity {
     private void getIntend() {
         productId = getIntent().getStringExtra("productId");
         binding.btnBack.setOnClickListener(v -> finish());
+
     }
 }

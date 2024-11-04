@@ -20,6 +20,7 @@ public class FeedBack implements Serializable {
     private String id;
     private String userId;
     private String productId;
+    private String orderId;
     private int rating;
     private String imageUrl;
     private String content;
