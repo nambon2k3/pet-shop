@@ -1,23 +1,24 @@
 package com.example.petshopapplication;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.example.petshopapplication.databinding.ActivityViewFeedbackItemBinding;
+import com.example.petshopapplication.Adapter.FeedBackListAdapter;
+import com.example.petshopapplication.databinding.ActivityListFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
+import com.example.petshopapplication.model.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -25,128 +26,145 @@ import java.util.List;
 
 public class ViewFeedBackItemActivity extends AppCompatActivity {
 
-    private ActivityViewFeedbackItemBinding binding;  // ViewBinding reference
+    private ActivityListFeedbackBinding binding;  // ViewBinding reference
+    private FirebaseDatabase database;
     private DatabaseReference databaseReference;
-    private String productId = "p1";
-    private String userId = "u1";
+    private FeedBackListAdapter feedbackAdapter;
+    private List<FeedBack> feedbackList;
+    private String userId;
+    private String orderId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Initialize ViewBinding
-        binding = ActivityViewFeedbackItemBinding.inflate(getLayoutInflater());
+        binding = ActivityListFeedbackBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Initialize Firebase Realtime Database reference
-        databaseReference = FirebaseDatabase.getInstance().getReference("feedbacks");
+        databaseReference = FirebaseDatabase.getInstance().getReference(getString(R.string.tbl_feedback_name));
 
-        // Fetch and display feedback for the specific product and user
-        fetchFeedback("");
+        // Set up RecyclerView
+        binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(this));
+        binding.btnBack.setOnClickListener(v -> finish());
 
-        // Initialize spinner options
-        List<String> options = new ArrayList<>();
-        options.add("Select Action:");
-        options.add("Edit");
-        options.add("Delete");
+        feedbackList = new ArrayList<>();
+        binding.rcvFeedback.setAdapter(feedbackAdapter);
 
-        // Set up spinner adapter
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, options);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spFeedback2.setAdapter(spinnerAdapter);
+        // Firebase Realtime Database reference
+        database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference(getString(R.string.tbl_feedback_name));
 
-        // Handle spinner item selection
-        binding.spFeedback2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        // Fetch feedbacks from Firebase
+        getIntend();
+        getProductId(orderId);
+    }
+
+    private void fetchFeedbacks(String productId) {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                String selectedAction = (String) parentView.getItemAtPosition(position);
-
-                // Check the selected action
-                switch (selectedAction) {
-                    case "Edit":
-                        fetchFeedback("Edit");
-                        break;
-                    case "Delete":
-                        fetchFeedback("Delete");
-                        break;
-                    default:
-                        break;
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                feedbackList.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
+                    if (feedback != null && !feedback.isDeleted()
+                            && feedback.getProductId().equals(productId)
+                            && feedback.getOrderId().equals(orderId)) {
+                        feedbackList.add(feedback);
+                    }
+                    fetchUserData(feedbackList);
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // No action needed
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ViewFeedBackItemActivity.this, "Failed to fetch data.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void fetchFeedback(String func) {
-        databaseReference.orderByChild("productId").equalTo(productId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
-                            if (feedback != null && feedback.getUserId().equals(userId) && !feedback.isDeleted()) {
-                                switch (func) {
-                                    case "":
-                                        displayFeedback(feedback);
-                                        break;
-                                    case "Edit":
-                                        updateFeedback(feedback);
-                                        break;
-                                    case "Delete":
-                                        deleteFeedback(feedback);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                displayFeedback(feedback);
-                                break;  // Stop after finding the matching feedback
+    private void getProductId(String orderId) {
+        DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference(getString(R.string.tbl_order_name));
+        List<String> productIds = new ArrayList<>();
+        Query query = ordersRef.orderByChild("id").equalTo(orderId);
+        query.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    //Get user data from database
+                    for (DataSnapshot orderSnapshot : snapshot.getChildren()) {
+                        DataSnapshot orderDetailsSnapshot = orderSnapshot.child("orderDetails");
+
+                        // Duyệt qua từng mục trong orderDetails
+                        for (DataSnapshot detailSnapshot : orderDetailsSnapshot.getChildren()) {
+                            String productId = detailSnapshot.child("productId").getValue(String.class);
+                            if (productId != null) {
+                                productIds.add(productId);
                             }
                         }
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(ViewFeedBackItemActivity.this, "Failed to fetch data.", Toast.LENGTH_SHORT).show();
+                    if (!productIds.isEmpty()) {
+                        for (String productId : productIds) {
+                            fetchFeedbacks(productId);
+                        }
                     }
-                });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
-    private void displayFeedback(FeedBack feedback) {
-        binding.rtbFeedbackRating.setRating(feedback.getRating());
-        binding.tvFeedbackContent.setText(feedback.getContent());
-        binding.tvFeedbackDate.setText(feedback.getCreatedAt());
+    private void fetchUserData(List<FeedBack> feedbackItems) {
+        databaseReference = database.getReference(getString(R.string.tbl_user_name));
+        for (FeedBack feedBack : feedbackItems) {
+            //Reference to the user table
+            databaseReference = database.getReference(getString(R.string.tbl_user_name));
+            //Get user data by user Id in feed back
+            Query query = databaseReference.orderByChild("id").equalTo(userId);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
 
-        // Load feedback image if available
-        if (feedback.getImageUrl() != null && !feedback.getImageUrl().isEmpty()) {
-            Glide.with(this)
-                    .load(feedback.getImageUrl())
-                    .into(binding.imvFeedbackImage);
-        } else {
-            binding.imvFeedbackImage.setImageResource(R.drawable.icon); // Placeholder image
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        //Get user data from database
+                        User user = null;
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            user = dataSnapshot.getValue(User.class);
+                        }
+                        if (user != null) {
+                            binding.tvFeedbackRatingTotal.setVisibility(View.GONE);
+                            binding.rbFeedbackAverageRating.setVisibility(View.GONE);
+                            binding.tvFeedbackRatingValue.setVisibility(View.GONE);
+                            binding.tvFeedbackTitle.setText("My Feedbacks");
+                            feedbackAdapter = new FeedBackListAdapter(feedbackItems, user);
+                            binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(ViewFeedBackItemActivity.this, RecyclerView.VERTICAL, true));
+                            binding.rcvFeedback.setAdapter(feedbackAdapter);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
     }
 
-    private void updateFeedback(FeedBack feedback) {
-        Intent intent = new Intent(this, UpdateFeedbackActivity.class);
-        intent.putExtra("feedback", feedback);  // Pass feedback object to UpdateFeedbackActivity
-        startActivity(intent);
-    }
+    private void getIntend() {
+        orderId = getIntent().getStringExtra("orderId");
+        userId = getIntent().getStringExtra("userId");
 
-    private void deleteFeedback(FeedBack feedback) {
-        feedback.setDeleted(true);
-
-        // Save the updated feedback in Firebase (with isDeleted = true)
-        DatabaseReference feedbackRef = FirebaseDatabase.getInstance().getReference("feedbacks").child(feedback.getId());
-        feedbackRef.setValue(feedback).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(this, "Feedback marked as deleted successfully", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Failed to delete feedback", Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (orderId == null || userId == null) {
+            Log.e("AddFeedbackActivity", "Null. Please pass a valid order ID.");
+            // Hiển thị thông báo lỗi hoặc kết thúc activity nếu cần
+            finish();
+        }
     }
 }

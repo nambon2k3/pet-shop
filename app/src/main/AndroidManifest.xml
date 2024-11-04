@@ -20,6 +20,9 @@
             android:name=".ViewDetailOrderActivity"
             android:exported="false" />
         <activity
+            android:name=".ViewFeedBackItemActivity"
+            android:exported="false" />
+        <activity
             android:name=".VNPayPaymentActivity"
             android:exported="false" />
         <activity
