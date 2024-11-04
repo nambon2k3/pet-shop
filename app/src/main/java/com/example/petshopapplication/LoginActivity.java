@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if(task.isSuccessful()) {
                 //User is authenticated, go to home activity
-                Intent intent = new Intent(LoginActivity.this, ViewAdminDashBoardActivity.class);
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(intent);
             }
 
