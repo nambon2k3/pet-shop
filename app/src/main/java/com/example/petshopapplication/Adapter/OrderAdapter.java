@@ -3,30 +3,28 @@ package com.example.petshopapplication.Adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.example.petshopapplication.AddFeedbackActivity;
 import com.example.petshopapplication.PrepareOrderActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.ViewDetailOrderActivity;
+import com.example.petshopapplication.ViewFeedBackItemActivity;
 import com.example.petshopapplication.model.Order;
 import com.example.petshopapplication.model.OrderDetail;
 import com.example.petshopapplication.utils.Validate;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder> {
@@ -164,7 +162,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
                     .show();
         });
 
+        checkFeedbackStatus(order.getId(), holder.btn_feedback);
 
+        // Hide feedback button if btnRate is false
+        if (!btnRate) {
+            holder.btn_feedback.setVisibility(View.GONE);
+        }
     }
 
     private void cancelOrder(String orderId) {
@@ -185,6 +188,32 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             Log.d(TAG, "Failed to cancel order: " + e.getMessage());
         });
     }
+
+    private void checkFeedbackStatus(String orderId, Button feedbackButton) {
+        DatabaseReference feedbackRef = FirebaseDatabase.getInstance()
+                .getReference(context.getString(R.string.tbl_feedback_name)).child(orderId);
+        feedbackRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                // Feedback exists
+                feedbackButton.setText("View Feedback");
+                feedbackButton.setOnClickListener(v -> {
+                    // Intent to view feedback
+                    Intent intent = new Intent(context, ViewFeedBackItemActivity.class);
+                    intent.putExtra("order_id", orderId);
+                    context.startActivity(intent);
+                });
+            } else {
+                // No feedback yet
+                feedbackButton.setOnClickListener(v -> {
+                    // Intent to add feedback
+                    Intent intent = new Intent(context, AddFeedbackActivity.class);
+                    intent.putExtra("order_id", orderId);
+                    context.startActivity(intent);
+                });
+            }
+        });
+    }
+
 
 
     @Override
