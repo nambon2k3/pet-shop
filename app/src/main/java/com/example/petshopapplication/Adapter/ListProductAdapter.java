@@ -148,7 +148,8 @@ public class ListProductAdapter extends RecyclerView.Adapter<ListProductAdapter.
                     }
                     if (feedbackCount > 0){
                         double averageRating = (double) totalRating / feedbackCount;
-                        holder.tv_rating.setText(String.valueOf(averageRating));
+                        String formattedRating = String.format("%.1f", averageRating);
+                        holder.tv_rating.setText(formattedRating);
                     }
                 }
             }
