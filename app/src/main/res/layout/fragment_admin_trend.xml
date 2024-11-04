@@ -5,13 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".AdminTrendFragment">
 
-    <TextView
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Trending"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:textColor="@color/textColorHint"
-        />
-
+        android:layout_gravity="center"
+         />
 </FrameLayout>
