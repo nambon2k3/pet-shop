@@ -16,6 +16,12 @@
         android:theme="@style/Theme.PetShopApplication"
         tools:targetApi="31">
         <activity
+            android:name=".PieChartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TrendingProductActivity"
+            android:exported="false" />
+        <activity
             android:name=".ViewAdminDashBoardActivity"
             android:exported="false" />
         <activity
@@ -59,7 +65,7 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -68,8 +74,7 @@
         </activity>
         <activity
             android:name=".ListProductActivity"
-            android:exported="false" >
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".AddFeedbackActivity"
             android:exported="false" />
@@ -81,9 +86,7 @@
             android:exported="false" />
         <activity
             android:name=".UpdateProductActivity"
-            android:exported="true" >
-
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".PaymentActivity"
             android:exported="false" />
@@ -111,6 +114,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
