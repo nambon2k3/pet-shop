@@ -61,7 +61,7 @@ public class ListCategoryAdapter extends RecyclerView.Adapter<ListCategoryAdapte
     }
 
     public class CategoryHolder extends RecyclerView.ViewHolder {
-        ImageView imv_category;
+        ImageView imv_category, imv_restore_category;
         TextView tv_category_name, tv_product_quantity, tv_category_quantity;
         public CategoryHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,21 +69,41 @@ public class ListCategoryAdapter extends RecyclerView.Adapter<ListCategoryAdapte
             imv_category = itemView.findViewById(R.id.imv_category);
             tv_category_name = itemView.findViewById(R.id.tv_category_name);
             tv_product_quantity = itemView.findViewById(R.id.tv_product_quantity);
+            imv_category = itemView.findViewById(R.id.imv_category);
+            imv_restore_category = itemView.findViewById(R.id.imv_restore_category);
 
 
         }
 
         public void bind(Category category, OnItemClickedListener listener) {
-            itemView.setOnClickListener(v -> {
-                // Gọi phương thức onItemClick khi item được click
-                listener.onItemClicked(category);
+            if (category.isDeleted()) {
+                itemView.setAlpha(0.5f);
+                imv_restore_category.setVisibility(View.VISIBLE);
+
+            } else {
+                itemView.setAlpha(1.0f);
+            }
+            //Handle when item is clicked
+            if(!category.isDeleted()){
+                itemView.setOnClickListener(v -> {
+                    listener.onItemClicked(category);
+                });
+            }
+
+            //Handle when restore button is clicked
+            imv_restore_category.setOnClickListener(v -> {
+                listener.onRestoreButtutonClikcked(category);
             });
-        }
+            }
+
+
+
     }
 
 
     //Interface communicate between Activity and Adapter
     public interface OnItemClickedListener{
         void onItemClicked(Category category);
+        void onRestoreButtutonClikcked(Category category);
     }
 }
