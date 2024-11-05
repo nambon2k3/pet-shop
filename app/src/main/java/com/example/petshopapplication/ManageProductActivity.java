@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.petshopapplication.Adapter.ListProductAdapter2;
+import com.example.petshopapplication.Adapter.ListUpdateProductAdapter;
 import com.example.petshopapplication.Adapter.ListProductCategoryAdapter;
 import com.example.petshopapplication.databinding.ActivityListManageProductBinding;
 import com.example.petshopapplication.model.Category;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ManageProductActivity extends AppCompatActivity implements ListProductCategoryAdapter.OnCategoryClickListener,
-        ListProductAdapter2.OnEditClickListener, ListProductAdapter2.OnDeleteClickListener {
+        ListUpdateProductAdapter.OnEditClickListener, ListUpdateProductAdapter.OnDeleteClickListener {
 
     private final int LIMIT_PAGE = 3;
     private final int ITEMS_PER_PAGE = 16;
@@ -148,7 +148,7 @@ public class ManageProductActivity extends AppCompatActivity implements ListProd
         if (categoryId != null && !categoryId.isBlank()) {
             query = reference.orderByChild("categoryId").equalTo(categoryId).limitToFirst(endIndex);
         } else {
-            query = reference.orderByChild("isDeleted").equalTo(false).limitToFirst(endIndex);
+            query = reference.orderByChild("deleted").equalTo(false).limitToFirst(endIndex);
         }
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -170,7 +170,6 @@ public class ManageProductActivity extends AppCompatActivity implements ListProd
                     productAdapter.notifyItemRangeInserted(startIndex, productItems.size());
                     binding.prgLoadMore.setVisibility(View.GONE);
                 }
-
             }
 
             @Override
@@ -192,7 +191,7 @@ public class ManageProductActivity extends AppCompatActivity implements ListProd
         if (categoryId != null && !categoryId.isBlank()) {
             query = reference.orderByChild("categoryId").equalTo(categoryId);
         } else {
-            query = reference.orderByChild("isDeleted").equalTo(false);
+            query = reference.orderByChild("deleted").equalTo(false);
         }
         query.limitToFirst(ITEMS_PER_PAGE).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -212,7 +211,7 @@ public class ManageProductActivity extends AppCompatActivity implements ListProd
                             }
                         }
                     }
-                    productAdapter = new ListProductAdapter2(productItems, categoryItems, ManageProductActivity.this,
+                    productAdapter = new ListUpdateProductAdapter(productItems, categoryItems, ManageProductActivity.this,
                             ManageProductActivity.this);
                     binding.rcvListProduct.setLayoutManager(new GridLayoutManager(ManageProductActivity.this, 2));
                     binding.rcvListProduct.setAdapter(productAdapter);

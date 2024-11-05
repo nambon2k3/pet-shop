@@ -22,7 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petshopapplication.databinding.ActivityAddProductBinding;
 import com.example.petshopapplication.model.Category;
-import com.example.petshopapplication.model.ObjectPrinter;
 import com.example.petshopapplication.model.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -58,7 +57,7 @@ public class UpdateProductActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
 
 
-        setContentView(R.layout.activity_add_product);
+        setContentView(R.layout.activity_update_product);
 
         binding = ActivityAddProductBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -71,7 +70,7 @@ public class UpdateProductActivity extends AppCompatActivity {
 
         }
 
-         proid = (String) getIntent().getStringExtra("id");
+        proid = (String) getIntent().getStringExtra("id");
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
 
@@ -246,7 +245,7 @@ public class UpdateProductActivity extends AppCompatActivity {
     {
         DatabaseReference productref = firebaseDatabase.getReference("products");
         String productId = "product-" + productref.push().getKey(); // Generate a unique ID
-        Intent intent= new Intent(this, UpadateProductVariantActivity.class);
+        Intent intent= new Intent(this, UpdateProductVariantActivity.class);
         intent.putExtra("product_old",old);
 
         current.setId(productId);

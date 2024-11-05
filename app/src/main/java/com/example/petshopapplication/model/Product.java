@@ -29,7 +29,8 @@ public class Product  implements Serializable {
     private String baseImageURL;
     private double basePrice;
     private List<Variant> listVariant;
-    private String createdAt;;
+    private String createdAt;
+    ;
     @PropertyName("isDeleted")
 
     private boolean isDeleted;

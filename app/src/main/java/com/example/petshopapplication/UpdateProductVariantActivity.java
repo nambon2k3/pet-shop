@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.ColorAdapter;
 import com.example.petshopapplication.Adapter.ItemModel;
-import com.example.petshopapplication.Adapter.SizeAdapter2;
+import com.example.petshopapplication.Adapter.ManageSizeAdapter;
 import com.example.petshopapplication.Adapter.VariantAdapter;
 import com.example.petshopapplication.databinding.ActivityAddProductVariantBinding;
 import com.example.petshopapplication.databinding.PopUpAddVariant1Binding;
@@ -61,7 +61,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 
-public class UpadateProductVariantActivity extends AppCompatActivity implements  SizeAdapter2.OnSizeClickEventListener,ColorAdapter.OnColorClickEventListener
+public class UpdateProductVariantActivity extends AppCompatActivity implements  ManageSizeAdapter.OnSizeClickEventListener,ColorAdapter.OnColorClickEventListener
 {
     Dialog dialog_dimension;
     Button btnShowAddSize;
@@ -83,7 +83,7 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add_product_variant);
+        setContentView(R.layout.activity_update_product_variant);
 
         binding = ActivityAddProductVariantBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -124,7 +124,7 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
     {
         if(currentDimension == null)
         {
-            Toast.makeText(UpadateProductVariantActivity.this, "Please set dimension", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UpdateProductVariantActivity.this, "Please set dimension", Toast.LENGTH_SHORT).show();
 
         }
         if(variants.isEmpty())
@@ -207,7 +207,7 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
     }
 
     private void showAddDimension() {
-        dialog_dimension = new Dialog(UpadateProductVariantActivity.this);
+        dialog_dimension = new Dialog(UpdateProductVariantActivity.this);
 
 
         dialog_dimension.setContentView(R.layout.pop_up_add_variant_dimnesion);
@@ -232,14 +232,14 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
             currentDimension.setLength(Integer.parseInt(bindingDimension.editLength.getText().toString()));
             currentDimension.setWidth(Integer.parseInt(bindingDimension.editWidth.getText().toString()));
             currentDimension.setWeight(Integer.parseInt(bindingDimension.editWeight.getText().toString()));
-            Toast.makeText(UpadateProductVariantActivity.this, "Add successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UpdateProductVariantActivity.this, "Add successfully", Toast.LENGTH_SHORT).show();
             dialog_dimension.dismiss();
         });
         dialog_dimension.show();
 
     }
     private void showAddSize(){
-        dialog = new Dialog(UpadateProductVariantActivity.this);
+        dialog = new Dialog(UpdateProductVariantActivity.this);
         dialog.setContentView(R.layout.pop_up_add_variant1);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -255,9 +255,9 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
 
         binding2.btnSubmit.setOnClickListener(view -> {
             if (currentColor == null || currentSize == null) {
-                Toast.makeText(UpadateProductVariantActivity.this, "Please select color or size.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpdateProductVariantActivity.this, "Please select color or size.", Toast.LENGTH_SHORT).show();
             } else if (binding2.editTextText.getText().toString().equals("0")) {
-                Toast.makeText(UpadateProductVariantActivity.this, "Please enter stock size.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpdateProductVariantActivity.this, "Please enter stock size.", Toast.LENGTH_SHORT).show();
             } else {
                 List<Variant> found = variants.stream().filter(x -> x.getSize().getName().equals(currentSize.getName())).collect(Collectors.toList());
                 Color newColor = currentColor;
@@ -361,14 +361,14 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
                         variants.set(index, updateVar);
                     }
                 }
-                Toast.makeText(UpadateProductVariantActivity.this, "Submitting. Please wait...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpdateProductVariantActivity.this, "Submitting. Please wait...", Toast.LENGTH_SHORT).show();
 
                 // Wait for all asynchronous operations to complete before dismissing the dialog
                 new Thread(() -> {
                     try {
                         latch.await(); // Wait until latch count reaches zero
                         runOnUiThread(() -> {
-                            Toast.makeText(UpadateProductVariantActivity.this, "Submit color and size success", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UpdateProductVariantActivity.this, "Submit color and size success", Toast.LENGTH_SHORT).show();
                             currentColor = null;
                             currentSize = null;
                             dialog.dismiss();
@@ -382,7 +382,7 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
         });
 
         binding2.btnAddSize.setOnClickListener(view -> {
-            dialog2 = new Dialog(UpadateProductVariantActivity.this);
+            dialog2 = new Dialog(UpdateProductVariantActivity.this);
             dialog2.setContentView(R.layout.pop_up_add_variant2);
             dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             dialog2.show();
@@ -403,7 +403,7 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
                                         dialog2.dismiss();
                                         initSize(dialog);
 
-                                        Toast.makeText(UpadateProductVariantActivity.this, "Size submitted successfully!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(UpdateProductVariantActivity.this, "Size submitted successfully!", Toast.LENGTH_SHORT).show();
 
                                     })
                             .addOnFailureListener(e ->
@@ -411,7 +411,7 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
                                         dialog2.dismiss();
                                         initSize(dialog);
 
-                                        Toast.makeText(UpadateProductVariantActivity.this, "Failed to submit size.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(UpdateProductVariantActivity.this, "Failed to submit size.", Toast.LENGTH_SHORT).show();
                                     });
 
                 }
@@ -457,9 +457,9 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         sizeItems.add(dataSnapshot.getValue(Size.class));
                     }
-                    SizeAdapter2 sizeAdapter = new SizeAdapter2(sizeItems, UpadateProductVariantActivity.this);
+                    ManageSizeAdapter sizeAdapter = new ManageSizeAdapter(sizeItems, UpdateProductVariantActivity.this);
                     sizeCartRecyclerView = dialog.findViewById(R.id.rcv_size);
-                    sizeCartRecyclerView.setLayoutManager(new GridLayoutManager(UpadateProductVariantActivity.this, 2));
+                    sizeCartRecyclerView.setLayoutManager(new GridLayoutManager(UpdateProductVariantActivity.this, 2));
                     sizeCartRecyclerView.setAdapter(sizeAdapter);
 
             }
@@ -496,9 +496,9 @@ public class UpadateProductVariantActivity extends AppCompatActivity implements 
         color2.setImageUrl("https://firebasestorage.googleapis.com/v0/b/pet-shop-4a349.appspot.com/o/per-food-4.png?alt=media&token=2672b45a-80c6-4011-b28a-6fbd97806498");
         colorItems.add(color2);
 
-        ColorAdapter colorAdapter = new ColorAdapter(colorItems, UpadateProductVariantActivity.this);
+        ColorAdapter colorAdapter = new ColorAdapter(colorItems, UpdateProductVariantActivity.this);
         colorCartRecyclerView = dialog.findViewById(R.id.rcv_color);
-        colorCartRecyclerView.setLayoutManager(new GridLayoutManager(UpadateProductVariantActivity.this, 1));
+        colorCartRecyclerView.setLayoutManager(new GridLayoutManager(UpdateProductVariantActivity.this, 1));
         colorCartRecyclerView.setAdapter(colorAdapter);
     }
     private Color currentColor = null;

@@ -52,7 +52,7 @@
             android:name=".HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".UpadateProductVariantActivity"
+            android:name=".UpdateProductVariantActivity"
             android:exported="false" />
         <activity
             android:name=".AddressAddActivity"
@@ -73,7 +73,9 @@
         <activity
             android:name=".AddFeedbackActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".ManageProductActivity"
+            android:exported="false" />
         <activity
             android:name=".ListFeedbackActivity"
             android:exported="false" />

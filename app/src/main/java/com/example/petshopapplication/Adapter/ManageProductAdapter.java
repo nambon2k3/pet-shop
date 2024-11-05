@@ -28,7 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductAdapter2 extends  RecyclerView.Adapter<ProductAdapter2.ProductHolder>{
+public class ManageProductAdapter extends  RecyclerView.Adapter<ManageProductAdapter.ProductHolder>{
 
     List<Product> productItems;
     List<Category> categoryItems;
@@ -36,7 +36,7 @@ public class ProductAdapter2 extends  RecyclerView.Adapter<ProductAdapter2.Produ
     FirebaseDatabase database;
     DatabaseReference reference;
 
-    public ProductAdapter2(List<Product> productItems, List<Category> categoryItems) {
+    public ManageProductAdapter(List<Product> productItems, List<Category> categoryItems) {
         this.productItems = productItems;
         this.categoryItems = categoryItems;
     }
@@ -46,7 +46,7 @@ public class ProductAdapter2 extends  RecyclerView.Adapter<ProductAdapter2.Produ
     @Override
     public ProductHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View inflater = LayoutInflater.from(context).inflate(R.layout.view_holder_product2, parent, false);
+        View inflater = LayoutInflater.from(context).inflate(R.layout.view_holder_manage_product, parent, false);
         return new ProductHolder(inflater);
     }
 

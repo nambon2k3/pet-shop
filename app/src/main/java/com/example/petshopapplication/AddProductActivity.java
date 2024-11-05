@@ -75,7 +75,7 @@ public class AddProductActivity extends AppCompatActivity {
         binding.prgHomeCategory2.setVisibility(View.VISIBLE);
 
         List<Category> categoryItems = new ArrayList<>();
-        Query query = reference.orderByChild("isDeleted").equalTo(false);
+        Query query = reference.orderByChild("deleted").equalTo(false);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override

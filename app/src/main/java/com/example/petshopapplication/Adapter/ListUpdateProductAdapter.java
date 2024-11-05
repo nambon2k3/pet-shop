@@ -21,7 +21,6 @@ import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.Product;
-import com.example.petshopapplication.model.Size;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,18 +31,18 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListProductAdapter2 extends RecyclerView.Adapter<ListProductAdapter2.ProductHolder>{
+public class ListUpdateProductAdapter extends RecyclerView.Adapter<ListUpdateProductAdapter.ProductHolder>{
 
     List<Product> productItems;
     List<Category> categoryItems;
     Context context;
     FirebaseDatabase database;
     DatabaseReference reference;
-    private ListProductAdapter2.OnEditClickListener onEditClickListener;
-    private ListProductAdapter2.OnDeleteClickListener onDeleteClickListener;
+    private ListUpdateProductAdapter.OnEditClickListener onEditClickListener;
+    private ListUpdateProductAdapter.OnDeleteClickListener onDeleteClickListener;
 
-    public ListProductAdapter2(List<Product> productItems, List<Category> categoryItems,OnEditClickListener onEditClickListener,
-                               OnDeleteClickListener onDeleteClickListener    ) {
+    public ListUpdateProductAdapter(List<Product> productItems, List<Category> categoryItems, OnEditClickListener onEditClickListener,
+                                    OnDeleteClickListener onDeleteClickListener    ) {
         this.productItems = productItems;
         this.categoryItems = categoryItems;
         this.onEditClickListener = onEditClickListener;
@@ -61,7 +60,7 @@ public class ListProductAdapter2 extends RecyclerView.Adapter<ListProductAdapter
     @Override
     public ProductHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View inflate = LayoutInflater.from(context).inflate(R.layout.view_holder_list_product2, parent, false);
+        View inflate = LayoutInflater.from(context).inflate(R.layout.view_holder_list_manage_product, parent, false);
         return new ProductHolder(inflate);
     }
 

@@ -3,11 +3,12 @@ package com.example.petshopapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.petshopapplication.Adapter.ManageProductAdapter;
 
 public class AdminManageProductFragment extends Fragment {
 
@@ -47,7 +48,7 @@ public class AdminManageProductFragment extends Fragment {
 
         // Set up button listeners
         view.findViewById(R.id.btnAddNewProduct).setOnClickListener(v -> openAddProductActivity());
-        //view.findViewById(R.id.btnViewListProduct).setOnClickListener(v -> openUpdateProductActivity());
+        view.findViewById(R.id.btnViewListProduct).setOnClickListener(v -> openUpdateProductActivity());
 
         return view;
     }
@@ -57,8 +58,8 @@ public class AdminManageProductFragment extends Fragment {
         startActivity(intent);
     }
 
-//    private void openUpdateProductActivity() {
-//        Intent intent = new Intent(getActivity(), UpdateProductActivity.class);
-//        startActivity(intent);
-//    }
+    private void openUpdateProductActivity() {
+        Intent intent = new Intent(getActivity(), ManageProductActivity.class);
+        startActivity(intent);
+    }
 }
