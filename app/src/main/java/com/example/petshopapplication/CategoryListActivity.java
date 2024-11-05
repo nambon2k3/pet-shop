@@ -1,4 +1,5 @@
 
+
 package com.example.petshopapplication;
 
 import android.app.Dialog;
@@ -32,6 +33,8 @@ import com.example.petshopapplication.databinding.ActivityCategoryListBinding;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.Product;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -181,6 +184,51 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
         });
     }
 
+    public void restoreProductOfCategory(Category category){
+        //Restore all product relative
+        reference = database.getReference(getString(R.string.tbl_product_name));
+        reference.orderByChild("categoryId").equalTo(category.getId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()){
+                            List<Task<Void>> tasks = new ArrayList<>();
+                            for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+
+                                Product product = dataSnapshot.getValue(Product.class);
+
+                                if(product != null){
+
+                                    if(dataSnapshot.child("deleted").getValue(Boolean.class)){
+
+                                        Task<Void> deleteTask = dataSnapshot.getRef().child("deleted")
+                                                .setValue(false).addOnCompleteListener(task -> {
+                                                    if(task.isSuccessful()){
+
+                                                        Log.e("RESTORE CATEGORY", product.getId() + "Restore product successfully!");
+
+                                                    } else {
+                                                        Log.e("RESTORE CATEGORY", "Fail to restore product!");
+                                                    }
+                                                });
+                                        tasks.add(deleteTask);
+                                    }
+                                }
+                            }
+                            //All product delete have been update
+                            Tasks.whenAllComplete(tasks).addOnCompleteListener(allTasks -> {
+                                reloadCategoryListActivity();
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
     @Override
     public void onRestoreButtutonClikcked(Category category) {
         //Restore category
@@ -195,9 +243,10 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
                                         .setValue(false).addOnCompleteListener(task -> {
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(CategoryListActivity.this, "Category restore successfully", Toast.LENGTH_SHORT).show();
+                                                restoreProductOfCategory(category);
                                                 //Exit popup
                                                 dialog.dismiss();
-                                                reloadCategoryListActivity();
+
                                             } else {
                                                 Toast.makeText(CategoryListActivity.this, "Failed to restore category", Toast.LENGTH_SHORT).show();
                                             }
@@ -214,40 +263,8 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
                     }
                 });
 
-        //Restore all product relative
-        reference = database.getReference(getString(R.string.tbl_product_name));
-        reference.orderByChild("categoryId").equalTo(category.getId())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()){
-                            for (DataSnapshot dataSnapshot: snapshot.getChildren()){
 
-                                Product product = dataSnapshot.getValue(Product.class);
 
-                                if(product != null){
-                                    if(product.isDeleted()){
-                                        dataSnapshot.getRef().child("deleted")
-                                                .setValue(false).addOnCompleteListener(task -> {
-                                                    if(task.isSuccessful()){
-
-                                                        Log.e("RESTORE CATEGORY", product.getId() + "Restore product successfully!");
-
-                                                    } else {
-                                                        Log.e("RESTORE CATEGORY", "Fail to restore product!");
-                                                    }
-                                                });
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
     }
 
 
@@ -264,8 +281,7 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
             imv_category.setImageURI(selectedImageUri); // Display the selected image
         }
     }
-    public void deleteCategoryInDatabae(Category category){
-
+    public void deleteProductOfCategory(Category category, AllProductDeleteChangeCallback callback){
         //Delete all product of category in Firebase
         reference = database.getReference(getString(R.string.tbl_product_name));
         reference.orderByChild("categoryId").equalTo(category.getId())
@@ -273,13 +289,14 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if(snapshot.exists()){
+                            List<Task<Void>> tasks = new ArrayList<>();
                             for (DataSnapshot dataSnapshot: snapshot.getChildren()){
 
                                 Product product = dataSnapshot.getValue(Product.class);
 
                                 if(product != null){
                                     if(!product.isDeleted()){
-                                        dataSnapshot.getRef().child("deleted")
+                                        Task<Void> deleteTask = dataSnapshot.getRef().child("deleted")
                                                 .setValue(true).addOnCompleteListener(task -> {
                                                     if(task.isSuccessful()){
 
@@ -289,9 +306,14 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
                                                         Log.e("DELETE CATEGORY", "Fail to delete product!");
                                                     }
                                                 });
+                                        tasks.add(deleteTask);
                                     }
                                 }
                             }
+                            //All product delete have been update
+                            Tasks.whenAllComplete(tasks).addOnCompleteListener(allTasks -> {
+                                callback.onComplete();
+                            });
                         }
                     }
 
@@ -300,36 +322,45 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
 
                     }
                 });
-        //Delete category relative
-        reference = database.getReference(getString(R.string.tbl_category_name));
-        reference.orderByChild("id").equalTo(category.getId())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()){
-                            for(DataSnapshot dataSnapshot : snapshot.getChildren()){
-                                dataSnapshot.getRef().child("deleted")
-                                        .setValue(true).addOnCompleteListener(task -> {
-                                            if (task.isSuccessful()) {
-                                                Toast.makeText(CategoryListActivity.this, "Category delete successfully", Toast.LENGTH_SHORT).show();
-                                                //Exit popup
-                                                dialog.dismiss();
-                                                reloadCategoryListActivity();
-                                            } else {
-                                                Toast.makeText(CategoryListActivity.this, "Failed to delete category", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+    }
+    public void deleteCategoryInDatabae(Category category){
 
+        deleteProductOfCategory(category, new AllProductDeleteChangeCallback() {
+            @Override
+            public void onComplete() {
+                //Delete category relative
+                reference = database.getReference(getString(R.string.tbl_category_name));
+                reference.orderByChild("id").equalTo(category.getId())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if(snapshot.exists()){
+                                    for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                        dataSnapshot.getRef().child("deleted")
+                                                .setValue(true).addOnCompleteListener(task -> {
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(CategoryListActivity.this, "Category delete successfully", Toast.LENGTH_SHORT).show();
+                                                        //Exit popup
+                                                        dialog.dismiss();
+                                                        reloadCategoryListActivity();
+                                                    } else {
+                                                        Toast.makeText(CategoryListActivity.this, "Failed to delete category", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+
+                                    }
+
+                                }
                             }
 
-                        }
-                    }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+            }
+        });
 
-                    }
-                });
 
     }
 
@@ -432,6 +463,9 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
         categoryList.clear();
         categoryListBeforeSort.clear();
         initListCategory();
+    }
+    public interface AllProductDeleteChangeCallback{
+        void onComplete();
     }
 
 
