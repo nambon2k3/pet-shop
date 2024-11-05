@@ -39,6 +39,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
     List<User> userItems;
     User user;
     Context context;
+    String role = "a";
 
     public FeedBackListAdapter(List<FeedBack> feedBackItems, List<User> userItems) {
         this.feedBackItems = feedBackItems;
@@ -94,8 +95,13 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
                 // Add options to the spinner
                 List<String> options = new ArrayList<>();
                 options.add("Select Action:");
-                options.add("Edit");
-                options.add("Delete");
+                if (role != null){
+                    options.add("Ban");
+                    options.add("Unban");
+                } else {
+                    options.add("Edit");
+                    options.add("Delete");
+                }
 
                 // Set up spinner
                 ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);
@@ -133,6 +139,10 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
             } else {
                 // Hide spinner if conditions are not met
                 holder.sp_feedback.setVisibility(View.GONE);
+            }
+
+            if (role != null && feedback.isDeleted()){
+                holder.itemView.setAlpha(0.5f);
             }
         }
     }
