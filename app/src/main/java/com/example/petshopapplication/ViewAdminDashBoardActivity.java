@@ -70,6 +70,8 @@ public class ViewAdminDashBoardActivity extends AppCompatActivity implements Nav
                 replaceFragment(new AdminStatFragment());
             } else if (itemId == R.id.ad_bottom_nav_manage_product) {
                 replaceFragment(new AdminManageProductFragment());
+            } else if (itemId == R.id.ad_bottom_nav_manage_feedback) {
+                replaceFragment(new AdminManageFeedBackFragment());
             }
 
 
