@@ -71,7 +71,7 @@
         >
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/btn_back"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -81,7 +81,7 @@
             app:srcCompat="@drawable/baseline_keyboard_arrow_left_24" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/tv_cart_title"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="center"

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.CartAdapter;
+import com.example.petshopapplication.databinding.ActivityAddCategoryBinding;
+import com.example.petshopapplication.databinding.ActivityCategoryListBinding;
 import com.example.petshopapplication.model.Cart;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Variant;
@@ -38,13 +41,17 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     List<Product> productList = new ArrayList<>();
     List<String> cartProductId = new ArrayList<>();
     List<Cart> selectedItemList = new ArrayList<>();
+    ActivityAddCategoryBinding binding;
     FirebaseAuth auth;
     FirebaseUser user;
     Button purchaseButton;
+    ImageView btn_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        binding = ActivityAddCategoryBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
         setContentView(R.layout.activity_cart);
 
         //Get Id of current User
@@ -57,6 +64,11 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
 
         initCart(userId);
 
+        //Handle back button
+        btn_back = findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(v -> {
+            finish();
+        });
 
         purchaseButton = findViewById(R.id.btn_purchase); // Khởi tạo nút mua hàng
 

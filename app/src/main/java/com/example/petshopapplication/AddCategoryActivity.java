@@ -1,28 +1,41 @@
+
 package com.example.petshopapplication;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.petshopapplication.Adapter.ListCategoryAdapter;
 import com.example.petshopapplication.databinding.ActivityAddCategoryBinding;
 import com.example.petshopapplication.databinding.ActivityAddFeedbackBinding;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.FeedBack;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class AddCategoryActivity extends AppCompatActivity {
@@ -30,6 +43,9 @@ public class AddCategoryActivity extends AppCompatActivity {
     private Uri selectedImageUri; // To store the selected image URI
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference reference;
+    private List<Category> categoryList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +62,26 @@ public class AddCategoryActivity extends AppCompatActivity {
 
         // Handle category submit submission
         binding.btnCategorySubmit.setOnClickListener(view -> uploadCategory());
+
+        //Handle max length of category name (max is 20)
+        binding.edtCategoryName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (binding.edtCategoryName.getText().toString().trim().length() > 20) {
+                    Toast.makeText(AddCategoryActivity.this, "Max length of category name is 20!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
 
     }
@@ -67,35 +103,60 @@ public class AddCategoryActivity extends AppCompatActivity {
     private void uploadCategory() {
         final String categoryName = binding.edtCategoryName.getText().toString().trim();
 
+        //Check category name is empty or not
         if (categoryName.isEmpty()) {
             Toast.makeText(this, "Please provide a name for category", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (selectedImageUri != null) {
-            // Upload the image to Firebase Storage
-            StorageReference storageReference = firebaseStorage.getReference().child("category_image/" + UUID.randomUUID().toString());
-            storageReference.putFile(selectedImageUri)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        // Get the image download URL
-                        storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                            String imageUrl = uri.toString();
-                            // After image upload, submit the feedback to the database
-                            addCategory(categoryName, imageUrl);
-                        });
-                    })
-                    .addOnFailureListener(e -> Toast.makeText(AddCategoryActivity.this, "Image upload failed!", Toast.LENGTH_SHORT).show());
+        //Check if category name is exceed 20
+        if(categoryName.length() > 20){
+            Toast.makeText(AddCategoryActivity.this, "Max length of category name is 20!", Toast.LENGTH_SHORT).show();
+            return;
         }
-//        else {
-//            // If no image is selected, submit feedback without image
-//            submitFeedback(userId, productId, comment, rating, null);
-//        }
+
+        //Check category name is existed or not
+        categoryList = getListCategory(categoryList -> {
+            boolean isDuplicate = false;
+
+            for (Category category : categoryList) {
+                if (categoryName.equals(category.getName())) {
+                    Toast.makeText(AddCategoryActivity.this, "Category name has exited!", Toast.LENGTH_SHORT).show();
+                    isDuplicate = true;
+                    break;
+                }
+            }
+            if(!isDuplicate) {
+                if (selectedImageUri != null) {
+                    // Upload the image to Firebase Storage
+                    StorageReference storageReference = firebaseStorage.getReference().child("category_image/" + UUID.randomUUID().toString());
+                    storageReference.putFile(selectedImageUri)
+                            .addOnSuccessListener(taskSnapshot -> {
+                                // Get the image download URL
+                                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                                    String imageUrl = uri.toString();
+                                    // After image upload, submit the feedback to the database
+                                    addCategory(categoryName, imageUrl);
+                                });
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(AddCategoryActivity.this, "Image upload failed!", Toast.LENGTH_SHORT).show());
+                } else {
+                    // If no image is selected, inform to user
+                    Toast.makeText(AddCategoryActivity.this, "Please choose an image!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+
+
+
     }
 
     private void addCategory(String categoryName, String imageUrl) {
         DatabaseReference categoryRef = firebaseDatabase.getReference("categories");
 
-        String categoryId = "category-" + categoryRef.push().getKey(); // Generate a unique ID
+        String categoryId = "category" + categoryRef.push().getKey(); // Generate a unique ID
 
         // Create a category object
         Category category = Category.builder()
@@ -103,6 +164,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                 .name(categoryName)
                 .image(imageUrl)
                 .createdAt(String.valueOf(new Date()))
+                .isDeleted(false)
                 .build();
 
         // Store the category in the database
@@ -112,4 +174,35 @@ public class AddCategoryActivity extends AppCompatActivity {
         Intent intent = new Intent(AddCategoryActivity.this, CategoryListActivity.class);
         startActivity(intent);
     }
+
+    private List<Category> getListCategory(CategoryListCallback callback) {
+        reference = firebaseDatabase.getReference(getString(R.string.tbl_category_name));
+
+        reference.orderByChild("id").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Category category = dataSnapshot.getValue(Category.class);
+
+                        categoryList.add(category);
+                    }
+                    callback.onCategoryListLoaded(categoryList);
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return categoryList;
+    }
+
+    public interface CategoryListCallback {
+        void onCategoryListLoaded(List<Category> categories);
+    }
+
 }
