@@ -71,13 +71,9 @@ public class ListFeedbackActivity extends AppCompatActivity {
 
                 if (feedbackCount > 0) {
                     double averageRating = (double) totalRating / feedbackCount;
-                    binding.tvFeedbackRatingValue.setText(String.valueOf(averageRating));
+                    String formattedRating = String.format("%.1f", averageRating);
+                    binding.tvFeedbackRatingValue.setText(formattedRating);
                     binding.rbFeedbackAverageRating.setRating((float) averageRating);
-
-                    // Display the average rating (example: in the Activity’s title or in a TextView)
-                    Toast.makeText(ListFeedbackActivity.this, "Average Rating: " + averageRating, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ListFeedbackActivity.this, "No feedback available for this product.", Toast.LENGTH_SHORT).show();
                 }
 
                 fetchUserData(feedbackList);
@@ -117,6 +113,7 @@ public class ListFeedbackActivity extends AppCompatActivity {
                     }
                 }
 
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
 
@@ -128,5 +125,6 @@ public class ListFeedbackActivity extends AppCompatActivity {
     private void getIntend() {
         productId = getIntent().getStringExtra("productId");
         binding.btnBack.setOnClickListener(v -> finish());
+
     }
 }

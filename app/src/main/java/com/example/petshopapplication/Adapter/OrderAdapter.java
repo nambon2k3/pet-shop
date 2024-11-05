@@ -1,30 +1,36 @@
 package com.example.petshopapplication.Adapter;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.example.petshopapplication.AddFeedbackActivity;
 import com.example.petshopapplication.PrepareOrderActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.ViewDetailOrderActivity;
+import com.example.petshopapplication.ViewFeedBackItemActivity;
+import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.Order;
 import com.example.petshopapplication.model.OrderDetail;
 import com.example.petshopapplication.utils.Validate;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,7 +170,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
                     .show();
         });
 
+        checkFeedbackStatus(order.getUserId(), order.getId(), holder.btn_feedback);
 
+        // Hide feedback button if btnRate is false
+        if (!btnRate) {
+            holder.btn_feedback.setVisibility(View.GONE);
+        }
     }
 
     private void cancelOrder(String orderId) {
@@ -185,6 +196,49 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             Log.d(TAG, "Failed to cancel order: " + e.getMessage());
         });
     }
+
+    private void checkFeedbackStatus(String userId, String orderId, Button feedbackButton) {
+        System.out.println("order id ---- " + orderId);
+        DatabaseReference feedbackRef = FirebaseDatabase.getInstance()
+                .getReference(context.getString(R.string.tbl_feedback_name));
+
+        Query query = feedbackRef.orderByChild("orderId").equalTo(orderId);
+        query.addValueEventListener(new ValueEventListener() {
+
+            @SuppressLint("ResourceType")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
+                    if (snapshot.exists() && !feedback.isDeleted()) {
+                        feedbackButton.setBackgroundColor(Color.parseColor(context.getString(R.color.button_background)));
+                        feedbackButton.setText("View Feedback");
+                        feedbackButton.setOnClickListener(v -> {
+                            Intent intent = new Intent(context, ViewFeedBackItemActivity.class);
+                            intent.putExtra("orderId", orderId);
+                            intent.putExtra("userId", userId);
+                            context.startActivity(intent);
+                        });
+                    } else {
+                        feedbackButton.setBackgroundColor(Color.RED);
+                        feedbackButton.setText("Rate");
+                        feedbackButton.setOnClickListener(v -> {
+                            Intent intent = new Intent(context, AddFeedbackActivity.class);
+                            intent.putExtra("orderId", orderId);
+                            intent.putExtra("userId", userId);
+                            context.startActivity(intent);
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý lỗi truy vấn nếu cần
+            }
+        });
+    }
+
 
 
     @Override

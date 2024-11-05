@@ -15,9 +15,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PetShopApplication"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ViewAdminDashBoardActivity"
+            android:exported="false" />
         <activity
             android:name=".ViewDetailOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ViewFeedBackItemActivity"
             android:exported="false" />
         <activity
             android:name=".VNPayPaymentActivity"
@@ -43,21 +48,15 @@
         <activity
             android:name=".ProductDetailActivity"
             android:exported="false" />
-
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".UpdateProductVariantActivity"
+            android:exported="false" />
         <activity
             android:name=".AddressAddActivity"
             android:exported="false" />
-
-        <activity
-            android:name=".ListProductActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AddFeedbackActivity"
-            android:exported="false"></activity>
         <activity
             android:name=".LoginActivity"
             android:exported="true" >
@@ -68,21 +67,35 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ListProductActivity"
+            android:exported="false" >
+        </activity>
+        <activity
+            android:name=".AddFeedbackActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ManageProductActivity"
+            android:exported="false" />
+        <activity
             android:name=".ListFeedbackActivity"
             android:exported="false" />
+        <activity
+            android:name=".UpdateProductActivity"
+            android:exported="true" >
+
+        </activity>
         <activity
             android:name=".PaymentActivity"
             android:exported="false" />
         <activity
             android:name=".AddressSelectionActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".AddProductActivity"
+            android:exported="true" />
         <activity
             android:name=".AddProductVariantActivity"
-            android:exported="true">
-
-        </activity>
-
+            android:exported="true" />
         <activity
             android:name=".UpdateFeedbackActivity"
             android:exported="false" />
@@ -96,19 +109,8 @@
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
-            android:exported="true"
-            tools:ignore="DuplicateActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".MainActivity"
             android:exported="true" />
-
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
