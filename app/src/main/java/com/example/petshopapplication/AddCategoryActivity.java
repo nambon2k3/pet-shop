@@ -57,6 +57,12 @@ public class AddCategoryActivity extends AppCompatActivity {
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
 
+        //Handle back button
+        binding.btnBack.setOnClickListener(view -> {
+            Intent intent = new Intent(AddCategoryActivity.this, CategoryListActivity.class);
+            startActivity(intent);
+        });
+
         // Handle image selection
         binding.btnCategoryImagePick.setOnClickListener(view -> chooseImage());
 
@@ -164,7 +170,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                 .name(categoryName)
                 .image(imageUrl)
                 .createdAt(String.valueOf(new Date()))
-                .isDeleted(false)
+                .deleted(false)
                 .build();
 
         // Store the category in the database
