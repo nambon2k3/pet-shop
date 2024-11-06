@@ -86,9 +86,6 @@
             android:name=".ManageProductActivity"
             android:exported="false" />
         <activity
-            android:name=".ManageFeedBackByProductActivity"
-            android:exported="false" />
-        <activity
             android:name=".ListFeedbackActivity"
             android:exported="false" />
         <activity
