@@ -106,6 +106,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
         if ("Shipping".equals(orderStatus) || orderStatus.equals("Delivered")) {
             holder.txt_shipping_status.setVisibility(View.VISIBLE);
             holder.txt_shipping_status.setText("Shipping Status: In Transit");
+
         } else if ("Delivered".equals(orderStatus)) {
             holder.txt_shipping_status.setVisibility(View.GONE);
             holder.line2.setVisibility(View.GONE);
@@ -166,8 +167,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             holder.btn_view_order_detail.setVisibility(View.VISIBLE);
             holder.line2.setVisibility(View.VISIBLE);
             if (orderStatus.equals("Delivered")) {
+                holder.btn_feedback.setVisibility(View.VISIBLE);
+            } else if ("Shipping".equals(orderStatus)) {
+                // Check if status = Shipment Completed (*****)
                 holder.btn_confirm_received.setVisibility(View.VISIBLE);
-                holder.btn_feedback.setVisibility(View.GONE);
             }
         }
 

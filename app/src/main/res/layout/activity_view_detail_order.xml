@@ -90,28 +90,31 @@
                             android:textColor="@android:color/black"
                             android:textSize="14sp"
                             android:textStyle="bold" />
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="16dp">
-                        <ImageView
-                            android:id="@+id/imv_shipment_logo"
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
-                            android:layout_marginEnd="8dp"
-                            android:scaleType="centerCrop"
-                            android:src="@color/textColorHint" />
 
-                        <TextView
-                            android:id="@+id/tv_shipping_method"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Shipment brand"
-                            android:textColor="@android:color/darker_gray"
-                            android:textSize="14sp"
-                            android:layout_marginTop="4dp"/>
-                    </LinearLayout>
+                            <ImageView
+                                android:id="@+id/imv_shipment_logo"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_marginEnd="8dp"
+                                android:scaleType="centerCrop"
+                                android:src="@color/textColorHint" />
+
+                            <TextView
+                                android:id="@+id/tv_shipping_method"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:text="Shipment brand"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp" />
+                        </LinearLayout>
                     </LinearLayout>
 
                     <!-- Address Information Section -->
@@ -236,20 +239,11 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:paddingStart="8dp"
+                            android:gravity="end"
                             android:text="2403178XNDQQ15 - code value"
                             android:textColor="@android:color/black"
                             android:textSize="14sp" />
 
-                        <Button
-                            android:id="@+id/btn_copy_order_code"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:backgroundTint="@android:color/darker_gray"
-                            android:paddingHorizontal="8dp"
-                            android:text="COPY"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <!-- Payment method -->

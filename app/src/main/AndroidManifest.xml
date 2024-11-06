@@ -16,9 +16,9 @@
         android:theme="@style/Theme.PetShopApplication"
         tools:replace="android:theme"
         tools:targetApi="31">
-        <activity
-            android:name=".UserProfileActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".UserProfileActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".AdminViewProductDetailActivity"
             android:exported="false" />

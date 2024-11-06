@@ -2,6 +2,7 @@ package com.example.petshopapplication;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -104,8 +105,12 @@ public class ViewDetailOrderActivity extends AppCompatActivity {
                             binding.tvOrderStatus.setText("Order " + order.getStatus());
                             binding.tvAddressDetail.setText(addressDetail);
                             binding.tvShippingMethod.setText(order.getCarrierName());
-                            binding.tvOrderCode.setText(order.getShipmentId());
-
+                            if (order.getStatus().equals("Processing") || order.getStatus().equals("Canceled")) {
+                                binding.tvOrderCode.setVisibility(View.GONE);
+                                binding.tvOrderCodeLabel.setVisibility(View.GONE);
+                            } else {
+                                binding.tvOrderCode.setText(order.getShipmentId());
+                            }
                             Glide.with(ViewDetailOrderActivity.this)
                                     .load(order.getCarrierLogo())
                                     .into(binding.imvShipmentLogo);
