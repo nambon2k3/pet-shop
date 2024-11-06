@@ -115,6 +115,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
         binding.addPvDimension.setOnClickListener(view -> showAddDimension());
         binding.addPvButton.setOnClickListener(view->addVariant());
         initVariants();
+        finish();
     }
     Product model;
     private void addVariant()
@@ -147,6 +148,9 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
                 .addOnSuccessListener(aVoid -> Toast.makeText(this, "Product submitted successfully!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to submit product.", Toast.LENGTH_SHORT).show());
 
+        Intent intent = new Intent(this, SeedingActivity.class);
+        intent.putExtra("productId", model.getId());
+        startActivity(intent);
     }
     private void initVariants()
     {

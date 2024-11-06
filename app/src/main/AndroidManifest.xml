@@ -89,6 +89,9 @@
             android:name=".ListFeedbackActivity"
             android:exported="false" />
         <activity
+            android:name=".SeedingActivity"
+            android:exported="false" />
+        <activity
             android:name=".UpdateProductActivity"
             android:exported="true" />
         <activity

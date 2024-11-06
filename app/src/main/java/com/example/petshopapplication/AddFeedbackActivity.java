@@ -75,7 +75,6 @@ public class AddFeedbackActivity extends AppCompatActivity {
     }
 
     private void uploadFeedback(String productId) {
-        System.out.println("uploadFeedback" + productId);
         final String comment = binding.edtFeedbackComment.getText().toString();
         final int rating = (int) binding.rbFeedbackRating.getRating();
 
@@ -129,7 +128,6 @@ public class AddFeedbackActivity extends AppCompatActivity {
     }
 
     private void getProductId(String orderId) {
-        System.out.println("getProductId--" + orderId);
         DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference(getString(R.string.tbl_order_name));
         List<String> productIds = new ArrayList<>();
         Query query = ordersRef.orderByChild("id").equalTo(orderId);
