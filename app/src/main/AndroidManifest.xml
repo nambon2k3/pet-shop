@@ -32,7 +32,7 @@
             android:name=".ViewFeedBackItemActivity"
             android:exported="false" />
         <activity
-            android:name=".VNPayPaymentActivity"
+            android:name=".ZaloPayPaymentActivity"
             android:exported="false" />
         <activity
             android:name=".AddCategoryActivity"
