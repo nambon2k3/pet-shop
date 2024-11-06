@@ -87,6 +87,14 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
 
         binding = ActivityAddProductVariantBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.imvGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8)
         {
