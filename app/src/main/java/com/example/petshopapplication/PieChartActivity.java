@@ -43,8 +43,6 @@ public class PieChartActivity extends AppCompatActivity {
 
     Map<String, String> idMapping = new HashMap<>(); // Mapping from category ID to name
     Map<String, Integer> categoryCountMap = new HashMap<>();
-    List<String> topProductList = new ArrayList<>();
-    ArrayList<PieEntry> visitors = new ArrayList<>();  // ArrayList for PieChart entries
 
     private int[] customColors = {
             Color.parseColor("#FF5722"), // Deep Orange
@@ -85,7 +83,6 @@ public class PieChartActivity extends AppCompatActivity {
 
         // Fetch and display product count by category with category names
         displayProductCountByCategoryWithNames();
-
     }
 
     private void displayProductCountByCategoryWithNames() {
@@ -119,8 +116,8 @@ public class PieChartActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : productSnapshot.getChildren()) {
                         Product product = dataSnapshot.getValue(Product.class);
                         if (product != null && !product.isDeleted()) {
-                            String categoryId = product.getCategoryId(); // This should match the ID in the mapping
-                            if (idMapping.containsKey(categoryId)) { // Only count if categoryId is in the mapping
+                            String categoryId = product.getCategoryId();
+                            if (idMapping.containsKey(categoryId)) {
                                 categoryCountMap.put(categoryId, categoryCountMap.getOrDefault(categoryId, 0) + 1);
                             }
                         }
@@ -160,7 +157,7 @@ public class PieChartActivity extends AppCompatActivity {
             pieChart.setCenterText("Product by Category");
             pieChart.setCenterTextSize(20f);
             pieChart.animateY(2000);
-            pieChart.invalidate(); // Refresh the chart
+            pieChart.invalidate();
 
             // Log results for verification
             for (PieEntry entry : pieEntries) {
@@ -173,7 +170,7 @@ public class PieChartActivity extends AppCompatActivity {
     private List<Integer> getPieChartColors(int numberOfEntries) {
         List<Integer> colors = new ArrayList<>();
         for (int i = 0; i < numberOfEntries; i++) {
-            colors.add(customColors[i % customColors.length]); // Cycle through the custom colors
+            colors.add(customColors[i % customColors.length]);
         }
         return colors;
     }
