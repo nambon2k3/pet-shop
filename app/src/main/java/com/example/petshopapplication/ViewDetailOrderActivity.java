@@ -65,6 +65,12 @@ public class ViewDetailOrderActivity extends AppCompatActivity {
         binding.ivBack.setOnClickListener(v -> {
             finish();
         });
+
+
+        // Set click listener for back button
+        binding.btnOut.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     private void loadOrderDetailById() {
@@ -87,15 +93,32 @@ public class ViewDetailOrderActivity extends AppCompatActivity {
 //                            Glide.with(ViewDetailOrderActivity.this)
 //                                    .load(order.getCarrierLogo())
 //                                    .into(binding.imgShipmentLogo);
-
-                            String city = getString(R.string.petshop_address_city_description);
-                            String district = getString(R.string.petshop_address_district_description);
-                            String ward = getString(R.string.petshop_address_ward_description);
+                            String userId = order.getUserId();
+                            loadUserDetails(userId);
+                            String city = order.getCity();
+                            String district = order.getDistrict();
+                            String ward = order.getWard();
                             String phoneNumber = getString(R.string.petshop_phone_nunmber);
 
-                            String addressDetail = phoneNumber + "\n" +  ward + "\n" + district + "\n" + city;
-
+                            String addressDetail = ward + "\n" + district + "\n" + city;
+                            binding.tvOrderStatus.setText("Order " + order.getStatus());
                             binding.tvAddressDetail.setText(addressDetail);
+                            binding.tvShippingMethod.setText(order.getCarrierName());
+                            binding.tvOrderCode.setText(order.getShipmentId());
+
+                            Glide.with(ViewDetailOrderActivity.this)
+                                    .load(order.getCarrierLogo())
+                                    .into(binding.imvShipmentLogo);
+
+                            binding.tvOrderCode.setText(order.getShipmentId());
+
+                            binding.tvRecipientName.setText("");
+
+//                            binding.tvPaymentMethod.setText(order.getPaymentId());
+
+                            // Lấy paymentId và truy vấn payment method
+                            String paymentId = order.getPaymentId();
+                            loadPaymentMethod(paymentId);
 
 //                            binding.tvShipmentBrand.setText(order.getCarrierName());
                             binding.txtTotalPrice.setText(String.format("Total: %s", Validate.formatVND(order.getTotalAmount())));
@@ -137,4 +160,73 @@ public class ViewDetailOrderActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void loadPaymentMethod(String paymentId) {
+        DatabaseReference paymentReference = database.getReference("payments").child(paymentId);
+        paymentReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    // Lấy payment method
+                    String paymentMethod = snapshot.child("paymentMethod").getValue(String.class);
+                    if (paymentMethod != null) {
+                        binding.tvPaymentMethod.setText(paymentMethod);
+                    } else {
+                        Log.e(TAG, "Payment method is null for paymentId: " + paymentId);
+                    }
+
+                    // Lấy total amount
+                    Double totalAmount = snapshot.child("amount").getValue(Double.class);
+                    if (totalAmount != null) {
+                        binding.txtTotalPrice.setText(String.format("Total: %s", Validate.formatVND(totalAmount)));
+                    } else {
+                        Log.e(TAG, "Total amount is null for paymentId: " + paymentId);
+                    }
+                } else {
+                    Log.e(TAG, "No payment data found for paymentId: " + paymentId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Failed to load payment method: " + error.getMessage());
+            }
+        });
+    }
+
+    private void loadUserDetails(String userId) {
+        DatabaseReference userReference = database.getReference("users");
+        Log.d(TAG, "Searching for user with ID: " + userId);
+
+        userReference.orderByChild("id").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean userFound = false;
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    String fullName = userSnapshot.child("fullName").getValue(String.class);
+                    String phoneNumber = userSnapshot.child("phoneNumber").getValue(String.class);
+
+                    if (fullName != null && phoneNumber != null) {
+                        binding.tvRecipientName.setText(String.format("%s - %s", fullName, phoneNumber));
+                        userFound = true;
+                        Log.d(TAG, "User found: " + fullName + " - " + phoneNumber);
+                        break;
+                    } else {
+                        Log.e(TAG, "User details are missing for userId: " + userId);
+                    }
+                }
+
+                if (!userFound) {
+                    Log.e(TAG, "No user data found for userId: " + userId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Failed to load user details: " + error.getMessage());
+            }
+        });
+    }
+
+
 }

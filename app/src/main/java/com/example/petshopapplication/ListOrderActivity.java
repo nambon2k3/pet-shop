@@ -141,27 +141,6 @@ public class ListOrderActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "No internet connection available.");
         }
-
-//        // Call the method to load cities:
-//        // Call the method to load cities
-//        loadCities();
-//        loadDistricts("100000");
-//        loadWards("100900");
-//
-//        // Test get rates:
-//
-//        String fromDistrict = "100900";
-//        String fromCity = "100000";
-//        String toDistrict = "100200";
-//        String toCity = "100000";
-//        int cod = 500000;
-//        int weight = 220;
-//        int width = 10;
-//        int height = 15;
-//        int length = 15;
-//
-//        loadRates(fromDistrict, fromCity, toDistrict, toCity, cod, cod, width, height, length, weight);
-
     }
 
     private void initTablayouts() {
