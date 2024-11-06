@@ -62,7 +62,6 @@ public class AddProductActivity extends AppCompatActivity {
 
         initCategory();
 
-
         // Handle image selection
         binding.addProductButton.setOnClickListener(view -> addProduct());
 
@@ -172,7 +171,7 @@ public class AddProductActivity extends AppCompatActivity {
         Intent intent= new Intent(this, AddProductVariantActivity.class);
         intent.putExtra("product",newProduct);
         startActivity(intent);
-
+        finish();
     }
 
 }
