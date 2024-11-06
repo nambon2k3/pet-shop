@@ -1,0 +1,282 @@
+[33mcommit b2ae366309a99325b30a9c4370bb73a1c460f6a7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mchungvn[m[33m)[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Mon Nov 4 19:06:49 2024 +0700
+
+    're_base'
+
+[33mcommit 9b532ac1042e5f8b0699bcdd7e788d1bafed8f19[m
+Merge: 298336b 438da32
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Mon Nov 4 18:33:28 2024 +0700
+
+    Merge branch 'main' of https://github.com/nambon2k3/pet-shop
+
+[33mcommit 298336be51149425a766578530ea478b41a5fc3f[m
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Mon Nov 4 18:32:35 2024 +0700
+
+    feat: admin dashboard page
+
+[33mcommit 438da32a9ff443521353994c58ee56caffccf162[m
+Author: PHAM HUONG LY <huongly2003.hn@gmail.com>
+Date:   Mon Nov 4 17:54:22 2024 +0700
+
+    feat: fb in product detail.
+
+[33mcommit 43a73ee2e589496ee59d11ea6707f3a62ae0300b[m
+Merge: 2f2105a 777db34
+Author: PHAM HUONG LY <huongly2003.hn@gmail.com>
+Date:   Mon Nov 4 16:49:29 2024 +0700
+
+    Merge branch 'main' into lyph
+
+[33mcommit 777db34f18ad4a20e659dc65ce22d214996b62fc[m
+Merge: 66189b2 6a8ea1e
+Author: LanThan99 <lananhthan99@gmail.com>
+Date:   Sun Nov 3 23:35:22 2024 +0700
+
+    Merge branch 'main' into anhttl
+
+[33mcommit 66189b2b668de4048c1eba16b62744a1b8dab43f[m
+Author: LanThan99 <lananhthan99@gmail.com>
+Date:   Sun Nov 3 23:31:13 2024 +0700
+
+    fix: add product to cart and check quantity for increase button
+
+[33mcommit 6a8ea1eb3af72f9871e349632ec1d69a85132e88[m[33m ([m[1;32mmono[m[33m, [m[1;32mmomo[m[33m)[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 23:21:29 2024 +0700
+
+    'delete_cart_after_ordering'
+
+[33mcommit fe62f4f87d7cad0a3b7e65aabb5b8b347f1b41ef[m
+Merge: 6c10621 49879b0
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 21:55:52 2024 +0700
+
+    Merge branch 'main' of https://github.com/nambon2k3/pet-shop
+
+[33mcommit 6c10621975cd04f1d831ba9e8c8f0de5d67cbe0a[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 21:55:33 2024 +0700
+
+    'calculate_final_cost'
+
+[33mcommit 49879b00d1f2c67d281d60adc3cbc67bf827ae77[m
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Sun Nov 3 21:10:04 2024 +0700
+
+    merge
+
+[33mcommit 5cdd94ffc7b23df1807061b14a41efaff31c6b49[m
+Merge: c55713e 37ad8d9
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Sun Nov 3 21:08:12 2024 +0700
+
+    Merge branch 'main' into khoakn
+
+[33mcommit c55713e68d7566929a10f2a228aa69556b1f8917[m
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Sun Nov 3 21:07:22 2024 +0700
+
+    chore: change direction
+
+[33mcommit 37ad8d9cfb4d66a45646e190f013a4ca1be03540[m
+Author: LanThan99 <lananhthan99@gmail.com>
+Date:   Sun Nov 3 21:05:21 2024 +0700
+
+    fix: display image product cart after reload
+
+[33mcommit 1a98454db9a5841ae5dc6c8e67b65a2faa0804df[m
+Merge: 6f6926e 5dc9a49
+Author: LanThan99 <lananhthan99@gmail.com>
+Date:   Sun Nov 3 20:42:23 2024 +0700
+
+    Merge branch 'main' into anhttl
+
+[33mcommit 6f6926e9efc98db18a2bcd54e6c711aba1f47255[m
+Author: LanThan99 <lananhthan99@gmail.com>
+Date:   Sun Nov 3 20:41:57 2024 +0700
+
+    fix: update quantity in cart
+
+[33mcommit 5dc9a49fea7d54ab71d91509acdb89223a584661[m
+Author: Tu Binh Nguyen <binhntthe176420@fpt.edu.vn>
+Date:   Sun Nov 3 20:41:23 2024 +0700
+
+    update: view orders
+
+[33mcommit 2c0b99457f001475343489698db6e5d84c3b9d8d[m
+Merge: d60e82f 17365b3
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Sun Nov 3 20:39:00 2024 +0700
+
+    merge
+
+[33mcommit d60e82f268b007dfdb430763aac262bca61e4739[m
+Merge: 89ff12e 228902e
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Sun Nov 3 20:33:36 2024 +0700
+
+    feat : add product variant
+
+[33mcommit 17365b394742b8a06abb4a84db70f2ff80db0da7[m
+Merge: a74b269 9391f04
+Author: Tu Binh Nguyen <binhntthe176420@fpt.edu.vn>
+Date:   Sun Nov 3 20:14:30 2024 +0700
+
+    update: view detail order
+
+[33mcommit a74b2692431d0abe26aef98dc193b7fb7d810c91[m
+Author: Tu Binh Nguyen <binhntthe176420@fpt.edu.vn>
+Date:   Sun Nov 3 20:10:20 2024 +0700
+
+    update: view detail order
+
+[33mcommit 9391f0415a938ed68263a703121fd251249ffc01[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 20:02:54 2024 +0700
+
+    'update_order_atb'
+
+[33mcommit 5f0b48a59f6a233de94cf44004b8a0cbb8e570a4[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 16:33:14 2024 +0700
+
+    'change_quantity'
+
+[33mcommit 89ff12eb2436c4e2455049920fe00ad70627f3dd[m
+Author: nhukhoa <khoa20033002@gmail.com>
+Date:   Sun Nov 3 16:13:45 2024 +0700
+
+    resolve conflict
+
+[33mcommit f92eb865867478db6d5fc91315b4ffd2bb053541[m
+Merge: 127e8ea d68250a
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 16:00:32 2024 +0700
+
+    Merge branch 'main' of https://github.com/nambon2k3/pet-shop
+
+[33mcommit 127e8ea3df8a00eb5c365e5fe70dc6803d3dcee6[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 15:59:40 2024 +0700
+
+    'update_purchasedCash'
+
+[33mcommit 228902ea0c13a483b94f6ffde7315414dd47fb7e[m
+Author: = <=>
+Date:   Sun Nov 3 15:52:48 2024 +0700
+
+    Add product variantAdd product variant
+
+[33mcommit d68250a757579cb5fabae024aea30f3674e02267[m
+Merge: 760fe09 64298aa
+Author: Tu Binh Nguyen <binhntthe176420@fpt.edu.vn>
+Date:   Sun Nov 3 14:54:05 2024 +0700
+
+    Merge branch 'main' of https://github.com/nambon2k3/pet-shop
+
+[33mcommit 760fe09f89582951ab9bb6ef3faf70a72cf84d85[m
+Author: Tu Binh Nguyen <binhntthe176420@fpt.edu.vn>
+Date:   Sun Nov 3 14:52:40 2024 +0700
+
+    fix: login->home
+
+[33mcommit 64298aaf420631ee34f0af0f6fb2012831ef1351[m
+Merge: 6235e63 d90e67b
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 13:51:08 2024 +0700
+
+    Merge branch 'main' of https://github.com/nambon2k3/pet-shop
+
+[33mcommit 6235e632cd68128eb0f5da00db7c7c9489d2635d[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 13:50:29 2024 +0700
+
+    'update_default_addr'
+
+[33mcommit d90e67b18273d20f11d2b74e57e722bfec846190[m
+Author: Tu Binh Nguyen <binhntthe176420@fpt.edu.vn>
+Date:   Sun Nov 3 13:46:48 2024 +0700
+
+    update: prepare order
+
+[33mcommit 63847744c1d5d5d3e3fdeddc84e48a714cc306fb[m
+Merge: 233d8ed f2a8122
+Author: Tu Binh Nguyen <binhntthe176420@fpt.edu.vn>
+Date:   Sun Nov 3 13:45:28 2024 +0700
+
+    update: prepare order
+
+[33mcommit 233d8edc5746942ab5576944e990eafcd4bff6a1[m
+Author: Tu Binh Nguyen <binhntthe176420@fpt.edu.vn>
+Date:   Sun Nov 3 13:35:07 2024 +0700
+
+    update: prepare order
+
+[33mcommit f2a81222334d618cbfe723656ebfe7b19d55a25f[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 12:56:51 2024 +0700
+
+    'update_selectedCart'
+
+[33mcommit a469409b01e5fd3ca43d854acf66ae65d167c48c[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 12:55:37 2024 +0700
+
+    'update_cart'
+
+[33mcommit 9b01a8db3620daf7c97ce1cb7a76119e1b1dd48f[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 11:12:15 2024 +0700
+
+    'update_4'
+
+[33mcommit 6f916fdffcf5f54e469529f9dd0476c590d96015[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 11:02:04 2024 +0700
+
+    'update_selectedCart'
+
+[33mcommit 046f5b55c0aeefe0b117b9c0497cc0f81fb26669[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 10:05:38 2024 +0700
+
+    'update_addr_ship'
+
+[33mcommit dbb002a38f648bac11149e6b4a6456634a3b2017[m
+Merge: 472c234 cdf9080
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 09:10:01 2024 +0700
+
+    Merge branch 'main' of https://github.com/nambon2k3/pet-shop
+
+[33mcommit 472c23419be24a3ca48a7fef362a983a592a98f2[m
+Author: qiwey <vungocchungfpt@gmail.com>
+Date:   Sun Nov 3 09:09:53 2024 +0700
+
+    'update_shipaddress'
+
+[33mcommit cdf9080d5a28911935fd2d499f04ec1662318c9e[m
+Merge: 5bd8154 049e1fe
+Author: LanThan99 <lananhthan99@gmail.com>
+Date:   Sat Nov 2 22:57:46 2024 +0700
+
+    Merge branch 'anhttl'
+
+[33mcommit 049e1fe862c5f62b3869de826b4a445e3c13b861[m
+Author: LanThan99 <lananhthan99@gmail.com>
+Date:   Sat Nov 2 22:57:09 2024 +0700
+
+    fix: change quantity item and checkbox in cart
+
+[33mcommit 2f2105a350e62c1671569fd0507035f99dcd55e0[m
+Author: PHAM HUONG LY <huongly2003.hn@gmail.com>
+Date:   Sat Nov 2 00:57:01 2024 +0700
+
+    chore: list user fb UI
+
+[33mcommit 5bd81543d4b0dbafa34c8516e329df42b306d994[m
+Author: PHAM HUONG LY <huongly2003.hn@gmail.com>
+Date:   Sat Nov 
