@@ -90,13 +90,14 @@ public class HomeActivity extends AppCompatActivity {
 
         List<Product> productItems = new ArrayList<>();
         Query query = reference.orderByChild("createdAt");
-        query.limitToFirst(10).addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        boolean isDeleted = Boolean.TRUE.equals(dataSnapshot.child("deleted").getValue(Boolean.class));
                         Product product = dataSnapshot.getValue(Product.class);
-                        if(!product.isDeleted()) {
+                        if(!isDeleted && productItems.size() < 10) {
                             productItems.add(product);
                         }
                     }
@@ -185,7 +186,7 @@ public class HomeActivity extends AppCompatActivity {
         binding.prgHomeCategory.setVisibility(View.VISIBLE);
 
         List<Category> categoryItems = new ArrayList<>();
-        Query query = reference.orderByChild("isDeleted").equalTo(false);
+        Query query = reference.orderByChild("deleted").equalTo(false);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override

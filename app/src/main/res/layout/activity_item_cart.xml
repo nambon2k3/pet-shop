@@ -26,8 +26,10 @@
 
         <ImageView
             android:id="@+id/imv_item"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_width="75dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="75dp"
             android:layout_weight="1"
             tools:srcCompat="@tools:sample/avatars" />
 

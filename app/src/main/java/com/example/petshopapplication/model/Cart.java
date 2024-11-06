@@ -16,6 +16,6 @@ public class Cart implements Serializable {
     private int quantity;
     private String selectedColorId;
     private String selectedVariantId;
-    private boolean isChecked;
+    private Boolean isChecked;
 
 }

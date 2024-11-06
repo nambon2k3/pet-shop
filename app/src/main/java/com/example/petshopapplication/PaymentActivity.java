@@ -2,6 +2,7 @@ package com.example.petshopapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.petshopapplication.API.CreateOrder;
 import com.example.petshopapplication.API.GoshipAPI;
 import com.example.petshopapplication.API.RetrofitClient;
 import com.example.petshopapplication.API_model.Parcel;
@@ -41,6 +43,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONObject;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,6 +55,10 @@ import java.util.UUID;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import vn.zalopay.sdk.Environment;
+import vn.zalopay.sdk.ZaloPayError;
+import vn.zalopay.sdk.ZaloPaySDK;
+import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class PaymentActivity extends AppCompatActivity implements RateAdapter.OnRateSelectListener {
     private static final int REQUEST_CODE = 1;
@@ -73,11 +81,13 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private TextView feeShip;
     private TextView purchasedMoney;
     private RadioButton checkboxPaymentOnDelivery;
+    private RadioButton checkboxPaymentZaloPay;
     private Button payButton;
     private String selectedRateID;
     private String selectedCartierName;
     private String selectedCartierLogo;
     private List<Product> productList = new ArrayList<>();
+    private double finalTotalAmount;
 
     FirebaseAuth auth;
     FirebaseUser user;
@@ -120,7 +130,17 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         getDefaultAddress(userId);
         loadProductDetails();
         checkboxPaymentOnDelivery = findViewById(R.id.checkboxPaymentOnDelivery);
+        checkboxPaymentZaloPay = findViewById(R.id.checkboxPaymentZaloPay);
         payButton = findViewById(R.id.payButton);
+
+        StrictMode.ThreadPolicy policy = new
+                StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        // ZaloPay SDK Init
+        ZaloPaySDK.init(553, Environment.SANDBOX);
+
+
         payButton.setOnClickListener(v -> {
             if (selectedRateID == null || selectedRateID.isEmpty()) {
                 Toast.makeText(PaymentActivity.this, "Vui lòng chọn phương thức vận chuyển", Toast.LENGTH_SHORT).show();
@@ -128,15 +148,78 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             }
             if (checkboxPaymentOnDelivery.isChecked()) {/* other payment method check */
                 createOrderAndPayment();
+                deleteCartItem();
+
+            } else if (checkboxPaymentZaloPay.isChecked()) {
+
+                CreateOrder orderApi = new CreateOrder();
+
+
+                try {
+                    int totalAmount = (int) Math.round(finalTotalAmount); // Làm tròn lên hoặc xuống
+                    String finalTotalAmountStr = String.valueOf(totalAmount); // Chuyển đổi thành chuỗi
+                    Log.d(TAG, "Final total amount: " + finalTotalAmountStr); // Log tổng tiền cần thanh toán
+
+                    JSONObject data = orderApi.createOrder(finalTotalAmountStr);
+                    Log.d(TAG, "Create order response: " + data.toString()); // Log phản hồi từ API tạo đơn hàng
+
+                    String code = data.getString("returncode");
+                    Log.d(TAG, "Return code from create order: " + code); // Log mã trả về từ API
+
+                    if (code.equals("1")) {
+                        String token = data.getString("zptranstoken");
+                        Log.d(TAG, "ZaloPay token received: " + token); // Log token nhận được từ API
+
+                        ZaloPaySDK.getInstance().payOrder(PaymentActivity.this, token, "demozpdk://app", new PayOrderListener() {
+
+                            @Override
+                            public void onPaymentSucceeded(String transactionId, String orderId, String amount) {
+                                Log.d(TAG, "Payment succeeded: Transaction ID: " + transactionId + ", Order ID: " + orderId + ", Amount: " + amount);
+                                createOrderAndPayment();
+                                deleteCartItem();
+                                Intent intent = new Intent(PaymentActivity.this, ZaloPayPaymentActivity.class);
+                                intent.putExtra("result", "Thanh toán thành công!");
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onPaymentCanceled(String s, String s1) {
+                                Log.d(TAG, "Payment canceled: " + s);
+                                Intent intent = new Intent(PaymentActivity.this, ZaloPayPaymentActivity.class);
+                                intent.putExtra("result", "Hủy thanh toán!");
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
+                                Log.e(TAG, "Payment error: " + zaloPayError.toString()); // Ghi lại thông điệp lỗi
+                                Intent intent = new Intent(PaymentActivity.this, ZaloPayPaymentActivity.class);
+                                intent.putExtra("result", "Thanh toán không thành công: " + zaloPayError.toString());
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
             } else {
                 Toast.makeText(this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
             }
         });
+
         changeAddressButton.setOnClickListener(v -> {
             Intent intent = new Intent(PaymentActivity.this, AddressSelectionActivity.class);
             intent.putExtra("selectedAddress", selectedUAddress);
             startActivityForResult(intent, REQUEST_CODE);
         });
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        ZaloPaySDK.getInstance().onResult(intent);
     }
 
     @Override
@@ -150,6 +233,37 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                 if (selectedUAddress.getDistrictId() != null && selectedUAddress.getCityId() != null) {
                     loadRates(selectedUAddress.getDistrictId(), selectedUAddress.getCityId(), 1, (int) totalAmount, totalWidth, totalHeight, totalLength, totalWeight);
                 }
+            }
+        }
+    }
+
+    private void deleteCartItem() {
+        DatabaseReference cartsRef = FirebaseDatabase.getInstance().getReference("carts");
+
+        for (Cart cart : selectedCartItems) {
+            String cartId = cart.getCartId();
+
+            if (cartId != null) {
+                cartsRef.orderByChild("cartId").equalTo(cartId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            // Xóa mục giỏ hàng
+                            snapshot.getRef().removeValue()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firebase", "Xóa cart thành công: " + cartId);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firebase", "Xóa cart thất bại: " + cartId, e);
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("Firebase", "Lỗi khi tìm cart: " + databaseError.getMessage());
+                    }
+                });
             }
         }
     }
@@ -187,7 +301,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                         payment.setId(UUID.randomUUID().toString()); // Tạo ID tự động cho thanh toán
                         payment.setOrderId(orderId);
                         payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Chuyển khoản"); // Gán phương thức thanh toán
-                        payment.setAmount(order.getTotalAmount()); // Số tiền thanh toán
+                        payment.setAmount(finalTotalAmount); // Số tiền thanh toán
                         payment.setTransactionId(""); // Nếu có ID giao dịch, thêm vào đây
 
                         // Thêm vào Firebase
@@ -221,6 +335,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                     }
                 });
     }
+
 
     public List<OrderDetail> getOrderDetailsList() {
         List<OrderDetail> orderDetailsList = new ArrayList<>();
@@ -266,6 +381,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         }
         return 0; // Return 0 if product not found
     }
+
     public Product findProductById(String productId) {
         for (Product product : productList) { // productList là danh sách sản phẩm
             if (product.getId().equals(productId)) {
@@ -274,7 +390,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         }
         return null; // Trả về null nếu không tìm thấy sản phẩm
     }
-
 
 
     private void loadProductDetails() {
@@ -417,7 +532,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
     @Override
     public void onRateSelected(double fee, String rateID, String cartierName, String cartierLogo) {
-        double finalTotalAmount = totalAmount + fee; // Cập nhật tổng giá
+        finalTotalAmount = totalAmount + fee; // Cập nhật tổng giá
 
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
         numberFormat.setMinimumFractionDigits(0);

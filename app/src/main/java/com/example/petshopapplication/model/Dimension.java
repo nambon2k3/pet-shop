@@ -1,5 +1,7 @@
 package com.example.petshopapplication.model;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +15,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Dimension {
+public class Dimension implements Serializable {
     private int height;
     private int weight;
     private int length;

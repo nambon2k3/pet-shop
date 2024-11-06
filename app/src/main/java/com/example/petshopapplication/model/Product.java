@@ -1,6 +1,9 @@
 package com.example.petshopapplication.model;
 
 
+import com.google.firebase.database.PropertyName;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +20,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Product {
+public class Product  implements Serializable {
     private String id;
     private String categoryId;
     private String name;
@@ -26,6 +29,18 @@ public class Product {
     private String baseImageURL;
     private double basePrice;
     private List<Variant> listVariant;
-    private String createdAt;;
+    private String createdAt;
+    ;
+    @PropertyName("isDeleted")
+
     private boolean isDeleted;
+    @PropertyName("isDeleted")
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    @PropertyName("isDeleted")
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
 }

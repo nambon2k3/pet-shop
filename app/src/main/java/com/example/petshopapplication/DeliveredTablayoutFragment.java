@@ -42,6 +42,9 @@ public class DeliveredTablayoutFragment extends Fragment {
         this.isInventory = isInventory;
     }
 
+    public DeliveredTablayoutFragment() {
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
