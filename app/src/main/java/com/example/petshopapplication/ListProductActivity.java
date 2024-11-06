@@ -105,7 +105,7 @@ public class ListProductActivity extends AppCompatActivity implements ListProduc
         reference = database.getReference(getString(R.string.tbl_category_name));
 
         categoryItems = new ArrayList<>();
-        Query query = reference.orderByChild("isDeleted");
+        Query query = reference.orderByChild("deleted");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -146,7 +146,7 @@ public class ListProductActivity extends AppCompatActivity implements ListProduc
         if(categoryId != null && !categoryId.isBlank()) {
             query = reference.orderByChild("categoryId").equalTo(categoryId).limitToFirst(endIndex);
         } else {
-        query = reference.orderByChild("isDeleted").equalTo(false).limitToFirst(endIndex) ;
+        query = reference.orderByChild("deleted").equalTo(false).limitToFirst(endIndex) ;
         }
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -190,7 +190,7 @@ public class ListProductActivity extends AppCompatActivity implements ListProduc
         if(categoryId != null && !categoryId.isBlank()) {
             query = reference.orderByChild("categoryId").equalTo(categoryId);
         } else {
-            query = reference.orderByChild("isDeleted").equalTo(false);
+            query = reference.orderByChild("deleted").equalTo(false);
         }
         query.limitToFirst(ITEMS_PER_PAGE).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

@@ -1,20 +1,30 @@
 package com.example.petshopapplication;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.CartAdapter;
+import com.example.petshopapplication.databinding.ActivityAddCategoryBinding;
+import com.example.petshopapplication.databinding.ActivityCategoryListBinding;
 import com.example.petshopapplication.model.Cart;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Variant;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class CartActivity extends AppCompatActivity implements CartAdapter.OnCartItemCheckedListener {
+public class CartActivity extends AppCompatActivity implements CartAdapter.OnCartItemCheckedListener, CartAdapter.OnItemLongPressListener {
     FirebaseDatabase database;
     DatabaseReference reference;
     CartAdapter.OnCartItemCheckedListener listener;
@@ -38,13 +48,23 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     List<Product> productList = new ArrayList<>();
     List<String> cartProductId = new ArrayList<>();
     List<Cart> selectedItemList = new ArrayList<>();
+    ActivityAddCategoryBinding binding;
     FirebaseAuth auth;
     FirebaseUser user;
     Button purchaseButton;
+    ImageView btn_back;
+
+    //Set up dialog cart
+    Dialog dialog;
+
+    //pop up view
+    Button btn_delete_cart_item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        binding = ActivityAddCategoryBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
         setContentView(R.layout.activity_cart);
 
         //Get Id of current User
@@ -57,6 +77,11 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
 
         initCart(userId);
 
+        //Handle back button
+        btn_back = findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(v -> {
+            finish();
+        });
 
         purchaseButton = findViewById(R.id.btn_purchase); // Khởi tạo nút mua hàng
 
@@ -118,7 +143,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
                             }
 
                             RecyclerView rec = findViewById(R.id.rec_cart);
-                            CartAdapter adapter = new CartAdapter(productList, cartList, CartActivity.this, CartActivity.this);
+                            CartAdapter adapter = new CartAdapter(productList, cartList, CartActivity.this, CartActivity.this, CartActivity.this);
                             rec.setLayoutManager(new LinearLayoutManager(CartActivity.this));
                             rec.setAdapter(adapter);
 
@@ -183,5 +208,66 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
             }
         }
         return null;
+    }
+
+    @Override
+    public void onItemLongPress(Cart cart) {
+        //create dialog of delete cart item
+        dialog = new Dialog(CartActivity.this);
+        dialog.setContentView(R.layout.pop_up_delete_cart_item);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        //init dialog view items
+        btn_delete_cart_item = dialog.findViewById(R.id.btn_delete_cart_item);
+
+        dialog.show();
+
+        //Handle delete button on dialog
+        btn_delete_cart_item.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reference = database.getReference(getString(R.string.tbl_cart_name));
+                reference.orderByChild("cartId").equalTo(cart.getCartId())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if(snapshot.exists()){
+                                            for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                                                Log.e("Cart Item Delete", dataSnapshot.getRef() + "");
+
+                                                dataSnapshot.getRef().removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if(task.isSuccessful()){
+                                                            Toast.makeText(CartActivity.this, "Delete cart item successfullu!", Toast.LENGTH_SHORT).show();
+                                                            //Exit dialog
+                                                            dialog.dismiss();
+                                                            //Reload cart list
+                                                            reloadCartList();
+
+                                                        } else  {
+                                                            Toast.makeText(CartActivity.this, "Failed to delete cart item!", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+            }
+        });
+
+
+
+    }
+
+    public void reloadCartList(){
+        cartList.clear();
+        initCart(user.getUid());
     }
 }

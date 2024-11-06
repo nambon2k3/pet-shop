@@ -75,7 +75,7 @@ public class AddProductActivity extends AppCompatActivity {
         binding.prgHomeCategory2.setVisibility(View.VISIBLE);
 
         List<Category> categoryItems = new ArrayList<>();
-        Query query = reference.orderByChild("isDeleted").equalTo(false);
+        Query query = reference.orderByChild("deleted").equalTo(false);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -165,7 +165,7 @@ public class AddProductActivity extends AppCompatActivity {
         newProduct.setName(name);
         newProduct.setCategoryId(selectedCategory.getId());
         newProduct.setDiscount(Integer.parseInt(discount));
-        newProduct.setBasePrice(Integer.parseInt(price));
+        newProduct.setBasePrice(Double.parseDouble(price));
         newProduct.setBaseImageURL(image);
         newProduct.setDescription(description);
 

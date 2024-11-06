@@ -30,6 +30,7 @@ public class ListFeedbackActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private String productId;
+    String role = "a";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,9 @@ public class ListFeedbackActivity extends AppCompatActivity {
                         feedbackList.add(feedback); // Add feedback to the list
                         totalRating += feedback.getRating(); // Sum up ratings
                         feedbackCount++;
+                    }
+                    if (feedback != null && role != null && feedback.isDeleted() && feedback.getProductId().equals(productId)){
+                        feedbackList.add(feedback);
                     }
                 }
 
@@ -113,6 +117,7 @@ public class ListFeedbackActivity extends AppCompatActivity {
                     }
                 }
 
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
 
@@ -124,5 +129,6 @@ public class ListFeedbackActivity extends AppCompatActivity {
     private void getIntend() {
         productId = getIntent().getStringExtra("productId");
         binding.btnBack.setOnClickListener(v -> finish());
+
     }
 }

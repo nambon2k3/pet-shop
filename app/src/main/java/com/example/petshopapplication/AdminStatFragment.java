@@ -1,5 +1,6 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,10 +11,10 @@ import android.view.ViewGroup;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AdminShortFragment#newInstance} factory method to
+ * Use the {@link AdminStatFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdminShortFragment extends Fragment {
+public class AdminStatFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +25,7 @@ public class AdminShortFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public AdminShortFragment() {
+    public AdminStatFragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +35,11 @@ public class AdminShortFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AdminShortFragment.
+     * @return A new instance of fragment SubscriptionFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdminShortFragment newInstance(String param1, String param2) {
-        AdminShortFragment fragment = new AdminShortFragment();
+    public static AdminStatFragment newInstance(String param1, String param2) {
+        AdminStatFragment fragment = new AdminStatFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -59,6 +60,16 @@ public class AdminShortFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_short, container, false);
+        View view = inflater.inflate(R.layout.fragment_stat, container, false);
+
+        // Set up button listeners
+        view.findViewById(R.id.btnShowPie).setOnClickListener(v -> openStatisticProductByCategoryActivity());
+        //view.findViewById(R.id.btnViewListProduct).setOnClickListener(v -> openUpdateProductActivity());
+
+        return view;
+    }
+    private void openStatisticProductByCategoryActivity() {
+        Intent intent = new Intent(getActivity(), PieChartActivity.class);
+        startActivity(intent);
     }
 }

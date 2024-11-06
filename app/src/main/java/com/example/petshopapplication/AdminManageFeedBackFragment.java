@@ -1,5 +1,6 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,10 +11,10 @@ import android.view.ViewGroup;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AdminSubscriptionFragment#newInstance} factory method to
+ * Use the {@link AdminManageFeedBackFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdminSubscriptionFragment extends Fragment {
+public class AdminManageFeedBackFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +25,7 @@ public class AdminSubscriptionFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public AdminSubscriptionFragment() {
+    public AdminManageFeedBackFragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +35,11 @@ public class AdminSubscriptionFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment SubscriptionFragment.
+     * @return A new instance of fragment AdminManageFeedBackFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdminSubscriptionFragment newInstance(String param1, String param2) {
-        AdminSubscriptionFragment fragment = new AdminSubscriptionFragment();
+    public static AdminManageFeedBackFragment newInstance(String param1, String param2) {
+        AdminManageFeedBackFragment fragment = new AdminManageFeedBackFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -59,6 +60,16 @@ public class AdminSubscriptionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_subscription, container, false);
+        View view = inflater.inflate(R.layout.fragment_admin_manage_feed_back, container, false);
+
+        // Set up button listeners
+        view.findViewById(R.id.btn_view_fb_by_product).setOnClickListener(v -> openManageFeedbackByProductActivity());
+
+        return view;
+    }
+
+    private void openManageFeedbackByProductActivity() {
+        Intent intent = new Intent(getActivity(), ManageFeedBackByProductActivity.class);
+        startActivity(intent);
     }
 }

@@ -1,5 +1,8 @@
 package com.example.petshopapplication.Adapter;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -17,8 +20,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.petshopapplication.ListFeedbackActivity;
+import com.example.petshopapplication.ListOrderActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.UpdateFeedbackActivity;
+import com.example.petshopapplication.databinding.ActivityListFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.User;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +39,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
     List<User> userItems;
     User user;
     Context context;
+    String role = "a";
 
     public FeedBackListAdapter(List<FeedBack> feedBackItems, List<User> userItems) {
         this.feedBackItems = feedBackItems;
@@ -88,8 +95,13 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
                 // Add options to the spinner
                 List<String> options = new ArrayList<>();
                 options.add("Select Action:");
-                options.add("Edit");
-                options.add("Delete");
+                if (role != null){
+                    options.add("Ban");
+                    options.add("Unban");
+                } else {
+                    options.add("Edit");
+                    options.add("Delete");
+                }
 
                 // Set up spinner
                 ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);
@@ -101,7 +113,6 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
                     @Override
                     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                         String selectedAction = (String) parentView.getItemAtPosition(position);
-
                         switch (selectedAction) {
                             case "Edit":
                                 updateFeedback(feedback);
@@ -128,6 +139,10 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
             } else {
                 // Hide spinner if conditions are not met
                 holder.sp_feedback.setVisibility(View.GONE);
+            }
+
+            if (role != null && feedback.isDeleted()){
+                holder.itemView.setAlpha(0.5f);
             }
         }
     }
@@ -180,10 +195,12 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
         feedbackRef.setValue(feedback).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(context, "Feedback marked as deleted successfully", Toast.LENGTH_SHORT).show();
+                ((Activity) context).finish();
             } else {
                 Toast.makeText(context, "Failed to delete feedback", Toast.LENGTH_SHORT).show();
             }
         });
+        return;
     }
 
     private void unbanFeedback(FeedBack feedback) {

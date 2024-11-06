@@ -26,14 +26,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.ColorAdapter;
 import com.example.petshopapplication.Adapter.ItemModel;
-import com.example.petshopapplication.Adapter.SizeAdapter2;
+import com.example.petshopapplication.Adapter.ManageSizeAdapter;
 import com.example.petshopapplication.Adapter.VariantAdapter;
 import com.example.petshopapplication.databinding.ActivityAddProductVariantBinding;
 import com.example.petshopapplication.databinding.PopUpAddVariant1Binding;
 import com.example.petshopapplication.databinding.PopUpAddVariantDimnesionBinding;
 import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.Dimension;
-import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.ObjectPrinter;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.Size;
@@ -53,7 +52,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -61,7 +59,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 
-public class AddProductVariantActivity extends AppCompatActivity implements  SizeAdapter2.OnSizeClickEventListener,ColorAdapter.OnColorClickEventListener
+public class AddProductVariantActivity extends AppCompatActivity implements  ManageSizeAdapter.OnSizeClickEventListener,ColorAdapter.OnColorClickEventListener
 {
     Dialog dialog_dimension;
     Button btnShowAddSize;
@@ -170,7 +168,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
             for(Color color : variant.getListColor())
             {
                 itemList.add(new ItemModel(variant.getSize().getName(),
-                        R.drawable.arrow,color.getName(),variant.getStock()));
+                        R.drawable.arrow,color.getName(),color  .getStock()));
             }
         }
         // Initialize the custom adapter and set it to the RecyclerView
@@ -201,6 +199,13 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
         dialog_dimension.setContentView(bindingDimension.getRoot());
         dialog_dimension.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         Button btnSubmit = dialog_dimension.findViewById(R.id.btn_submit_dimension);
+        if(currentDimension!=null)
+        {
+            bindingDimension.editHeight.setText(String.valueOf(currentDimension.getHeight()));
+            bindingDimension.editWidth.setText(String.valueOf(currentDimension.getWidth()));
+            bindingDimension.editLength.setText(String.valueOf(currentDimension.getLength()));
+            bindingDimension.editWeight.setText(String.valueOf(currentDimension.getWeight()));
+        }
         btnSubmit.setOnClickListener(viewCurrent ->
         {
             currentDimension = new Dimension();
@@ -434,7 +439,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Siz
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         sizeItems.add(dataSnapshot.getValue(Size.class));
                     }
-                    SizeAdapter2 sizeAdapter = new SizeAdapter2(sizeItems, AddProductVariantActivity.this);
+                    ManageSizeAdapter sizeAdapter = new ManageSizeAdapter(sizeItems, AddProductVariantActivity.this);
                     sizeCartRecyclerView = dialog.findViewById(R.id.rcv_size);
                     sizeCartRecyclerView.setLayoutManager(new GridLayoutManager(AddProductVariantActivity.this, 2));
                     sizeCartRecyclerView.setAdapter(sizeAdapter);

@@ -4,28 +4,30 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RatingBar;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.petshopapplication.databinding.ActivityAddFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.utils.Validate;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class AddFeedbackActivity extends AppCompatActivity {
@@ -33,6 +35,8 @@ public class AddFeedbackActivity extends AppCompatActivity {
     private Uri selectedImageUri; // To store the selected image URI
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
+    private String userId;
+    private String orderId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +52,12 @@ public class AddFeedbackActivity extends AppCompatActivity {
         // Handle image selection
         binding.btnFeedbackPick.setOnClickListener(view -> chooseImage());
 
+        binding.btnBack.setOnClickListener(v -> finish());
+
+        getIntend();
+
         // Handle feedback submission
-        binding.btnFeedbackSubmit.setOnClickListener(view -> uploadFeedback());
+        binding.btnFeedbackSubmit.setOnClickListener(v -> getProductId(orderId));
     }
 
     private void chooseImage() {
@@ -66,9 +74,8 @@ public class AddFeedbackActivity extends AppCompatActivity {
         }
     }
 
-    private void uploadFeedback() {
-        final String userId = "u1";
-        final String productId = "p1";
+    private void uploadFeedback(String productId) {
+        System.out.println("uploadFeedback" + productId);
         final String comment = binding.edtFeedbackComment.getText().toString();
         final int rating = (int) binding.rbFeedbackRating.getRating();
 
@@ -87,18 +94,18 @@ public class AddFeedbackActivity extends AppCompatActivity {
                         storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                             String imageUrl = uri.toString();
                             // After image upload, submit the feedback to the database
-                            submitFeedback(userId, productId, comment, rating, imageUrl);
+                            submitFeedback(userId, productId, orderId, comment, rating, imageUrl);
                         });
                     })
                     .addOnFailureListener(e -> Toast.makeText(AddFeedbackActivity.this, "Image upload failed!", Toast.LENGTH_SHORT).show());
         } else {
             // If no image is selected, submit feedback without image
-            submitFeedback(userId, productId, comment, rating, null);
+            submitFeedback(userId, productId, orderId, comment, rating, null);
         }
     }
 
-    private void submitFeedback(String userId, String productId, String comment, int rating, @Nullable String imageUrl) {
-        DatabaseReference feedbackRef = firebaseDatabase.getReference("feedbacks");
+    private void submitFeedback(String userId, String productId, String orderId, String comment, int rating, @Nullable String imageUrl) {
+        DatabaseReference feedbackRef = firebaseDatabase.getReference(getString(R.string.tbl_feedback_name));
 
         String feedbackId = "feedback-" + feedbackRef.push().getKey(); // Generate a unique ID
 
@@ -107,6 +114,7 @@ public class AddFeedbackActivity extends AppCompatActivity {
                 .id(feedbackId)
                 .userId(userId)
                 .productId(productId)
+                .orderId(orderId)
                 .rating(rating)
                 .imageUrl(imageUrl)
                 .content(comment)
@@ -118,5 +126,54 @@ public class AddFeedbackActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> Toast.makeText(AddFeedbackActivity.this, "Feedback submitted successfully!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(AddFeedbackActivity.this, "Failed to submit feedback.", Toast.LENGTH_SHORT).show());
         finish();
+    }
+
+    private void getProductId(String orderId) {
+        System.out.println("getProductId--" + orderId);
+        DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference(getString(R.string.tbl_order_name));
+        List<String> productIds = new ArrayList<>();
+        Query query = ordersRef.orderByChild("id").equalTo(orderId);
+        query.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    //Get user data from database
+                    for (DataSnapshot orderSnapshot : snapshot.getChildren()) {
+                        DataSnapshot orderDetailsSnapshot = orderSnapshot.child("orderDetails");
+
+                        // Duyệt qua từng mục trong orderDetails
+                        for (DataSnapshot detailSnapshot : orderDetailsSnapshot.getChildren()) {
+                            String productId = detailSnapshot.child("productId").getValue(String.class);
+                            if (productId != null) {
+                                System.out.println("getProductId" + productId);
+                                productIds.add(productId);
+                            }
+                        }
+                    }
+                    if (!productIds.isEmpty()) {
+                        for (String productId : productIds) {
+                            uploadFeedback(productId);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void getIntend() {
+        orderId = getIntent().getStringExtra("orderId");
+        userId = getIntent().getStringExtra("userId");
+
+        if (orderId == null || userId == null) {
+            Log.e("AddFeedbackActivity", "Null. Please pass a valid order ID.");
+            // Hiển thị thông báo lỗi hoặc kết thúc activity nếu cần
+            finish();
+        }
     }
 }

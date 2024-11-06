@@ -11,11 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Size;
-import com.example.petshopapplication.model.Variant;
 
 import java.util.List;
 
-public class SizeAdapter2 extends RecyclerView.Adapter<SizeAdapter2.SizeViewHolder2>{
+public class ManageSizeAdapter extends RecyclerView.Adapter<ManageSizeAdapter.SizeViewHolder2>{
 
     List<Size> sizeItems;
 
@@ -23,7 +22,7 @@ public class SizeAdapter2 extends RecyclerView.Adapter<SizeAdapter2.SizeViewHold
     private int selectedPosition = RecyclerView.NO_POSITION;
     private OnSizeClickEventListener onSizeClickEventListener;
 
-    public SizeAdapter2(List<Size> sizeItems, OnSizeClickEventListener onSizeClickEventListener) {
+    public ManageSizeAdapter(List<Size> sizeItems, OnSizeClickEventListener onSizeClickEventListener) {
         this.sizeItems = sizeItems;
         this.onSizeClickEventListener = onSizeClickEventListener;
     }
