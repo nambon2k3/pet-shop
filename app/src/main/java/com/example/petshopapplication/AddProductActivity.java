@@ -172,6 +172,7 @@ public class AddProductActivity extends AppCompatActivity {
         newProduct.setCategoryId(selectedCategory.getId());
         newProduct.setDiscount(Integer.parseInt(discount));
         newProduct.setBasePrice(Double.parseDouble(price));
+        newProduct.setListVariant(new ArrayList<>());
         newProduct.setBaseImageURL(image);
         newProduct.setDescription(description);
 

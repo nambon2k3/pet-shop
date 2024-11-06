@@ -133,7 +133,6 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
         if(currentDimension == null)
         {
             Toast.makeText(UpdateProductVariantActivity.this, "Please set dimension", Toast.LENGTH_SHORT).show();
-
         }
         if(variants.isEmpty())
         {
@@ -273,6 +272,7 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
 
                 if (found.isEmpty()) {
                     Variant newva = new Variant();
+                    newva.setId(UUID.randomUUID().toString());
                     newva.setSize(currentSize);
                     newva.setDeleted(false);
                     newva.setDimension(null);
