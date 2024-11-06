@@ -32,6 +32,15 @@
             android:name=".ViewAdminDashBoardActivity"
             android:exported="false" />
         <activity
+            android:name=".CreateOrderSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddShopAddressActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChangeShopAddressActivity"
+            android:exported="false" />
+        <activity
             android:name=".ViewDetailOrderActivity"
             android:exported="false" />
         <activity
@@ -61,6 +70,7 @@
         <activity
             android:name=".ProductDetailActivity"
             android:exported="false" />
+
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
@@ -115,6 +125,9 @@
         </activity>
         <activity
             android:name=".AddressSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddressUpdateActivity"
             android:exported="false" />
         <activity
             android:name=".AddProductActivity"

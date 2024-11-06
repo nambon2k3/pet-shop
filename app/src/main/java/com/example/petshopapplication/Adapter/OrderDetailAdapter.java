@@ -18,6 +18,7 @@ import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.Order;
 import com.example.petshopapplication.model.OrderDetail;
 import com.example.petshopapplication.model.Product;
+import com.example.petshopapplication.model.Size;
 import com.example.petshopapplication.model.Variant;
 import com.example.petshopapplication.utils.Validate;
 import com.google.firebase.database.DataSnapshot;
@@ -92,23 +93,39 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
                             Glide.with(context).load(product.getBaseImageURL()).into(holder.imv_product_image);
                             String formattedOldPrice = Validate.formatVND(product.getBasePrice());
                             String size, color;
+                            Size sizeModel;
                             List<Variant> variants = product.getListVariant();
                             for (int i = 0; i < variants.size(); i++) {
                                 if (variants.get(i).getId().equals(orderDetail.getVariantId())) {
                                     formattedOldPrice = Validate.formatVND(variants.get(i).getPrice());
-                                    size = variants.get(i).getSize().getName();
+                                    sizeModel = variants.get(i).getSize();
+//                                    size = variants.get(i).getSize().getName();
                                     List<Color> colors = variants.get(i).getListColor();
-                                    if (colors != null && !colors.isEmpty()) {
-                                        for (int j = 0; j < colors.size(); j++) {
-                                            if (colors.get(j).getId().equals(orderDetail.getColorId())) {
-                                                color = colors.get(j).getName();
-                                                holder.txt_product_detail.setText(size + " - " + color);
+
+                                    if (sizeModel != null && colors != null && !colors.isEmpty()) {
+                                        // Trường hợp có cả kích thước và màu sắc
+                                        for (Color colorItem : colors) {
+                                            if (colorItem.getId().equals(orderDetail.getColorId())) {
+                                                holder.txt_product_detail.setText(sizeModel.getName() + " - " + colorItem.getName());
+                                                break; // Thoát vòng lặp khi tìm thấy màu sắc phù hợp
                                             }
                                         }
-
+                                    } else if (sizeModel == null && colors != null && !colors.isEmpty()) {
+                                        // Trường hợp chỉ có màu sắc, không có kích thước
+                                        for (Color colorItem : colors) {
+                                            if (colorItem.getId().equals(orderDetail.getColorId())) {
+                                                holder.txt_product_detail.setText(colorItem.getName());
+                                                break;
+                                            }
+                                        }
+                                    } else if (sizeModel != null && (colors == null || colors.isEmpty())) {
+                                        // Trường hợp chỉ có kích thước, không có màu sắc
+                                        holder.txt_product_detail.setText(sizeModel.getName());
                                     } else {
-                                        holder.txt_product_detail.setText(size);
+                                        // Trường hợp không có kích thước và không có màu sắc
+                                        holder.txt_product_detail.setText("");
                                     }
+
                                     break;
                                 }
                             }

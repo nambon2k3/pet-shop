@@ -166,6 +166,16 @@
                 android:textColor="@android:color/white"
                 android:visibility="visible"
                 app:cornerRadius="5dp" />
+            <Button
+                android:id="@+id/btn_confirm_received"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/red"
+                android:backgroundTintMode="src_in"
+                android:text="Received"
+                android:textColor="@android:color/white"
+                android:visibility="gone"
+                app:cornerRadius="5dp" />
 
 
         </LinearLayout>
