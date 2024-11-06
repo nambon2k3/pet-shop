@@ -80,7 +80,6 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(HomeActivity.this, ListProductActivity.class);
             startActivity(intent);
         });
-
     }
 
     private void initNewProduct(List<Category> categoryItems){
@@ -166,6 +165,12 @@ public class HomeActivity extends AppCompatActivity {
                             feedbackAdapter = new FeedBackAdapter(feedbackItems, userItems);
                             binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(HomeActivity.this, RecyclerView.VERTICAL, true));
                             binding.rcvFeedback.setAdapter(feedbackAdapter);
+
+                            binding.btnHomeUserProfile.setOnClickListener(v -> {
+                                Intent intent = new Intent(HomeActivity.this, ListUserFeedbackActivity.class);
+                                intent.putExtra("userId", userItems.get(0).getId());
+                                startActivity(intent);
+                            });
                         }
                         binding.prgFeedback.setVisibility(View.GONE);
                     }
