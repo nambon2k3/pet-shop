@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.petshopapplication.AddFeedbackActivity;
+import com.example.petshopapplication.OrderTrackingActivity;
 import com.example.petshopapplication.PrepareOrderActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.ViewDetailOrderActivity;
@@ -215,6 +216,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
                     })
                     .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                     .show();
+        });
+
+        holder.txt_shipping_status.setOnClickListener(v -> {
+            Context context = holder.itemView.getContext();
+            Intent intent = new Intent(context, OrderTrackingActivity.class);
+            intent.putExtra("order_id", order.getId());
+            context.startActivity(intent);
         });
 
         checkFeedbackStatus(order.getUserId(), order.getId(), holder.btn_feedback);
