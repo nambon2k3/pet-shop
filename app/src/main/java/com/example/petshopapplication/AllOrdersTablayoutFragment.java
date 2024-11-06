@@ -58,7 +58,11 @@ public class AllOrdersTablayoutFragment extends Fragment {
         database = FirebaseDatabase.getInstance();
         reference = database.getReference("orders");
 
-        initOrders();
+        if (isInventory) {
+            initOrdersInventory();
+        } else {
+            initOrders();
+        }
         return view;
     }
 
@@ -70,7 +74,7 @@ public class AllOrdersTablayoutFragment extends Fragment {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
-            Log.d(TAG, "Start - onDataChange");
+                Log.d(TAG, "Start - onDataChange");
                 orderItems.clear(); // Xóa dữ liệu cũ
 
                 // Kiểm tra xem snapshot có dữ liệu hay không
