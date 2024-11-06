@@ -9,11 +9,5 @@
     android:gravity="center"
     tools:context=".TrendingProductActivity">
 
-  <Button
-      android:id="@+id/pie"
-      android:layout_height="wrap_content"
-      android:layout_width="match_parent"
-      android:text="Pie Chart"
-    />
 
 </LinearLayout>

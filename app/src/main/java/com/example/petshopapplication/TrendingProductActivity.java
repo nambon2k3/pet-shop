@@ -20,14 +20,14 @@ public class TrendingProductActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_trending_product);
 
-        pie = findViewById(R.id.pie);
-
-        pie.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent pie = new Intent(TrendingProductActivity.this, PieChartActivity.class);
-                startActivity(pie);
-            }
-        });
+//        pie = findViewById(R.id.);
+//
+//        pie.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent pie = new Intent(TrendingProductActivity.this, PieChartActivity.class);
+//                startActivity(pie);
+//            }
+//        });
     }
 }

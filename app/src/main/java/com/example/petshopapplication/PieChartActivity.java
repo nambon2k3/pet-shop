@@ -7,12 +7,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.petshopapplication.databinding.ActivityPieChartBinding;
 import com.example.petshopapplication.model.Product;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -36,6 +39,7 @@ public class PieChartActivity extends AppCompatActivity {
     DatabaseReference reference, productRef, categoryRef;
     PieChart pieChart;
     final Handler handler = new Handler(Looper.getMainLooper());
+    ActivityPieChartBinding binding;
 
     Map<String, String> idMapping = new HashMap<>(); // Mapping from category ID to name
     Map<String, Integer> categoryCountMap = new HashMap<>();
@@ -59,7 +63,16 @@ public class PieChartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pie_chart);
+        //setContentView(R.layout.activity_pie_chart);
+        binding = ActivityPieChartBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        binding.imvGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         pieChart = findViewById(R.id.pieChart);
         database = FirebaseDatabase.getInstance();
