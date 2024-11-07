@@ -15,8 +15,15 @@ import com.example.petshopapplication.Adapter.ViewPagerOrderManageAdapter;
 import com.example.petshopapplication.databinding.ActivityListOrderManageBinding;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +45,9 @@ public class ListOrderManageActivity extends AppCompatActivity {
 
         tabTitles = getResources().getStringArray(R.array.tab_order_manage_inventory_titles);
         initTablayouts();
+
+        updateOrderHistory("0591d08f-a27f-43fe-bc9c-2991567b6827", 904, "Hàng đang được đi giao cho khách", "Giao hàng", "Hàng đang được đi giao cho khách");
+
 //        searchShipment("GSL7KJRM96");
     }
 
@@ -99,4 +109,24 @@ public class ListOrderManageActivity extends AppCompatActivity {
             }
         });
     }
+
+    public static void updateOrderHistory(String orderId, int status, String message, String statusText, String statusDesc) {
+        DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("orders").child(orderId).child("history");
+        String updatedAt = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+        long updatedTime = System.currentTimeMillis() / 1000L;
+
+        // Tạo object History mới
+        Map<String, Object> historyEntry = new HashMap<>();
+        historyEntry.put("status", status);
+        historyEntry.put("message", message);
+        historyEntry.put("statusText", statusText);
+        historyEntry.put("statusDesc", statusDesc);
+        historyEntry.put("updatedAt", updatedAt);
+
+        // Thêm vào danh sách history trong Firebase
+        orderRef.push().setValue(historyEntry)
+                .addOnSuccessListener(aVoid -> Log.d("UpdateHistory", "Order history updated successfully."))
+                .addOnFailureListener(e -> Log.e("UpdateHistory", "Failed to update order history: " + e.getMessage()));
+    }
+
 }

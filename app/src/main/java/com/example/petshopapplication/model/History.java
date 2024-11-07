@@ -1,5 +1,5 @@
 package com.example.petshopapplication.model;
-
+import java.io.Serializable;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -15,10 +15,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class OrderDetail {
-    private String productId;
-    private String variantId;
-    private String colorId;
-    private int quantity;
-    private double purchased;
+public class History {
+    private int status;
+    private String message;
+    private String statusText;
+    private String statusDesc;
+    private String updatedAt;
 }

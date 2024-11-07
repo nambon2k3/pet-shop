@@ -472,6 +472,9 @@ public class PrepareOrderActivity extends AppCompatActivity {
 
                         // Cập nhật trạng thái của order trong Firebase
                         updateOrderStatus(orderId, "Shipping", createOrderResponse.getId());
+
+                        // Gọi đến phương thức updateOrderHistory với trạng thái ban đầu
+                        ListOrderManageActivity.updateOrderHistory(orderId, 900, null, "Đơn mới", "Đơn đã lưu chưa được gửi đi");
                     } else {
                         Log.e(TAG, "CreateOrderResponse is null");
                         showDialog("Failed!", "There was an issue confirming this order. Please try again.");

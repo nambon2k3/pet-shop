@@ -16,9 +16,9 @@ import lombok.ToString;
 @Builder
 @ToString
 public class Payment {
-    private String id;               // ID thanh toán
-    private String orderId;          // ID đơn hàng liên quan
-    private String paymentMethod;     // Phương thức thanh toán (ví dụ: "COD", "VNPay")
-    private double amount;            // Số tiền thanh toán
-    private String transactionId;     // ID giao dịch (nếu có cái này cho VNPay)
+    private String id;
+    private String orderId;
+    private String paymentMethod;
+    private double amount;
+    private String transactionId;
 }
