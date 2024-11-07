@@ -82,13 +82,8 @@ public class UserFeedBackListAdapter extends RecyclerView.Adapter<UserFeedBackLi
                 // Add options to the spinner
                 List<String> options = new ArrayList<>();
                 options.add("Select Action:");
-                if (role != null){
-                    options.add("Ban");
-                    options.add("Unban");
-                } else {
                     options.add("Edit");
                     options.add("Delete");
-                }
 
                 // Set up spinner
                 ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);

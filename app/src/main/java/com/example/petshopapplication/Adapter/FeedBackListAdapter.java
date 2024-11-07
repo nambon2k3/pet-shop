@@ -34,7 +34,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
     List<User> userItems;
     User user;
     Context context;
-    String role = "a";
+    String role;
 
     public FeedBackListAdapter(List<FeedBack> feedBackItems, List<User> userItems, User user) {
         this.feedBackItems = feedBackItems;

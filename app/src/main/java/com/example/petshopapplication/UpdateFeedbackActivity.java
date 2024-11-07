@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.petshopapplication.databinding.ActivityAddFeedbackBinding;
+import com.example.petshopapplication.databinding.ActivityListFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -49,7 +50,9 @@ public class UpdateFeedbackActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_feedback);  // Reusing layout of Add Feedback
+        // Initialize ViewBinding
+        binding = ActivityAddFeedbackBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -103,6 +106,7 @@ public class UpdateFeedbackActivity extends AppCompatActivity {
         binding.btnFeedbackSubmit.setOnClickListener(view -> {
             updateFeedbackInDatabase();
         });
+
     }
 
     private void chooseImage() {
