@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
     private int selectedWardId;
     private EditText fullNameEditText, phoneEditText, citySelectButton, districtSelectButton, wardSelectButton;
     private Button updateButton, deleteButton;
+    private ImageView btn_back;
     private DatabaseReference addressRef;
     private String addressId;
     private String AUTH_TOKEN;
@@ -59,7 +61,10 @@ public class AddressUpdateActivity extends AppCompatActivity {
         wardSelectButton = findViewById(R.id.wardSelectButton);
         updateButton = findViewById(R.id.updateButton);
         deleteButton = findViewById(R.id.deleteButton);
-
+        btn_back = findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(v -> {
+            finish();
+        });
         addressRef = FirebaseDatabase.getInstance().getReference("addresses");
 
         addressId = getIntent().getStringExtra("addressId");

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,8 @@ public class AddressAddActivity extends AppCompatActivity {
     private EditText fullNameEditText;
     private Switch defaultAddressSwitch;
     private EditText phoneEditText;
+    private ImageView btn_back;
+
     FirebaseAuth auth;
     FirebaseUser user;
     // Khai báo biến addressesRef
@@ -61,6 +64,10 @@ public class AddressAddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_add);
 
+        btn_back = findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(v -> {
+            finish();
+        });
         // Khởi tạo Firebase Database và reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         addressesRef = database.getReference("addresses");
