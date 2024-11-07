@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.petshopapplication.Adapter.OrderAdapter;
 import com.example.petshopapplication.databinding.FragmentProcessingTablayoutBinding;
@@ -55,8 +56,52 @@ public class ProcessingTablayoutFragment extends Fragment {
 
         database = FirebaseDatabase.getInstance();
         reference = database.getReference("orders");
-        initOrdersProcessing();
+        if (isInventory) {
+            initOrdersProcessingInventory();
+        } else {
+            initOrdersProcessing();
+        }
         return view;
+    }
+
+    // Get All orders for Inventory:
+    private void initOrdersProcessingInventory() {
+        Log.d(TAG, "Start - load orders from Firebase");
+
+        Query query = reference;
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "Start - onDataChange");
+                orderItems.clear();
+
+                if (snapshot.exists()) {
+                    Log.d(TAG, "Data found in Firebase");
+
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Order order = dataSnapshot.getValue(Order.class);
+                        if (order != null && "Processing".equals(order.getStatus())) {
+                            Log.d(TAG, "Order ID: " + order.getId() + ", Status: " + order.getStatus());
+                            orderItems.add(order);
+                        } else {
+                            Log.e(TAG, "Order data is null for snapshot: " + dataSnapshot.getKey());
+                        }
+                    }
+                    Log.d(TAG, "Total orders retrieved: " + orderItems.size());
+                    adapter.notifyDataSetChanged();
+
+                } else {
+                    Log.d(TAG, "No data found in Firebase");
+                }
+            }
+
+            @Override
+            public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+                Log.e(TAG, "Failed to load orders: " + error.getMessage());
+                Toast.makeText(getContext(), "Không tải được danh sách đơn hàng", Toast.LENGTH_SHORT).show();
+            }
+        });
+        Log.d(TAG, "End - load orders from Firebase");
     }
 
     private void initOrdersProcessing() {
