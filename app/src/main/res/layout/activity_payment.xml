@@ -29,6 +29,7 @@
                 android:paddingBottom="12dp">
 
                 <ImageView
+                    android:id="@+id/btn_back"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_arrow_back" />
@@ -239,7 +240,6 @@
                         android:textSize="16sp" />
                 </LinearLayout>
 
-                <!-- Giảm giá voucher -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

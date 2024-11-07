@@ -21,20 +21,22 @@ import java.text.SimpleDateFormat;
 public class Order implements Serializable {
     private String id;
     private String userId;
-    private String shipmentId;  // ID từ đơn vận chuyển
-    private String rateId;  // mã vc
+    private String fullName;
+    private String phoneNumber;
+    private String shipmentId;
+    private String rateId;
     private String carrierLogo;
     private String carrierName;
-    private String districtId;   // ID quận
-    private String district;   //  quận
-    private String cityId;      // ID thành phố
-    private String city;      //  thành phố
-    private String wardId;   // ID quận
-    private String ward;   //  quận
-    private double totalAmount; // Tổng số tiền của đơn hàng
-    private List<OrderDetail> orderDetails; // Chi tiết các sản phẩm trong đơn hàng
+    private String districtId;
+    private String district;
+    private String cityId;
+    private String city;
+    private String wardId;
+    private String ward;
+    private double totalAmount;
+    private List<OrderDetail> orderDetails;
     private Date orderDate;
-    private String paymentId; // Thông tin thanh toán
+    private String paymentId;
     private String status;
     private boolean isShipmentCreated = false;
 

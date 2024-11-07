@@ -64,8 +64,6 @@ public class ViewAdminDashBoardActivity extends AppCompatActivity implements Nav
             int itemId = item.getItemId();
             if (itemId == R.id.ad_bottom_nav_home) {
                 replaceFragment(new AdminDashBoardFragment());
-            } else if (itemId == R.id.ad_bottom_nav_trend) {
-                replaceFragment(new AdminTrendFragment());
             } else if (itemId == R.id.ad_bottom_nav_stat) {
                 replaceFragment(new AdminStatFragment());
             } else if (itemId == R.id.ad_bottom_nav_manage_product) {

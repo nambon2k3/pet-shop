@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,6 +88,9 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private String selectedCartierLogo;
     private List<Product> productList = new ArrayList<>();
     private double finalTotalAmount;
+    private ImageView btn_back;
+    private String zalo_transactionId;
+    private String zaloMoney;
 
     FirebaseAuth auth;
     FirebaseUser user;
@@ -95,12 +98,19 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.payment);
+        setContentView(R.layout.activity_payment);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         String userId = user.getUid();
 
+
+        btn_back = findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(v -> {
+            Intent intent = new Intent(PaymentActivity.this, CartActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        });
         Intent intent1 = getIntent();
         selectedCartItems = (ArrayList<Cart>) intent1.getSerializableExtra("selectedItems");
         totalAmount = intent1.getDoubleExtra("totalAmount", 0.0);
@@ -175,6 +185,8 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                             @Override
                             public void onPaymentSucceeded(String transactionId, String orderId, String amount) {
                                 Log.d(TAG, "Payment succeeded: Transaction ID: " + transactionId + ", Order ID: " + orderId + ", Amount: " + amount);
+                                zalo_transactionId = transactionId;
+                                zaloMoney = finalTotalAmountStr;
                                 createOrderAndPayment();
                                 deleteCartItem();
                                 Intent intent = new Intent(PaymentActivity.this, ZaloPayPaymentActivity.class);
@@ -229,7 +241,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             selectedUAddress = (UAddress) data.getSerializableExtra("selectedAddress");
             if (selectedUAddress != null) {
                 displayAddress(selectedUAddress);
-                // Gọi lại loadRates nếu cần thiết
                 if (selectedUAddress.getDistrictId() != null && selectedUAddress.getCityId() != null) {
                     loadRates(selectedUAddress.getDistrictId(), selectedUAddress.getCityId(), 1, (int) totalAmount, totalWidth, totalHeight, totalLength, totalWeight);
                 }
@@ -270,17 +281,18 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
 
     private void createOrderAndPayment() {
-        // Tạo đơn hàng với UUID
         Order order = new Order();
-        order.setId(UUID.randomUUID().toString()); // Tạo ID tự động bằng UUID
-        order.setUserId(user.getUid()); // Gán ID người dùng thực tế
-        order.setTotalAmount(totalAmount); // Tổng số tiền
-        order.setShipmentId(""); // ID vận chuyển
-        order.setRateId(selectedRateID); // Sử dụng selectedRateID đã lưu
-        order.setOrderDetails(getOrderDetailsList()); // Danh sách chi tiết đơn hàng
-        order.setOrderDate(new Date()); // Thời gian đặt hàng
-        order.setStatus("Processing"); // Trạng thái đơn hàng
+        order.setId(UUID.randomUUID().toString());
+        order.setUserId(user.getUid());
+        order.setTotalAmount(totalAmount);
+        order.setShipmentId("");
+        order.setRateId(selectedRateID);
+        order.setOrderDetails(getOrderDetailsList());
+        order.setOrderDate(new Date());
+        order.setStatus("Processing");
         order.setCityId(selectedUAddress.getCityId());
+        order.setFullName(selectedUAddress.getFullName());
+        order.setPhoneNumber(selectedUAddress.getPhone());
         order.setDistrictId(selectedUAddress.getDistrictId());
         order.setWardId(selectedUAddress.getWardId());
         order.setCarrierName(selectedCartierName);
@@ -291,22 +303,30 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
         // Thêm vào Firebase
         DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference("orders");
-        String orderId = order.getId(); // Lấy ID từ đơn hàng đã tạo
+        String orderId = order.getId();
 
         ordersRef.child(orderId).setValue(order)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Tạo thông tin thanh toán sau khi tạo đơn hàng thành công
                         Payment payment = new Payment();
-                        payment.setId(UUID.randomUUID().toString()); // Tạo ID tự động cho thanh toán
+                        payment.setId(UUID.randomUUID().toString());
                         payment.setOrderId(orderId);
-                        payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Chuyển khoản"); // Gán phương thức thanh toán
-                        payment.setAmount(finalTotalAmount); // Số tiền thanh toán
-                        payment.setTransactionId(""); // Nếu có ID giao dịch, thêm vào đây
+                        payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Thanh toan qua ZaloPay"); // Gán phương thức thanh toán
+                        // Kiểm tra nếu thanh toán qua ZaloPay
+                        if (!checkboxPaymentOnDelivery.isChecked()) {
+                            payment.setTransactionId(zalo_transactionId);
+                            payment.setAmount(Double.parseDouble(zaloMoney));
+
+                        } else {
+                            payment.setTransactionId(""); // Để trống nếu không phải thanh toán qua ZaloPay
+                            payment.setAmount(finalTotalAmount);
+                        }
+
 
                         // Thêm vào Firebase
                         DatabaseReference paymentsRef = FirebaseDatabase.getInstance().getReference("payments");
-                        String paymentId = payment.getId(); // Lấy ID từ thanh toán đã tạo
+                        String paymentId = payment.getId();
 
                         paymentsRef.child(paymentId).setValue(payment)
                                 .addOnCompleteListener(paymentTask -> {
@@ -340,7 +360,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     public List<OrderDetail> getOrderDetailsList() {
         List<OrderDetail> orderDetailsList = new ArrayList<>();
 
-        // Giả sử selectedCartItems là danh sách các mặt hàng trong giỏ hàng
         for (Cart cartItem : selectedCartItems) {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setProductId(cartItem.getProductId());
@@ -352,43 +371,40 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             double discountPercentage = getDiscountForProduct(cartItem.getProductId());
             double discountedPrice = price * (1 - discountPercentage / 100.0);
 
-            orderDetail.setPurchased(discountedPrice); // Lưu giá đã giảm
+            orderDetail.setPurchased(discountedPrice);
 
-            orderDetailsList.add(orderDetail); // Thêm vào danh sách chi tiết đơn hàng
+            orderDetailsList.add(orderDetail);
         }
         return orderDetailsList;
     }
 
     private double getPriceForProduct(String productId, String variantId) {
-        // Retrieve product details from your database or data structure
-        // Assuming you have a method to find the product by ID and variant ID
-        Product product = findProductById(productId); // Implement this method
+        Product product = findProductById(productId);
         if (product != null) {
             for (Variant variant : product.getListVariant()) {
                 if (variant.getId().equals(variantId)) {
-                    return variant.getPrice(); // Return the price of the variant
+                    return variant.getPrice();
                 }
             }
         }
-        return 0; // Return 0 if product or variant not found
+        return 0;
     }
 
     private double getDiscountForProduct(String productId) {
-        // Retrieve product details to get discount
-        Product product = findProductById(productId); // Implement this method
+        Product product = findProductById(productId);
         if (product != null) {
-            return product.getDiscount(); // Return the discount percentage of the product
+            return product.getDiscount();
         }
-        return 0; // Return 0 if product not found
+        return 0;
     }
 
     public Product findProductById(String productId) {
-        for (Product product : productList) { // productList là danh sách sản phẩm
+        for (Product product : productList) {
             if (product.getId().equals(productId)) {
-                return product; // Trả về sản phẩm nếu tìm thấy
+                return product;
             }
         }
-        return null; // Trả về null nếu không tìm thấy sản phẩm
+        return null;
     }
 
 

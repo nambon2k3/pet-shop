@@ -64,12 +64,16 @@ public class AdminStatFragment extends Fragment {
 
         // Set up button listeners
         view.findViewById(R.id.btnShowPie).setOnClickListener(v -> openStatisticProductByCategoryActivity());
-        //view.findViewById(R.id.btnViewListProduct).setOnClickListener(v -> openUpdateProductActivity());
+        view.findViewById(R.id.btnStatisticTotalRevenue).setOnClickListener(v -> openStatisticTotalRevenue());
 
         return view;
     }
     private void openStatisticProductByCategoryActivity() {
         Intent intent = new Intent(getActivity(), PieChartActivity.class);
+        startActivity(intent);
+    }
+    private void openStatisticTotalRevenue() {
+        Intent intent = new Intent(getActivity(), StatisticByRevenueActivity.class);
         startActivity(intent);
     }
 }
