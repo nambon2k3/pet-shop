@@ -96,7 +96,8 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
         binding.btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                Intent intent = new Intent(CategoryListActivity.this, ViewAdminDashBoardActivity.class);
+                startActivity(intent);
             }
         });
 
