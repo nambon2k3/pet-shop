@@ -187,7 +187,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                             public void onPaymentSucceeded(String transactionId, String orderId, String amount) {
                                 Log.d(TAG, "Payment succeeded: Transaction ID: " + transactionId + ", Order ID: " + orderId + ", Amount: " + amount);
                                 zalo_transactionId = transactionId;
-                                zaloMoney = amount;
+                                zaloMoney = finalTotalAmountStr;
                                 createOrderAndPayment();
                                 deleteCartItem();
                                 Intent intent = new Intent(PaymentActivity.this, ZaloPayPaymentActivity.class);
@@ -294,6 +294,8 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
         order.setOrderDate(new Date());
         order.setStatus("Processing");
         order.setCityId(selectedUAddress.getCityId());
+        order.setFullName(selectedUAddress.getFullName());
+        order.setPhoneNumber(selectedUAddress.getPhone());
         order.setDistrictId(selectedUAddress.getDistrictId());
         order.setWardId(selectedUAddress.getWardId());
         order.setCarrierName(selectedCartierName);
@@ -313,7 +315,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                         Payment payment = new Payment();
                         payment.setId(UUID.randomUUID().toString());
                         payment.setOrderId(orderId);
-                        payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Chuyển khoản"); // Gán phương thức thanh toán
+                        payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Thanh toan qua ZaloPay"); // Gán phương thức thanh toán
                         // Kiểm tra nếu thanh toán qua ZaloPay
                         if (!checkboxPaymentOnDelivery.isChecked()) {
                             // transactionId là kết quả từ API ZaloPay
