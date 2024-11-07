@@ -92,6 +92,14 @@ public class CategoryListActivity extends AppCompatActivity implements ListCateg
             }
         });
 
+        //Handling back button
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         //create dialog of pop up for add to cart
         dialog = new Dialog(CategoryListActivity.this);
         dialog.setContentView(R.layout.pop_up_update_delete_category_item);

@@ -59,7 +59,7 @@ public class AddressAddActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.address_add);
+        setContentView(R.layout.activity_address_add);
 
         // Khởi tạo Firebase Database và reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -68,7 +68,6 @@ public class AddressAddActivity extends AppCompatActivity {
         user = auth.getCurrentUser();
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
 
-        // Find views by ID
         citySelectButton = findViewById(R.id.citySelectButton);
         districtSelectButton = findViewById(R.id.districtSelectButton);
         wardSelectButton = findViewById(R.id.wardSelectButton);
@@ -77,7 +76,6 @@ public class AddressAddActivity extends AppCompatActivity {
         defaultAddressSwitch = findViewById(R.id.defaultAddressSwitch);
         Button completeButton = findViewById(R.id.completeButton);
 
-        // Set button click listeners
         citySelectButton.setOnClickListener(v -> loadCities());
         districtSelectButton.setOnClickListener(v -> loadDistricts(selectedCityId));
         wardSelectButton.setOnClickListener(v -> loadWards(selectedDistrictId));
@@ -88,7 +86,7 @@ public class AddressAddActivity extends AppCompatActivity {
         });
 
     }
-
+// Goi API de lay cac tinh cua VN
     private void loadCities() {
         GoshipAPI api = RetrofitClient.getRetrofitInstance().create(GoshipAPI.class);
         Call<CityResponse> call = api.getCities("application/json", "application/json", AUTH_TOKEN);
@@ -128,6 +126,7 @@ public class AddressAddActivity extends AppCompatActivity {
                 .show();
     }
 
+    // Goi API de lay cac quan/huyen
     private void loadDistricts(String cityId) {
         if (cityId == null) {
             Toast.makeText(this, "Vui lòng chọn thành phố trước", Toast.LENGTH_SHORT).show();
@@ -171,7 +170,7 @@ public class AddressAddActivity extends AppCompatActivity {
                 })
                 .show();
     }
-
+    // Goi API de lay cac xa phuong
     private void loadWards(String districtId) {
         if (districtId == null) {
             Toast.makeText(this, "Vui lòng chọn quận trước", Toast.LENGTH_SHORT).show();
@@ -228,14 +227,14 @@ public class AddressAddActivity extends AppCompatActivity {
             return false;
         }
 
-        // Kiểm tra định dạng số điện thoại (có thể điều chỉnh theo yêu cầu)
+        // Kiểm tra định dạng số điện thoại
         String phonePattern = "^[0-9]{10,15}$"; // Định dạng cho số điện thoại có từ 10 đến 15 chữ số
         if (!phone.matches(phonePattern)) {
             Toast.makeText(this, "Số điện thoại không hợp lệ. Vui lòng nhập lại.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        return true; // Nếu tất cả các điều kiện xác thực đều hợp lệ
+        return true;
     }
 
 
@@ -246,7 +245,7 @@ public class AddressAddActivity extends AppCompatActivity {
         String phone = phoneEditText.getText().toString().trim();
 
         if (!validateInput(fullName, phone)) {
-            return; // Nếu không hợp lệ, dừng lại
+            return;
         }
 
         if (fullName.isEmpty() || phone.isEmpty() || selectedCityId == null || selectedDistrictId == null || selectedWardId == 0) {
@@ -257,7 +256,6 @@ public class AddressAddActivity extends AppCompatActivity {
         boolean isDefault = defaultAddressSwitch.isChecked();
         String addressId = UUID.randomUUID().toString(); // Tạo ID ngẫu nhiên
 
-        // Tạo một đối tượng địa chỉ mới
         UAddress newAddress = new UAddress(
                 addressId,
                 fullName,
@@ -283,7 +281,6 @@ public class AddressAddActivity extends AppCompatActivity {
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 UAddress existingAddress = snapshot.getValue(UAddress.class);
                                 if (existingAddress != null && existingAddress.getUserId().equals(user.getUid())) {
-                                    // Ghi log khi tìm thấy địa chỉ mặc định
                                     Log.d(TAG, "Found existing default address: " + existingAddress.getAddressId());
                                     // Cập nhật địa chỉ hiện tại thành không phải mặc định
                                     snapshot.getRef().child("default").setValue(false)
@@ -295,7 +292,7 @@ public class AddressAddActivity extends AppCompatActivity {
                                                 }
                                             });
                                     existingDefaultFound = true; // Đánh dấu là đã tìm thấy địa chỉ mặc định
-                                    break; // Thoát vòng lặp sau khi cập nhật địa chỉ mặc định đầu tiên
+                                    break;
                                 }
                             }
                             // Lưu địa chỉ mới sau khi cập nhật địa chỉ cũ

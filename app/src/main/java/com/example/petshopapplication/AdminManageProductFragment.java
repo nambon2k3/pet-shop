@@ -50,6 +50,7 @@ public class AdminManageProductFragment extends Fragment {
         view.findViewById(R.id.btnShowTrendingProduct).setOnClickListener(v -> openViewTopTrendingProduct());
         view.findViewById(R.id.btnAddNewProduct).setOnClickListener(v -> openAddProductActivity());
         view.findViewById(R.id.btnViewListProduct).setOnClickListener(v -> openUpdateProductActivity());
+        view.findViewById(R.id.btnManageCategory).setOnClickListener(v -> openManageCategory());
 
         return view;
     }
@@ -66,6 +67,11 @@ public class AdminManageProductFragment extends Fragment {
 
     private void openViewTopTrendingProduct() {
         Intent intent = new Intent(getActivity(), TrendingProductActivity.class);
+        startActivity(intent);
+    }
+
+    public void openManageCategory() {
+        Intent intent = new Intent(getActivity(), CategoryListActivity.class);
         startActivity(intent);
     }
 }
