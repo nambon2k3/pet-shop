@@ -31,7 +31,6 @@ import lombok.NonNull;
 public class LoginActivity extends AppCompatActivity {
 
     private static final int ROLE_USER = 1;
-    private static final int ROLE_INVENTORY = 10;
 
 
     EditText edt_email, edt_password;
@@ -136,10 +135,6 @@ public class LoginActivity extends AppCompatActivity {
                     if(user.getRoleId() == ROLE_USER) {
                         //User is authenticated, go to home activity
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                        startActivity(intent);
-                    } else if (user.getRoleId() == ROLE_INVENTORY) {
-                        //Inventory is authenticated, go to List Order Manage Activity
-                        Intent intent = new Intent(LoginActivity.this, ListOrderManageActivity.class);
                         startActivity(intent);
                     }
                 }
