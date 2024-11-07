@@ -12,11 +12,21 @@
         android:gravity="center">
 
         <Button
+            android:id="@+id/btnShowTrendingProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Top Trending Product"
+            android:textSize="20sp"
+            android:backgroundTint="@color/textColorHint"
+            android:onClick="openViewTopTrendingProduct" />
+
+        <Button
             android:id="@+id/btnAddNewProduct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add New Product"
             android:textSize="20sp"
+            android:layout_marginTop="16dp"
             android:backgroundTint="@color/textColorHint"
             android:onClick="openAddProductActivity" />
 
