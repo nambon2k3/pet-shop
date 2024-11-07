@@ -201,7 +201,7 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_button_outline_orange"
+            android:backgroundTint="#FFFFFF"
             android:padding="12dp"
             android:text="Tiếp tục shopping"
             android:textColor="#F4A261"
