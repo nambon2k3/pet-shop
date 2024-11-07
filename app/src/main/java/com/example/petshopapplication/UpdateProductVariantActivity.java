@@ -158,7 +158,7 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
                     Toast.makeText(this, "Product submitted successfully!", Toast.LENGTH_SHORT).show();
                     Map<String, Object> updates = new HashMap<>();
 
-                    updates.put("isDeleted", true); // Hoặc false tùy theo yêu cầu
+                    updates.put("deleted", true); // Hoặc false tùy theo yêu cầu
                     productRef.child(oldProductId).updateChildren(updates);
 
                     // Navigate to AdminManageProductFragment

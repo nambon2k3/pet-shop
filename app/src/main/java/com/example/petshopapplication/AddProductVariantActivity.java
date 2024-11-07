@@ -147,12 +147,6 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
         productRef.child(feedbackId).setValue(model)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Product submitted successfully!", Toast.LENGTH_SHORT).show();
-
-                    // Navigate to AdminManageProductFragment
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new AdminManageProductFragment())
-                            .addToBackStack(null)
-                            .commit();
                 })
 
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to submit product.", Toast.LENGTH_SHORT).show());
@@ -403,7 +397,6 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
                                     {
                                         dialog2.dismiss();
                                         initSize(dialog);
-
                                         Toast.makeText(AddProductVariantActivity.this, "Size submitted successfully!", Toast.LENGTH_SHORT).show();
 
                                     })
@@ -411,7 +404,6 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
                                     {
                                         dialog2.dismiss();
                                         initSize(dialog);
-
                                         Toast.makeText(AddProductVariantActivity.this, "Failed to submit size.", Toast.LENGTH_SHORT).show();
                                     });
 

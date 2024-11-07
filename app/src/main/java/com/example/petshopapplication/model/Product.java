@@ -31,15 +31,14 @@ public class Product  implements Serializable {
     private List<Variant> listVariant;
     private String createdAt;
     ;
-    @PropertyName("isDeleted")
 
+    @PropertyName("deleted")
     private boolean isDeleted;
-    @PropertyName("isDeleted")
+    @PropertyName("deleted")
     public boolean isDeleted() {
         return isDeleted;
     }
-
-    @PropertyName("isDeleted")
+    @PropertyName("deleted")
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
     }
