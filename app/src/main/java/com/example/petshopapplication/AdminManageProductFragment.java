@@ -47,6 +47,7 @@ public class AdminManageProductFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_manage_product, container, false);
 
         // Set up button listeners
+        view.findViewById(R.id.btnShowTrendingProduct).setOnClickListener(v -> openViewTopTrendingProduct());
         view.findViewById(R.id.btnAddNewProduct).setOnClickListener(v -> openAddProductActivity());
         view.findViewById(R.id.btnViewListProduct).setOnClickListener(v -> openUpdateProductActivity());
 
@@ -60,6 +61,11 @@ public class AdminManageProductFragment extends Fragment {
 
     private void openUpdateProductActivity() {
         Intent intent = new Intent(getActivity(), ManageProductActivity.class);
+        startActivity(intent);
+    }
+
+    private void openViewTopTrendingProduct() {
+        Intent intent = new Intent(getActivity(), TrendingProductActivity.class);
         startActivity(intent);
     }
 }
