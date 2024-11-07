@@ -87,13 +87,20 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
 
         // Thiết lập sự kiện khi nút mua hàng được nhấn
         purchaseButton.setOnClickListener(v -> {
-            double totalAmount =  calculateTotalPrice();
             List<Cart> selectedItems = selectedItemList; // Lấy danh sách sản phẩm đã chọn
-            Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
-            intent.putExtra("selectedItems", (ArrayList<Cart>) selectedItems); // Chuyển danh sách sản phẩm đã chọn
-            intent.putExtra("totalAmount", totalAmount);
-            startActivity(intent); // Chuyển sang PaymentActivity
+
+            // Kiểm tra nếu danh sách sản phẩm đã chọn trống hoặc null
+            if (selectedItems == null || selectedItems.isEmpty()) {
+                Toast.makeText(CartActivity.this, "Vui lòng chọn sản phẩm để mua", Toast.LENGTH_SHORT).show();
+            } else {
+                double totalAmount = calculateTotalPrice();
+                Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
+                intent.putExtra("selectedItems", (ArrayList<Cart>) selectedItems); // Chuyển danh sách sản phẩm đã chọn
+                intent.putExtra("totalAmount", totalAmount);
+                startActivity(intent); // Chuyển sang PaymentActivity
+            }
         });
+
     }
 
     public void initCart(String userId) {
