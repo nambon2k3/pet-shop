@@ -31,7 +31,7 @@ import lombok.NonNull;
 public class LoginActivity extends AppCompatActivity {
 
     private static final int ROLE_USER = 1;
-    private static final int ROLE_SALE = 3;
+    private static final int ROLE_INVENTORY = 3;
     private static final int ROLE_MARKETING = 4;
 
 
@@ -139,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                         //User is authenticated, go to home activity
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         startActivity(intent);
-                    } else if(user.getRoleId() == ROLE_SALE) {
+                    } else if(user.getRoleId() == ROLE_INVENTORY) {
                         //User is authenticated, go to home activity
                         Intent intent = new Intent(LoginActivity.this, ListOrderManageActivity.class);
                         startActivity(intent);
