@@ -1,6 +1,7 @@
 package com.example.petshopapplication.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.petshopapplication.ProductDetailActivity;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.FeedBack;
@@ -94,6 +96,14 @@ public class ProductAdapter extends  RecyclerView.Adapter<ProductAdapter.Product
                 .load(imageUrl)
                 .transform(new CenterCrop(), new RoundedCorners(30))
                 .into(holder.imv_product_image);
+
+
+        holder.itemView.setOnClickListener(v -> {
+            // Open product detail activity with product id
+            Intent intent = new Intent(context, ProductDetailActivity.class);
+            intent.putExtra("productId", product.getId());
+            context.startActivity(intent);
+        });
 
         fetchFeedback(product, holder);
 
