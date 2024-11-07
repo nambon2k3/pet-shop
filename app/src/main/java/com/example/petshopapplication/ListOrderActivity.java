@@ -102,6 +102,10 @@ public class ListOrderActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "No internet connection available.");
         }
+
+        binding.btnBack.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     private void initTablayouts() {
