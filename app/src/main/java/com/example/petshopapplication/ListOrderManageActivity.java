@@ -54,6 +54,11 @@ public class ListOrderManageActivity extends AppCompatActivity {
 
 //        updateOrderHistory("", 905, "", "", "");
 //        searchShipment("GSL7KJRM96");
+
+        // Back btn:
+        binding.btnBack.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     private void initTablayouts() {
