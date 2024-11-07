@@ -29,8 +29,8 @@ import com.example.petshopapplication.Adapter.ItemModel;
 import com.example.petshopapplication.Adapter.ManageSizeAdapter;
 import com.example.petshopapplication.Adapter.VariantAdapter;
 import com.example.petshopapplication.databinding.ActivityAddProductVariantBinding;
-import com.example.petshopapplication.databinding.PopUpAddVariant1Binding;
 import com.example.petshopapplication.databinding.PopUpAddVariantDimnesionBinding;
+import com.example.petshopapplication.databinding.PopUpAddVariantSizeColorBinding;
 import com.example.petshopapplication.model.Color;
 import com.example.petshopapplication.model.Dimension;
 import com.example.petshopapplication.model.ObjectPrinter;
@@ -66,7 +66,7 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
     Dialog dialog_dimension;
     Button btnShowAddSize;
     ActivityAddProductVariantBinding binding;
-    PopUpAddVariant1Binding binding2;
+    PopUpAddVariantSizeColorBinding binding2;
     FirebaseDatabase database;
     private Uri selectedImageUri; // To store the selected image URI
 
@@ -247,11 +247,11 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
     }
     private void showAddSize(){
         dialog = new Dialog(UpdateProductVariantActivity.this);
-        dialog.setContentView(R.layout.pop_up_add_variant1);
+        dialog.setContentView(R.layout.pop_up_add_variant_size_color);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
 // Create binding BEFORE showing the dialog
-        binding2 = PopUpAddVariant1Binding.inflate(getLayoutInflater());
+        binding2 = PopUpAddVariantSizeColorBinding.inflate(getLayoutInflater());
         dialog.setContentView(binding2.getRoot());
 
         dialog.show();
@@ -391,7 +391,7 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
 
         binding2.btnAddSize.setOnClickListener(view -> {
             dialog2 = new Dialog(UpdateProductVariantActivity.this);
-            dialog2.setContentView(R.layout.pop_up_add_variant2);
+            dialog2.setContentView(R.layout.pop_up_add_variant_size);
             dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             dialog2.show();
             Button btnConfirm = dialog2.findViewById(R.id.btn_submit_name);
