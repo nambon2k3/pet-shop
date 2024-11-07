@@ -111,6 +111,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         });
+
         Intent intent1 = getIntent();
         selectedCartItems = (ArrayList<Cart>) intent1.getSerializableExtra("selectedItems");
         totalAmount = intent1.getDoubleExtra("totalAmount", 0.0);
@@ -523,16 +524,27 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        selectedUAddress = null;
+
                         for (DataSnapshot addressSnapshot : snapshot.getChildren()) {
                             Boolean isDefault = addressSnapshot.child("default").getValue(Boolean.class);
                             if (isDefault != null && isDefault) {
                                 selectedUAddress = addressSnapshot.getValue(UAddress.class);
-                                displayAddress(selectedUAddress);
-                                Log.d(TAG, selectedUAddress.toString());
                                 break;
                             }
                         }
+
+                        if (selectedUAddress != null) {
+                            displayAddress(selectedUAddress);
+                            Log.d(TAG, selectedUAddress.toString());
+                        } else {
+                            // Chuyển sang trang AddAddress nếu không có địa chỉ nào được tìm thấy
+                            Intent intent = new Intent(PaymentActivity.this, AddressAddActivity.class);
+                            startActivity(intent);
+                        }
                     }
+
+
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {

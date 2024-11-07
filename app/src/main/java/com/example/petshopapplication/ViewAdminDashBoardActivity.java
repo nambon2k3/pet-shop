@@ -41,7 +41,6 @@ public class ViewAdminDashBoardActivity extends AppCompatActivity implements Nav
         setContentView(R.layout.activity_view_admin_dash_board);
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        fab = findViewById(R.id.fab);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -76,12 +75,6 @@ public class ViewAdminDashBoardActivity extends AppCompatActivity implements Nav
             return true;
         });
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showBottomDialog();
-            }
-        });
     }
 
     private  void replaceFragment(Fragment fragment) {

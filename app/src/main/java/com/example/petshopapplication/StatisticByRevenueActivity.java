@@ -109,7 +109,7 @@ public class StatisticByRevenueActivity extends AppCompatActivity {
             LineData lineData = new LineData(lineDataSet);
             revenueLineChart.setData(lineData);
             revenueLineChart.getDescription().setEnabled(false);
-            revenueLineChart.animateX(2000);
+            revenueLineChart.animateX(1000);
 
             // Format the X-axis to show months only (1-12)
             revenueLineChart.getXAxis().setValueFormatter((value, axis) -> {

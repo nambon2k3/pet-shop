@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,6 +46,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
     private DatabaseReference addressRef;
     private String addressId;
     private String AUTH_TOKEN;
+    private Switch defaultAddressSwitch;
     FirebaseAuth auth;
     FirebaseUser user;
     @Override
@@ -59,6 +61,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
         citySelectButton = findViewById(R.id.citySelectButton);
         districtSelectButton = findViewById(R.id.districtSelectButton);
         wardSelectButton = findViewById(R.id.wardSelectButton);
+        defaultAddressSwitch = findViewById(R.id.defaultAddressSwitch);
         updateButton = findViewById(R.id.updateButton);
         deleteButton = findViewById(R.id.deleteButton);
         btn_back = findViewById(R.id.btn_back);
@@ -73,7 +76,6 @@ public class AddressUpdateActivity extends AppCompatActivity {
         citySelectButton.setOnClickListener(v -> loadCities());
         districtSelectButton.setOnClickListener(v -> loadDistricts(selectedCityId));
         wardSelectButton.setOnClickListener(v -> loadWards(selectedDistrictId));
-
 
         updateButton.setOnClickListener(v -> updateAddress());
         deleteButton.setOnClickListener(v -> deleteAddress());
@@ -232,7 +234,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
         String city = citySelectButton.getText().toString().trim();
         String district = districtSelectButton.getText().toString().trim();
         String ward = wardSelectButton.getText().toString().trim();
-        boolean isDefault = false; // Hoặc lấy từ trạng thái của Switch nếu có
+        boolean isDefault = defaultAddressSwitch.isChecked();
 
         if (fullName.isEmpty() || phone.isEmpty() || city.isEmpty() || district.isEmpty() || ward.isEmpty()) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
@@ -248,28 +250,73 @@ public class AddressUpdateActivity extends AppCompatActivity {
                 districtSelectButton.getText().toString(),
                 selectedDistrictId,
                 wardSelectButton.getText().toString(),
-                selectedWardId + "",
-                false,
+                String.valueOf(selectedWardId),
+                isDefault,
                 user.getUid()
         );
+
+        // Save the updated address
         addressRef.child(addressId).setValue(updatedUAddress)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(AddressUpdateActivity.this, "Cập nhật địa chỉ thành công", Toast.LENGTH_SHORT).show();
-                    finish(); // Quay lại màn hình trước đó
+
+                    if (isDefault) {
+                        // If the updated address is default, set all others to non-default
+                        setOtherAddressesNonDefault();
+                    }
+
+                    finish(); // Go back to the previous screen
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(AddressUpdateActivity.this, "Cập nhật địa chỉ thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
+    // Set other addresses as non-default
+    private void setOtherAddressesNonDefault() {
+        addressRef.orderByChild("userId").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot addressSnapshot : snapshot.getChildren()) {
+                    UAddress address = addressSnapshot.getValue(UAddress.class);
+                    if (address != null && !address.getAddressId().equals(addressId) && address.isDefault()) {
+                        addressSnapshot.getRef().child("default").setValue(false);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error updating default addresses: " + error.getMessage());
+            }
+        });
+    }
+
+
     private void deleteAddress() {
-        addressRef.child(addressId).removeValue()
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(AddressUpdateActivity.this, "Xóa địa chỉ thành công", Toast.LENGTH_SHORT).show();
-                    finish(); // Quay lại màn hình trước đó
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(AddressUpdateActivity.this, "Xóa địa chỉ thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        addressRef.child(addressId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UAddress address = snapshot.getValue(UAddress.class);
+                if (address != null && address.isDefault()) {
+                    // Nếu là địa chỉ mặc định, hiển thị thông báo không cho phép xóa
+                    Toast.makeText(AddressUpdateActivity.this, "Không thể xóa địa chỉ mặc định", Toast.LENGTH_SHORT).show();
+                } else {
+                    addressRef.child(addressId).removeValue()
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(AddressUpdateActivity.this, "Xóa địa chỉ thành công", Toast.LENGTH_SHORT).show();
+                                finish(); // Quay lại màn hình trước đó
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(AddressUpdateActivity.this, "Xóa địa chỉ thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AddressUpdateActivity.this, "Lỗi khi kiểm tra địa chỉ: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

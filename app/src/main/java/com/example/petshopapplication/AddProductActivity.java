@@ -21,6 +21,7 @@ import com.example.petshopapplication.Adapter.CategoryAdapter;
 import com.example.petshopapplication.databinding.ActivityAddFeedbackBinding;
 import com.example.petshopapplication.databinding.ActivityAddProductBinding;
 import com.example.petshopapplication.model.Category;
+import com.example.petshopapplication.model.ObjectPrinter;
 import com.example.petshopapplication.model.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -174,11 +175,10 @@ public class AddProductActivity extends AppCompatActivity {
         newProduct.setListVariant(new ArrayList<>());
         newProduct.setBaseImageURL(image);
         newProduct.setDescription(description);
-
+        System.out.println(ObjectPrinter.print(newProduct));
         Intent intent= new Intent(this, AddProductVariantActivity.class);
         intent.putExtra("product",newProduct);
         startActivity(intent);
-        finish();
     }
 
 }

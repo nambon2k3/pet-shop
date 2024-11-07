@@ -105,7 +105,7 @@ public class ManageProductActivity extends AppCompatActivity implements ListProd
         reference = database.getReference(getString(R.string.tbl_category_name));
 
         categoryItems = new ArrayList<>();
-        Query query = reference.orderByChild("isDeleted");
+        Query query = reference.orderByChild("deleted");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -278,7 +278,7 @@ public class ManageProductActivity extends AppCompatActivity implements ListProd
 
                                 // Update isDeleted field to true
                                 Map<String, Object> updates = new HashMap<>();
-                                updates.put("isDeleted", true);
+                                updates.put("deleted", true);
 
                                 productRef.child(id).updateChildren(updates)
                                         .addOnCompleteListener(task -> {

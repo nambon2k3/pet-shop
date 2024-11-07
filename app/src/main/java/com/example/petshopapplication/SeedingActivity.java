@@ -1,5 +1,6 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -82,4 +83,6 @@ public class SeedingActivity extends AppCompatActivity {
             finish();
         }
     }
+
+
 }
