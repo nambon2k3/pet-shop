@@ -48,6 +48,19 @@
             android:text="Purchase"
             app:cornerRadius="0dp" />
     </LinearLayout>
+    <TextView
+        android:id="@+id/tv_cart_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="There is nothing. Please shopping!"
+        android:layout_marginTop="50dp"
+        android:textSize="20sp"
+        android:textColor="@color/textColorHint"
+        android:visibility="gone"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rec_cart"

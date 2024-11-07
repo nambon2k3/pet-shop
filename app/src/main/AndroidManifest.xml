@@ -19,6 +19,12 @@
         <activity
             android:name=".UserPanel"
             android:exported="false" />
+        <activity
+            android:name=".StatisticByRevenueActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OrderTrackingActivity"
+            android:exported="false" />
         <!-- <activity -->
         <!-- android:name=".UserProfileActivity" -->
         <!-- android:exported="false" /> -->
@@ -61,9 +67,9 @@
         <activity
             android:name=".PrepareOrderActivity"
             android:exported="false" />
-        <activity
-            android:name=".ListOrderManageActivity"
-            android:exported="false" />
+         <activity
+         android:name=".ListOrderManageActivity"
+         android:exported="false" />
         <activity
             android:name=".ListOrderActivity"
             android:exported="false" />

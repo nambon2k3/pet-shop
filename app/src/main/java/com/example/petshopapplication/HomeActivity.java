@@ -99,7 +99,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        boolean isDeleted = Boolean.TRUE.equals(dataSnapshot.child("deleted").getValue(Boolean.class));
+                        boolean isDeleted = Boolean.TRUE.equals(dataSnapshot.child("isDeleted").getValue(Boolean.class));
                         Product product = dataSnapshot.getValue(Product.class);
                         if(!isDeleted && productItems.size() < 10) {
                             productItems.add(product);
@@ -118,7 +118,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-
 
 
     public void initFeedback() {

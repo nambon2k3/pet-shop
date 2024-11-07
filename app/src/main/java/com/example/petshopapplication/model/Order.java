@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 public class Order implements Serializable {
     private String id;
     private String userId;
+    private String fullName;
+    private String phoneNumber;
     private String shipmentId;
     private String rateId;
     private String carrierLogo;

@@ -53,6 +53,8 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     FirebaseUser user;
     Button purchaseButton;
     ImageView btn_back;
+    TextView tv_cart_empty;
+    RecyclerView rec_cart;
 
     //Set up dialog cart
     Dialog dialog;
@@ -74,6 +76,10 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
 
         //Initialize firebase
         database = FirebaseDatabase.getInstance();
+
+        tv_cart_empty = findViewById(R.id.tv_cart_empty);
+        rec_cart = findViewById(R.id.rec_cart);
+
 
         initCart(userId);
 
@@ -117,7 +123,11 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
                                 Cart cart = dataSnapshot.getValue(Cart.class);
                                 cartList.add(cart);
                             }
+
+
                             getListProductInCart(cartList);
+
+
                         }
                     }
 
@@ -182,6 +192,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
             }
         }
     }
+
     public double calculateTotalPrice() { // Đổi kiểu trả về thành double
         double totalPrice = 0.;
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
@@ -235,45 +246,49 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
             public void onClick(View view) {
                 reference = database.getReference(getString(R.string.tbl_cart_name));
                 reference.orderByChild("cartId").equalTo(cart.getCartId())
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if(snapshot.exists()){
-                                            for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                                Log.e("Cart Item Delete", dataSnapshot.getRef() + "");
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                        Log.e("Cart Item Delete", dataSnapshot.getRef() + "");
 
-                                                dataSnapshot.getRef().removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if(task.isSuccessful()){
-                                                            Toast.makeText(CartActivity.this, "Delete cart item successfullu!", Toast.LENGTH_SHORT).show();
-                                                            //Exit dialog
-                                                            dialog.dismiss();
-                                                            //Reload cart list
-                                                            reloadCartList();
+                                        dataSnapshot.getRef().removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Toast.makeText(CartActivity.this, "Delete cart item successfullu!", Toast.LENGTH_SHORT).show();
+                                                    //Exit dialog
+                                                    dialog.dismiss();
+                                                    //Reload cart list
+                                                    reloadCartList();
 
-                                                        } else  {
-                                                            Toast.makeText(CartActivity.this, "Failed to delete cart item!", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    }
-                                                });
+                                                } else {
+                                                    Toast.makeText(CartActivity.this, "Failed to delete cart item!", Toast.LENGTH_SHORT).show();
+                                                }
                                             }
-                                        }
+                                        });
                                     }
+                                }
+                            }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                                    }
-                                });
+                            }
+                        });
             }
         });
 
     }
 
-    public void reloadCartList(){
+    public void reloadCartList() {
         cartList.clear();
+        CartAdapter emptyAdapter = new CartAdapter(new ArrayList<>(), new ArrayList<>(), CartActivity.this, CartActivity.this, CartActivity.this);
+        rec_cart.setAdapter(emptyAdapter);
+
         initCart(user.getUid());
+
     }
 
 }
