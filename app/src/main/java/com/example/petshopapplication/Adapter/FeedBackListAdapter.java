@@ -83,61 +83,60 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
                         .into(holder.imv_feedback_image);
             }
 
-
+        // Add options to the spinner
+        List<String> options = new ArrayList<>();
+        options.add("Select Action:");
+        if (role != null) {
+            options.add("Ban");
+            options.add("Unban");
+        } else {
             // Check if the current user matches the feedback user and if feedback is not marked as deleted
             if (feedback.getUserId().equals(user.getId())) {
-                // Add options to the spinner
-                List<String> options = new ArrayList<>();
-                options.add("Select Action:");
-                if (role != null){
-                    options.add("Ban");
-                    options.add("Unban");
-                } else {
                     options.add("Edit");
                     options.add("Delete");
-                }
-
-                // Set up spinner
-                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);
-                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                holder.sp_feedback.setAdapter(spinnerAdapter);
-
-                // Handle spinner item selection
-                holder.sp_feedback.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                        String selectedAction = (String) parentView.getItemAtPosition(position);
-                        switch (selectedAction) {
-                            case "Edit":
-                                updateFeedback(feedback);
-                                break;
-                            case "Delete":
-                                deleteFeedback(feedback);
-                                break;
-                            case "Ban":
-                                deleteFeedback(feedback);
-                                break;
-                            case "Unban":
-                                unbanFeedback(feedback);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parentView) {
-                        // No action needed
-                    }
-                });
             } else {
                 // Hide spinner if conditions are not met
                 holder.sp_feedback.setVisibility(View.GONE);
             }
+        }
 
-            if (role != null && feedback.isDeleted()){
-                holder.itemView.setAlpha(0.5f);
+        // Set up spinner
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        holder.sp_feedback.setAdapter(spinnerAdapter);
+
+        // Handle spinner item selection
+        holder.sp_feedback.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedAction = (String) parentView.getItemAtPosition(position);
+                switch (selectedAction) {
+                    case "Edit":
+                        updateFeedback(feedback);
+                        break;
+                    case "Delete":
+                        deleteFeedback(feedback);
+                        break;
+                    case "Ban":
+                        deleteFeedback(feedback);
+                        break;
+                    case "Unban":
+                        unbanFeedback(feedback);
+                        break;
+                    default:
+                        break;
+                }
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // No action needed
+            }
+        });
+
+        if (role != null && feedback.isDeleted()) {
+            holder.itemView.setAlpha(0.5f);
+        }
     }
 
     public User getUser(String userId) {
