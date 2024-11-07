@@ -34,7 +34,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
     List<User> userItems;
     User user;
     Context context;
-    String role = "ur";
+    int role;
 
     public FeedBackListAdapter(List<FeedBack> feedBackItems, List<User> userItems, User user) {
         this.feedBackItems = feedBackItems;
@@ -52,6 +52,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull FeedbackHolder holder, int position) {
+        role = user.getRoleId();
         FeedBack feedback = feedBackItems.get(position);
 
         User fbUser;
@@ -86,7 +87,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
         // Add options to the spinner
         List<String> options = new ArrayList<>();
         options.add("Select Action:");
-        if (role != null) {
+        if (role != 1) {
             options.add("Ban");
             options.add("Unban");
         } else {
@@ -115,8 +116,6 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
                         updateFeedback(feedback);
                         break;
                     case "Delete":
-                        deleteFeedback(feedback);
-                        break;
                     case "Ban":
                         deleteFeedback(feedback);
                         break;
@@ -134,7 +133,7 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
             }
         });
 
-        if (role != null && feedback.isDeleted()) {
+        if (role != 1 && feedback.isDeleted()) {
             holder.itemView.setAlpha(0.5f);
         }
     }
