@@ -17,6 +17,12 @@
         tools:replace="android:theme"
         tools:targetApi="31">
         <activity
+            android:name=".OrderTrackingActivity"
+            android:exported="false" />
+        <!-- <activity -->
+        <!-- android:name=".UserProfileActivity" -->
+        <!-- android:exported="false" /> -->
+        <activity
             android:name=".AdminViewProductDetailActivity"
             android:exported="false" />
         <activity
@@ -27,6 +33,15 @@
             android:exported="false" />
         <activity
             android:name=".ViewAdminDashBoardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CreateOrderSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddShopAddressActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChangeShopAddressActivity"
             android:exported="false" />
         <activity
             android:name=".ViewDetailOrderActivity"
@@ -46,9 +61,9 @@
         <activity
             android:name=".PrepareOrderActivity"
             android:exported="false" />
-        <activity
-            android:name=".ListOrderManageActivity"
-            android:exported="false" />
+         <activity
+         android:name=".ListOrderManageActivity"
+         android:exported="false" />
         <activity
             android:name=".ListOrderActivity"
             android:exported="false" />
@@ -86,10 +101,10 @@
             android:name=".ManageProductActivity"
             android:exported="false" />
         <activity
-            android:name=".ManageFeedBackByProductActivity"
+            android:name=".ListFeedbackActivity"
             android:exported="false" />
         <activity
-            android:name=".ListFeedbackActivity"
+            android:name=".SeedingActivity"
             android:exported="false" />
         <activity
             android:name=".UpdateProductActivity"
@@ -101,17 +116,20 @@
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="demozpdk"
-                    android:host="app" />
+
+                <data
+                    android:host="app"
+                    android:scheme="demozpdk" />
             </intent-filter>
         </activity>
-
-
-        />
         <activity
             android:name=".AddressSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddressUpdateActivity"
             android:exported="false" />
         <activity
             android:name=".AddProductActivity"

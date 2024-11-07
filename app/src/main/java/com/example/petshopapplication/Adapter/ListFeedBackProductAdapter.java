@@ -80,7 +80,6 @@ public class ListFeedBackProductAdapter extends RecyclerView.Adapter<ListFeedBac
             intent.putExtra("productId", product.getId());
             context.startActivity(intent);
         });
-        System.out.println(product);
         fetchFeedback(product, holder);
     }
 
@@ -119,7 +118,6 @@ public class ListFeedBackProductAdapter extends RecyclerView.Adapter<ListFeedBac
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
                     if (!feedback.isDeleted()) {
-                        System.out.println();
                         feedbackItems.add(feedback);
                         totalRating += feedback.getRating();
                         feedbackCount++;

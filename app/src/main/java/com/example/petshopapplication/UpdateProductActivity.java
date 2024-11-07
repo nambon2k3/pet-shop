@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petshopapplication.databinding.ActivityAddProductBinding;
+import com.example.petshopapplication.databinding.ActivityUpdateProductBinding;
 import com.example.petshopapplication.model.Category;
 import com.example.petshopapplication.model.Product;
 import com.google.firebase.database.DataSnapshot;
@@ -44,8 +45,8 @@ import java.util.UUID;
 
 
 public class UpdateProductActivity extends AppCompatActivity {
-    private ActivityAddProductBinding binding;
-    private Uri selectedImageUri; // To store the selected image URI
+    private ActivityUpdateProductBinding binding;
+    private Uri selectedImageUri;
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
     DatabaseReference reference;
@@ -56,18 +57,24 @@ public class UpdateProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
-
         setContentView(R.layout.activity_update_product);
 
-        binding = ActivityAddProductBinding.inflate(getLayoutInflater());
+        binding = ActivityUpdateProductBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.imvGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8)
         {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
-
         }
 
         proid = (String) getIntent().getStringExtra("id");
@@ -104,12 +111,11 @@ public class UpdateProductActivity extends AppCompatActivity {
     Product current = null;
     String old = "";
     private void initProduct()
-    {reference = firebaseDatabase.getReference("products");
+    {
+        reference = firebaseDatabase.getReference("products");
 
         Query query = reference.orderByChild("id").equalTo(proid);
         try {
-
-
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -160,7 +166,7 @@ public class UpdateProductActivity extends AppCompatActivity {
         binding.prgHomeCategory2.setVisibility(View.VISIBLE);
 
          categoryItems = new ArrayList<>();
-        Query query = reference.orderByChild("isDeleted").equalTo(false);
+        Query query = reference.orderByChild("deleted").equalTo(false);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override

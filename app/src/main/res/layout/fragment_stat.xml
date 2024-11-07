@@ -23,7 +23,7 @@
             android:onClick="openStatisticProductByCategoryActivity" />
 
         <Button
-            android:id="@+id/btnViewListProduct"
+            android:id="@+id/btnStatisticByOther"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Statistic by Other Field"

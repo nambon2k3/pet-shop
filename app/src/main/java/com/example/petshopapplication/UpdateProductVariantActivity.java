@@ -87,6 +87,14 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
 
         binding = ActivityAddProductVariantBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.imvGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8)
         {
@@ -125,7 +133,6 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
         if(currentDimension == null)
         {
             Toast.makeText(UpdateProductVariantActivity.this, "Please set dimension", Toast.LENGTH_SHORT).show();
-
         }
         if(variants.isEmpty())
         {
@@ -265,6 +272,7 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
 
                 if (found.isEmpty()) {
                     Variant newva = new Variant();
+                    newva.setId(UUID.randomUUID().toString());
                     newva.setSize(currentSize);
                     newva.setDeleted(false);
                     newva.setDimension(null);

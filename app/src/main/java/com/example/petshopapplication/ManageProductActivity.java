@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -90,10 +91,6 @@ public class ManageProductActivity extends AppCompatActivity implements ListProd
             initListProduct(categoryItems);
         });
 
-        binding.btnCart.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CartActivity.class);
-            startActivity(intent);
-        });
 
         binding.tvAllCategory.setOnClickListener(v -> {
             categoryId = null;
@@ -260,37 +257,53 @@ public class ManageProductActivity extends AppCompatActivity implements ListProd
         startActivity(intent);
     }
 
-    @Override
     public void onDeleteClickEvent(Product product) {
-        DatabaseReference productRef = database.getReference("products");
-        Query query = reference.orderByChild("id").equalTo(product.getId());
+        // Create an AlertDialog builder
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Product")
+                .setMessage("Are you sure you want to delete this product?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // Proceed with delete if user confirms
+                    DatabaseReference productRef = database.getReference("products");
+                    Query query = productRef.orderByChild("id").equalTo(product.getId());
 
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                String id = "";
+                                for (DataSnapshot child : snapshot.getChildren()) {
+                                    id = child.getKey();
+                                }
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String id = "";
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        id = child.getKey();
-                    }
-                    Map<String, Object> updates = new HashMap<>();
+                                // Update isDeleted field to true
+                                Map<String, Object> updates = new HashMap<>();
+                                updates.put("isDeleted", true);
 
-                    updates.put("isDeleted", true); // Hoặc false tùy theo yêu cầu
-                    productRef.child(id).updateChildren(updates);
-                    finish();
-                    startActivity(getIntent());
-                    Toast.makeText(ManageProductActivity.this, "Product deleted successfully!", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
+                                productRef.child(id).updateChildren(updates)
+                                        .addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                // Restart activity to refresh data after deletion
+                                                finish();
+                                                startActivity(getIntent());
+                                                Toast.makeText(ManageProductActivity.this, "Product deleted successfully!", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(ManageProductActivity.this, "Failed to delete product.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(ManageProductActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("No", (dialog, which) -> {
+                    // Dismiss the dialog if user clicks "No"
+                    dialog.dismiss();
+                })
+                .show();
     }
+
 }

@@ -2,6 +2,7 @@ package com.example.petshopapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -31,7 +32,7 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
     private List<FeedBack> feedbackList;
     private DatabaseReference databaseReference;
     private FirebaseDatabase database;
-    String currentUserId = "Ko9B1selclMHLfa2PBZxSrYL2qG3";
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +52,14 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
 
         feedbackList = new ArrayList<>();
         binding.rcvFeedback.setAdapter(feedbackAdapter);
+        binding.btnBack.setOnClickListener(v -> finish());
 
         // Firebase Realtime Database reference
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(getString(R.string.tbl_feedback_name));
 
         // Fetch feedbacks from Firebase
+        getIntend();
         fetchFeedbacks();
     }
 
@@ -67,7 +70,7 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
                 feedbackList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
-                    if (feedback != null && !feedback.isDeleted() && feedback.getUserId().equals(currentUserId)) {
+                    if (feedback != null && !feedback.isDeleted() && feedback.getUserId().equals(userId)) {
                         feedbackList.add(feedback); // Add feedback to the list
                     }
                 }
@@ -111,6 +114,16 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
 
                 }
             });
+        }
+    }
+
+    private void getIntend() {
+        userId = getIntent().getStringExtra("userId");
+
+        if (userId == null) {
+            Log.e("ListUserFeedbackActivity", "Null. Please pass a valid order ID.");
+            // Hiển thị thông báo lỗi hoặc kết thúc activity nếu cần
+            finish();
         }
     }
 }

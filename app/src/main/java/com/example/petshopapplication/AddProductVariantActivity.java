@@ -84,6 +84,14 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
 
         binding = ActivityAddProductVariantBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.imvGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8)
         {
@@ -107,6 +115,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
         binding.addPvDimension.setOnClickListener(view -> showAddDimension());
         binding.addPvButton.setOnClickListener(view->addVariant());
         initVariants();
+        finish();
     }
     Product model;
     private void addVariant()
@@ -139,6 +148,9 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
                 .addOnSuccessListener(aVoid -> Toast.makeText(this, "Product submitted successfully!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to submit product.", Toast.LENGTH_SHORT).show());
 
+        Intent intent = new Intent(this, SeedingActivity.class);
+        intent.putExtra("productId", model.getId());
+        startActivity(intent);
     }
     private void initVariants()
     {
@@ -236,6 +248,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
 
 
         binding2.btnSubmit.setOnClickListener(view -> {
+            //reference =  database.getReference("list");
             if (currentColor == null || currentSize == null) {
                 Toast.makeText(AddProductVariantActivity.this, "Please select color or size.", Toast.LENGTH_SHORT).show();
             } else if (binding2.editTextText.getText().toString().equals("0")) {
@@ -247,6 +260,7 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
 
                 if (found.isEmpty()) {
                     Variant newva = new Variant();
+                    newva.setId(UUID.randomUUID().toString());
                     newva.setSize(currentSize);
                     newva.setDeleted(false);
                     newva.setDimension(null);
