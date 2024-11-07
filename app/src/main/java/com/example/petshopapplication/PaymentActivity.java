@@ -88,7 +88,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     private String selectedCartierLogo;
     private List<Product> productList = new ArrayList<>();
     private double finalTotalAmount;
-    private ImageView  btn_back;
+    private ImageView btn_back;
     private String zalo_transactionId;
     private String zaloMoney;
 
@@ -241,7 +241,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             selectedUAddress = (UAddress) data.getSerializableExtra("selectedAddress");
             if (selectedUAddress != null) {
                 displayAddress(selectedUAddress);
-                // Gọi lại loadRates nếu cần thiết
                 if (selectedUAddress.getDistrictId() != null && selectedUAddress.getCityId() != null) {
                     loadRates(selectedUAddress.getDistrictId(), selectedUAddress.getCityId(), 1, (int) totalAmount, totalWidth, totalHeight, totalLength, totalWeight);
                 }
@@ -282,7 +281,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
 
 
     private void createOrderAndPayment() {
-        // Tạo đơn hàng với UUID
         Order order = new Order();
         order.setId(UUID.randomUUID().toString());
         order.setUserId(user.getUid());
@@ -317,7 +315,6 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
                         payment.setPaymentMethod(checkboxPaymentOnDelivery.isChecked() ? "COD" : "Thanh toan qua ZaloPay"); // Gán phương thức thanh toán
                         // Kiểm tra nếu thanh toán qua ZaloPay
                         if (!checkboxPaymentOnDelivery.isChecked()) {
-                            // transactionId là kết quả từ API ZaloPay
                             payment.setTransactionId(zalo_transactionId);
                             payment.setAmount(Double.parseDouble(zaloMoney));
 
@@ -374,9 +371,9 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
             double discountPercentage = getDiscountForProduct(cartItem.getProductId());
             double discountedPrice = price * (1 - discountPercentage / 100.0);
 
-            orderDetail.setPurchased(discountedPrice); // Lưu giá đã giảm
+            orderDetail.setPurchased(discountedPrice);
 
-            orderDetailsList.add(orderDetail); // Thêm vào danh sách chi tiết đơn hàng
+            orderDetailsList.add(orderDetail);
         }
         return orderDetailsList;
     }
@@ -402,12 +399,12 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     }
 
     public Product findProductById(String productId) {
-        for (Product product : productList) { // productList là danh sách sản phẩm
+        for (Product product : productList) {
             if (product.getId().equals(productId)) {
-                return product; // Trả về sản phẩm nếu tìm thấy
+                return product;
             }
         }
-        return null; // Trả về null nếu không tìm thấy sản phẩm
+        return null;
     }
 
 

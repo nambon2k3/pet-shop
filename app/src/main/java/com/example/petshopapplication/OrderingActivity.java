@@ -26,8 +26,8 @@ public class OrderingActivity extends AppCompatActivity {
     private DatabaseReference db;
     private String orderId;
 
-    private TextView tvOrderStatus, tvShippingMethod, tvRecipientName, tvAddressDetail, tvTotalPrice, tvPaymentMethod;
-    private TextView tvCarrierName, tvCity, tvDistrict, tvOrderDate;
+    private TextView tvRecipientName, tvAddressDetail, tvTotalPrice, tvPaymentMethod;
+    private TextView tvCarrierName;
     private ImageView imvShipmentLogo;
     Button continueShoppingButton;
     Button viewOrdersButton;
@@ -36,14 +36,9 @@ public class OrderingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ordering);
-
-        // Initialize Firebase Database reference
         db = FirebaseDatabase.getInstance().getReference();
-
-        // Get orderId from the Intent
         orderId = getIntent().getStringExtra("orderId");
 
-        // Initialize UI components
         tvCarrierName = findViewById(R.id.tv_shipping_method);
         tvRecipientName = findViewById(R.id.tv_recipient_name);
         tvAddressDetail = findViewById(R.id.tv_address_detail);
@@ -51,14 +46,13 @@ public class OrderingActivity extends AppCompatActivity {
         tvPaymentMethod = findViewById(R.id.tv_payment_method);
         imvShipmentLogo = findViewById(R.id.imv_shipment_logo);
 
-        // Load order details
         loadOrderDetails(orderId);
 
         continueShoppingButton = findViewById(R.id.button_continue_shopping);
         continueShoppingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Redirect to HomeActivity
+
                 Intent intent = new Intent(OrderingActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish(); // End current activity
@@ -88,18 +82,15 @@ public class OrderingActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     Log.d("OrderingActivity", "Order found: " + orderId);
 
-                    // Retrieve order details
                     String recipientFullName = dataSnapshot.child("fullName").getValue(String.class);
                     String shipmentLogoUrl = dataSnapshot.child("carrierLogo").getValue(String.class);
 
                     String carrierName = dataSnapshot.child("carrierName").getValue(String.class);
-                    String paymentID = dataSnapshot.child("paymentId").getValue(String.class);
                     String city = dataSnapshot.child("city").getValue(String.class);
                     String district = dataSnapshot.child("district").getValue(String.class);
                     String ward = dataSnapshot.child("ward").getValue(String.class);
                     String phoneNumber = dataSnapshot.child("phoneNumber").getValue(String.class);
 
-                    // Format address and recipient name
                     String addressDetail = (ward != null ? ward : "") + "," + (district != null ? district : "") + "," + (city != null ? city : "");
                     String recipientName = (recipientFullName != null ? recipientFullName : "") + " | " + (phoneNumber != null ? phoneNumber : "");
 
@@ -125,14 +116,11 @@ public class OrderingActivity extends AppCompatActivity {
 
                                     String paymentMethod = paymentSnapshot.child("paymentMethod").getValue(String.class);
 
-
-                                    // Update UI with order details
                                     tvCarrierName.setText(carrierName != null ? carrierName : "Unknown");
                                     tvRecipientName.setText(recipientName);
                                     tvAddressDetail.setText(addressDetail);
                                     tvPaymentMethod.setText(paymentMethod != null ? paymentMethod : "Unknown");
 
-                                    // Load shipment logo if URL is available
                                     if (shipmentLogoUrl != null) {
                                         Glide.with(OrderingActivity.this).load(shipmentLogoUrl).into(imvShipmentLogo);
                                         Log.d("OrderingActivity", "Loaded shipment logo: " + shipmentLogoUrl);

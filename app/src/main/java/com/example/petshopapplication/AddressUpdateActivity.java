@@ -41,7 +41,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
     private EditText fullNameEditText, phoneEditText, citySelectButton, districtSelectButton, wardSelectButton;
     private Button updateButton, deleteButton;
     private DatabaseReference addressRef;
-    private String addressId; // ID của địa chỉ
+    private String addressId;
     private String AUTH_TOKEN;
     FirebaseAuth auth;
     FirebaseUser user;
@@ -62,7 +62,6 @@ public class AddressUpdateActivity extends AppCompatActivity {
 
         addressRef = FirebaseDatabase.getInstance().getReference("addresses");
 
-        // Nhận ID địa chỉ từ Intent
         addressId = getIntent().getStringExtra("addressId");
         fetchAddressDetails(addressId);
 
@@ -236,18 +235,17 @@ public class AddressUpdateActivity extends AppCompatActivity {
         }
 
         UAddress updatedUAddress = new UAddress(
-                addressId,                                   // ID địa chỉ
-                fullName,                                   // Họ và tên
-                phone,                                      // Số điện thoại
-                citySelectButton.getText().toString(),     // Tên thành phố
-                selectedCityId,                             // ID thành phố
-                districtSelectButton.getText().toString(),  // Tên quận
-                selectedDistrictId,                         // ID quận
-                wardSelectButton.getText().toString(),      // Tên phường
+                addressId,
+                fullName,
+                phone,
+                citySelectButton.getText().toString(),
+                selectedCityId,
+                districtSelectButton.getText().toString(),
+                selectedDistrictId,
+                wardSelectButton.getText().toString(),
                 selectedWardId + "",
                 false,
-                user.getUid()// isDefault (ví dụ: false cho địa chỉ không mặc định)
-                                                       // ID người dùng
+                user.getUid()
         );
         addressRef.child(addressId).setValue(updatedUAddress)
                 .addOnSuccessListener(aVoid -> {

@@ -55,7 +55,6 @@ public class AddressSelectionActivity extends AppCompatActivity implements Addre
         // Lấy tất cả địa chỉ của người dùng
         fetchUserAddresses(user.getUid());
 
-        // Thiết lập sự kiện cho việc thêm địa chỉ mới
         LinearLayout addAddressLayout = findViewById(R.id.add_address_layout);
         addAddressLayout.setOnClickListener(v -> {
             Intent intent = new Intent(AddressSelectionActivity.this, AddressAddActivity.class);
@@ -66,7 +65,7 @@ public class AddressSelectionActivity extends AppCompatActivity implements Addre
     @Override
     public void onAddressSelected(UAddress selectedAddress) {
         Log.d(TAG, "Selected address1: " + selectedAddress.toString());
-        proceedToPayment(selectedAddress); // Gọi hàm để chuyển sang PaymentActivity
+        proceedToPayment(selectedAddress);
     }
 
     private void proceedToPayment(UAddress selectedAddress) {
