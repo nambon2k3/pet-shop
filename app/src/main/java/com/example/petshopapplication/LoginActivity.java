@@ -134,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
                     User user = ds.getValue(User.class);
                     if(user.getRoleId() == ROLE_USER) {
                         //User is authenticated, go to home activity
-                        Intent intent = new Intent(LoginActivity.this, ViewAdminDashBoardActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         startActivity(intent);
                     }
                 }
