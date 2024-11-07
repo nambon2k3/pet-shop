@@ -42,7 +42,7 @@ public class ViewPagerOrderManageAdapter extends FragmentStateAdapter {
                 }
                 case 2: {
                     Log.d("createFragment", "ShippingTablayoutFragment");
-                    return new ShippingTablayoutFragment(); // Shipping
+                    return new ShippingTablayoutFragment(isInventory); // Shipping
                 }
                 case 3: {
                     Log.d("createFragment", "Return goods");
@@ -63,11 +63,11 @@ public class ViewPagerOrderManageAdapter extends FragmentStateAdapter {
                 }
                 case 1: {
                     Log.d("createFragment", "ShippingTablayoutFragment");
-                    return new ShippingTablayoutFragment(); // Shipping
+                    return new ShippingTablayoutFragment(isInventory); // Shipping
                 }
                 case 2: {
                     Log.d("createFragment", "Return goods");
-                    return new ShippingTablayoutFragment(); // Returning
+                    return new ShippingTablayoutFragment(isInventory); // Returning
                 }
                 case 3: {
                     Log.d("createFragment", "DeliveredTablayoutFragment");

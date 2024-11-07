@@ -37,7 +37,9 @@ public class ShippingTablayoutFragment extends Fragment {
     private FirebaseDatabase database;
     private DatabaseReference reference;
     private boolean isInventory = true;
-
+    public ShippingTablayoutFragment(boolean isInventory) {
+        this.isInventory = isInventory;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

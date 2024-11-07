@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.OrderHistoryAdapter;
+import com.example.petshopapplication.Adapter.TimelineDecoration;
 import com.example.petshopapplication.databinding.ActivityOrderTrackingBinding;
 import com.example.petshopapplication.model.History;
 import com.google.firebase.database.DataSnapshot;
@@ -49,8 +50,15 @@ public class OrderTrackingActivity extends AppCompatActivity {
         orderHistoryAdapter = new OrderHistoryAdapter(this, historyList);
         recyclerViewOrderHistory.setAdapter(orderHistoryAdapter);
 
+        // Thêm TimelineDecoration cho RecyclerView
+        recyclerViewOrderHistory.addItemDecoration(new TimelineDecoration(this));
+
         // Gọi hàm để lấy dữ liệu lịch sử từ Firebase
         loadOrderHistory(orderId);
+
+        binding.ivBack.setOnClickListener(v -> {
+            finish();
+        });
 
 //        generateFakeOrderHistoryData();
 

@@ -45,9 +45,6 @@ public class ListOrderManageActivity extends AppCompatActivity {
 
         tabTitles = getResources().getStringArray(R.array.tab_order_manage_inventory_titles);
         initTablayouts();
-
-        updateOrderHistory("0591d08f-a27f-43fe-bc9c-2991567b6827", 904, "Hàng đang được đi giao cho khách", "Giao hàng", "Hàng đang được đi giao cho khách");
-
 //        searchShipment("GSL7KJRM96");
     }
 

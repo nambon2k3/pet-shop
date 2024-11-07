@@ -26,6 +26,7 @@ import com.example.petshopapplication.R;
 import com.example.petshopapplication.ViewDetailOrderActivity;
 import com.example.petshopapplication.ViewFeedBackItemActivity;
 import com.example.petshopapplication.model.FeedBack;
+import com.example.petshopapplication.model.History;
 import com.example.petshopapplication.model.Order;
 import com.example.petshopapplication.model.OrderDetail;
 import com.example.petshopapplication.utils.Validate;
@@ -172,7 +173,30 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             } else if ("Shipping".equals(orderStatus)) {
                 // Check if status = Shipment Completed (*****)
                 holder.btn_confirm_received.setVisibility(View.VISIBLE);
+                holder.btn_feedback.setVisibility(View.GONE);
+
+                Log.d(TAG, "ORder + " + order.getId() + ": " + order.toString());
+                // if history order -> final history.status = 905(Giao thành công (Đã giao hàng cho khách thành công))
+                // Inside the appropriate section of your code where you are checking order status
+                if (order.getHistory() != null && !order.getHistory().isEmpty()) {
+                    // Get the last history item
+                    History lastHistory = order.getHistory().get(order.getHistory().size() - 1);
+                    Log.d(TAG, "LAST status = " + lastHistory.getStatus());
+
+                    if (lastHistory.getStatus() == 905) {
+                        Log.d(TAG, "status = " + 905);
+                        // Show the 'Received' button if the last status is 905
+                        holder.btn_confirm_received.setVisibility(View.VISIBLE);
+                    } else {
+                        Log.d(TAG, "status not = " + 905);
+                        holder.btn_confirm_received.setVisibility(View.GONE);
+                    }
+                } else {
+                    holder.btn_confirm_received.setVisibility(View.GONE);
+                }
             }
+
+
         }
 
         holder.btn_prepare_order.setOnClickListener(v -> {
@@ -210,8 +234,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
                     .setTitle("Confirm received order")
                     .setMessage("Are you sure you received this order?")
                     .setPositiveButton("Yes", (dialog, which) -> {
-                        // Cancel order
-//                        cancelOrder(order.getId());
+                        // update status -> Delivered
+
                         Log.d(TAG, "Delivered Order ID: " + order.getId() + "| Order Total: " + order.getTotalAmount());
                     })
                     .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
@@ -240,8 +264,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             // Successfully updated status in Firebase
             Log.d(TAG, "Order canceled successfully.");
 
-            // Remove the order from the local list
-//            orderList.removeIf(order -> order.getId().equals(orderId));
+            // method to update quantity, deliveringQuantity
 
             // Notify the adapter to update the RecyclerView
             notifyDataSetChanged();

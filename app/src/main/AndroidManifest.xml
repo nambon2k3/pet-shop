@@ -61,9 +61,9 @@
         <activity
             android:name=".PrepareOrderActivity"
             android:exported="false" />
-         <activity
-         android:name=".ListOrderManageActivity"
-         android:exported="false" />
+<!--         <activity-->
+<!--         android:name=".ListOrderManageActivity"-->
+<!--         android:exported="false" />-->
         <activity
             android:name=".ListOrderActivity"
             android:exported="false" />
