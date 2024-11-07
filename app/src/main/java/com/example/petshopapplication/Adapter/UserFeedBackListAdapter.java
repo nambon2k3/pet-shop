@@ -28,21 +28,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapter.FeedbackHolder> {
+public class UserFeedBackListAdapter extends RecyclerView.Adapter<UserFeedBackListAdapter.FeedbackHolder> {
 
     List<FeedBack> feedBackItems;
     List<User> userItems;
     User user;
     Context context;
-    String role;
+    String role = "a";
 
-    public FeedBackListAdapter(List<FeedBack> feedBackItems, List<User> userItems, User user) {
-        this.feedBackItems = feedBackItems;
-        this.userItems = userItems;
-        this.user = user;
-    }
-
-    public FeedBackListAdapter(List<FeedBack> feedBackItems, User user) {
+    public UserFeedBackListAdapter(List<FeedBack> feedBackItems, User user) {
         this.feedBackItems = feedBackItems;
         this.user = user;
     }
@@ -59,22 +53,16 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
     public void onBindViewHolder(@NonNull FeedbackHolder holder, int position) {
         FeedBack feedback = feedBackItems.get(position);
 
-        User fbUser;
-        if (!userItems.isEmpty()){
-            fbUser = getUser(feedback.getUserId());
-        } else {
-            fbUser = user;
-        }
 
             // Display elements of feedback
-            if (fbUser.getAvatar() != null && !fbUser.getAvatar().isEmpty()) {
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
                 holder.imv_feedback_user_avatar.setVisibility(View.VISIBLE);
                 Glide.with(context)
-                        .load(fbUser.getAvatar())
+                        .load(user.getAvatar())
                         .placeholder(R.drawable.icon) // Optional placeholder image
                         .into(holder.imv_feedback_user_avatar);
             }
-            holder.tv_feedback_user_name.setText(fbUser.getFullName());
+            holder.tv_feedback_user_name.setText(user.getFullName());
             holder.tv_feedback_content.setText(feedback.getContent());
             holder.tv_feedback_created_at.setText(feedback.getCreatedAt().replace("T", " "));
             holder.rtb_feedback_rating.setRating(feedback.getRating());
@@ -94,13 +82,8 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
                 // Add options to the spinner
                 List<String> options = new ArrayList<>();
                 options.add("Select Action:");
-                if (role != null){
-                    options.add("Ban");
-                    options.add("Unban");
-                } else {
                     options.add("Edit");
                     options.add("Delete");
-                }
 
                 // Set up spinner
                 ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);

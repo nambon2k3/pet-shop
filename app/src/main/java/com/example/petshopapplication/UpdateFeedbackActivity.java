@@ -19,7 +19,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.petshopapplication.databinding.ActivityAddFeedbackBinding;
+import com.example.petshopapplication.databinding.ActivityListFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -33,75 +36,77 @@ import java.net.URL;
 import java.util.UUID;
 
 public class UpdateFeedbackActivity extends AppCompatActivity {
-    private EditText edt_feedback_comment;
-    private RatingBar rb_feedback_rating;
-    private ImageView imv_feedback_image;
-    private Button btn_feedback_pick, btn_feedback_submit, btn_feedback_remove_image;
+    private ActivityAddFeedbackBinding binding;
     private Uri selectedImageUri;
     private FeedBack feedback;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference feedbackRef;
     private FirebaseStorage firebaseStorage;
+    private FirebaseAuth firebaseAuth;
 
     private boolean isImageRemoved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_feedback);  // Reusing layout of Add Feedback
-
-        edt_feedback_comment = findViewById(R.id.edt_feedback_comment);
-        rb_feedback_rating = findViewById(R.id.rb_feedback_rating);
-        imv_feedback_image = findViewById(R.id.imv_feedback_image);
-        btn_feedback_submit = findViewById(R.id.btn_feedback_submit);
-        btn_feedback_pick = findViewById(R.id.btn_feedback_pick);
-        btn_feedback_remove_image = findViewById(R.id.btn_feedback_remove_image);
+        // Initialize ViewBinding
+        binding = ActivityAddFeedbackBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
+
+        binding.btnBack.setOnClickListener(v -> finish());
+
+        binding.btnHomeLogout.setOnClickListener(v -> {
+            firebaseAuth.signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        });
 
         // Get the feedback object passed from FeedBackListAdapter
         feedback = (FeedBack) getIntent().getSerializableExtra("feedback");
 
         // Handle image selection
-        btn_feedback_pick.setOnClickListener(view -> {
+        binding.btnFeedbackPick.setOnClickListener(view -> {
             chooseImage();
         });
 
         // Handle removing the image
-        btn_feedback_remove_image.setOnClickListener(view -> {
-            imv_feedback_image.setImageResource(R.drawable.icon); // Set placeholder or default image
+        binding.btnFeedbackRemoveImage.setOnClickListener(view -> {
+            binding.imvFeedbackImage.setImageResource(R.drawable.icon); // Set placeholder or default image
             selectedImageUri = null; // Clear any new image selection
             isImageRemoved = true; // Mark that the image has been removed
-            btn_feedback_remove_image.setVisibility(View.GONE); // Hide the remove button
+            binding.btnFeedbackRemoveImage.setVisibility(View.GONE); // Hide the remove button
         });
 
         // Handle feedback submission
-        btn_feedback_submit.setOnClickListener(view -> {
+        binding.btnFeedbackSubmit.setOnClickListener(view -> {
             updateFeedbackInDatabase();
         });
 
         // Populate the UI with existing feedback data
         if (feedback != null) {
-            edt_feedback_comment.setText(feedback.getContent());
-            rb_feedback_rating.setRating(feedback.getRating());
+            binding.edtFeedbackComment.setText(feedback.getContent());
+            binding.rbFeedbackRating.setRating(feedback.getRating());
             // Load image using Glide if available
             if (feedback.getImageUrl() != null && !feedback.getImageUrl().isEmpty()) {
                 Glide.with(this)
                         .load(feedback.getImageUrl())
                         .placeholder(R.drawable.icon)
-                        .into(imv_feedback_image);
+                        .into(binding.imvFeedbackImage);
 
                 // Show "Remove Image" button if an image exists
-                btn_feedback_remove_image.setVisibility(View.VISIBLE);
+                binding.btnFeedbackRemoveImage.setVisibility(View.VISIBLE);
             }
         }
 
         // Handle feedback update submission
-        btn_feedback_submit.setOnClickListener(view -> {
+        binding.btnFeedbackSubmit.setOnClickListener(view -> {
             updateFeedbackInDatabase();
         });
+
     }
 
     private void chooseImage() {
@@ -114,16 +119,16 @@ public class UpdateFeedbackActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             selectedImageUri = data.getData(); // Save the selected image URI
-            imv_feedback_image.setImageURI(selectedImageUri); // Display the selected image
+            binding.imvFeedbackImage.setImageURI(selectedImageUri); // Display the selected image
             isImageRemoved = false;
-            btn_feedback_remove_image.setVisibility(View.VISIBLE);
+            binding.btnFeedbackRemoveImage.setVisibility(View.VISIBLE);
         }
     }
 
     private void updateFeedbackInDatabase() {
         // Get updated values from the user input
-        String updatedComment = edt_feedback_comment.getText().toString();
-        float updatedRating = rb_feedback_rating.getRating();
+        String updatedComment = binding.edtFeedbackComment.getText().toString();
+        float updatedRating = binding.rbFeedbackRating.getRating();
 
         // Update feedback object with new data
         feedback.setContent(updatedComment);
