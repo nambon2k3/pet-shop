@@ -19,6 +19,7 @@
     <string name="petshop_address_district_description">Quận Long Biên</string>
     <string name="petshop_address_ward_description">Phường long biên</string>
     <string name="petshop_phone_nunmber">0358219555</string>
+    <string name="petshop_shop_name">Pet Shop</string>
 
     <string name="msg_register_Success">Registration successful</string>
     <string name="msg_password_fail">Passwords do not match</string>

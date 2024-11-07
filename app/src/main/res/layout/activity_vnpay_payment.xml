@@ -5,15 +5,10 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/et_amount"
+
+    <TextView
+        android:id="@+id/notification"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Số tiền" />
-
-    <Button
-        android:id="@+id/btn_pay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Thanh toán" />
+        android:text="Thong bao" />
 </LinearLayout>

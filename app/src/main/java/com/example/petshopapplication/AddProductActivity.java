@@ -56,12 +56,17 @@ public class AddProductActivity extends AppCompatActivity {
         binding = ActivityAddProductBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.imvGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         initCategory();
-
 
         // Handle image selection
         binding.addProductButton.setOnClickListener(view -> addProduct());
@@ -166,13 +171,14 @@ public class AddProductActivity extends AppCompatActivity {
         newProduct.setCategoryId(selectedCategory.getId());
         newProduct.setDiscount(Integer.parseInt(discount));
         newProduct.setBasePrice(Double.parseDouble(price));
+        newProduct.setListVariant(new ArrayList<>());
         newProduct.setBaseImageURL(image);
         newProduct.setDescription(description);
 
         Intent intent= new Intent(this, AddProductVariantActivity.class);
         intent.putExtra("product",newProduct);
         startActivity(intent);
-
+        finish();
     }
 
 }

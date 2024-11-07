@@ -1,5 +1,6 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -58,7 +59,17 @@ public class AdminTrendFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_trend, container, false);
+        View view = inflater.inflate(R.layout.fragment_admin_trend, container, false);
+
+        // Set up button listeners
+        view.findViewById(R.id.btnShowTrendingProduct).setOnClickListener(v -> openViewTopTrendingProduct());
+        //view.findViewById(R.id.btnViewListProduct).setOnClickListener(v -> openUpdateProductActivity());
+
+        return view;
+    }
+
+    private void openViewTopTrendingProduct() {
+        Intent intent = new Intent(getActivity(), TrendingProductActivity.class);
+        startActivity(intent);
     }
 }
