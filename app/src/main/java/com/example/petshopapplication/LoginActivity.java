@@ -10,10 +10,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.petshopapplication.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +29,9 @@ import com.google.firebase.database.ValueEventListener;
 import lombok.NonNull;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private static final int ROLE_USER = 1;
+
 
     EditText edt_email, edt_password;
     Button btn_login;
@@ -113,13 +118,33 @@ public class LoginActivity extends AppCompatActivity {
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
 
             if(task.isSuccessful()) {
-                //User is authenticated, go to home activity
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                startActivity(intent);
+                fetchUserData();
             }
 
         });
 
+    }
+
+    private void fetchUserData() {
+        Query query = reference.orderByChild("email").equalTo(edt_email.getText().toString());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    User user = ds.getValue(User.class);
+                    if(user.getRoleId() == ROLE_USER) {
+                        //User is authenticated, go to home activity
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(LoginActivity.this, "Get user data failed!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
