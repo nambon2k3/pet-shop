@@ -87,11 +87,11 @@ public class ShipmentSearchResponse {
     public static class Parcel {
         private String name;
         private int quantity;
-        private int width;
-        private int height;
-        private int length;
-        private int weight;
-        private int cweight;
+        private double width;
+        private double height;
+        private double length;
+        private double weight;
+        private double cweight;
         private String metadata;
 
         @SerializedName("cod_amount")

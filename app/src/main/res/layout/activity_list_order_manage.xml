@@ -5,27 +5,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!--tools:context=".OrderActivity">-->
 
     <!-- Back Button -->
     <ImageView
         android:id="@+id/btn_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:contentDescription="Back"
         android:padding="16dp"
         android:src="@drawable/baseline_arrow_back_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Title: Đơn Hàng -->
-
-    <!-- Search and Chat Icon -->
+    <!-- Search Icon -->
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="Orders Management"
         android:textColor="@android:color/black"
         android:textSize="18sp"
@@ -48,7 +47,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/btn_back" />
 
-    <!-- Tab Layout (Chờ xác nhận, Chờ lấy hàng, etc.) -->
+    <!-- Tab Layout (etc.) -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="0dp"
@@ -68,90 +67,9 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tab_layout" />
-    <!-- Dropdown 1: Sắp xếp theo -->
-    <!--    <LinearLayout-->
-    <!--        android:id="@+id/sort_by_dropdown"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:orientation="horizontal"-->
-    <!--        android:padding="8dp"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/tab_layout">-->
-
-    <!--        <TextView-->
-    <!--            android:id="@+id/txt_sort_by"-->
-    <!--            android:layout_width="0dp"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:layout_weight="1"-->
-    <!--            android:gravity="center"-->
-    <!--            android:text="Sắp xếp theo"-->
-    <!--            android:textColor="@android:color/black" />-->
-
-    <!--        <ImageView-->
-    <!--            android:id="@+id/arrow_down_sort"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:padding="8dp"-->
-    <!--            android:src="@drawable/baseline_keyboard_arrow_down_24" />-->
-    <!--    </LinearLayout>-->
-
-    <!-- Dropdown 2: Đơn vị vận chuyển -->
-    <!--    <LinearLayout-->
-    <!--        android:id="@+id/delivery_type_dropdown"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:orientation="horizontal"-->
-    <!--        android:padding="8dp"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/sort_by_dropdown">-->
-
-    <!--        <TextView-->
-    <!--            android:id="@+id/txt_delivery_type"-->
-    <!--            android:layout_width="0dp"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:layout_weight="1"-->
-    <!--            android:gravity="center"-->
-    <!--            android:text="Đơn vị vận chuyển"-->
-    <!--            android:textColor="@android:color/black" />-->
-
-    <!--        <ImageView-->
-    <!--            android:id="@+id/arrow_down_delivery"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:padding="8dp"-->
-    <!--            android:src="@drawable/baseline_keyboard_arrow_down_24" />-->
-    <!--    </LinearLayout>-->
-
-    <!-- Empty Order View -->
-    <!--    <LinearLayout-->
-    <!--        android:id="@+id/empty_order_view"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="0dp"-->
-    <!--        android:gravity="center"-->
-    <!--        android:orientation="vertical"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/delivery_type_dropdown">-->
-
-    <!--        <ImageView-->
-    <!--            android:id="@+id/empty_order_icon"-->
-    <!--            android:layout_width="163dp"-->
-    <!--            android:layout_height="150dp"-->
-    <!--            android:contentDescription="Empty Order"-->
-    <!--            android:src="@drawable/empty_box" />-->
-
-    <!--        <TextView-->
-    <!--            android:id="@+id/empty_order_text"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:paddingTop="8dp"-->
-    <!--            android:text="Chưa có đơn hàng"-->
-    <!--            android:textColor="@android:color/darker_gray"-->
-    <!--            android:textSize="16sp" />-->
-    <!--    </LinearLayout>-->
-
+        app:layout_constraintTop_toBottomOf="@id/tab_layout"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

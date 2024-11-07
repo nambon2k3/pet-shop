@@ -32,15 +32,17 @@ public class AddressShopAdapter extends RecyclerView.Adapter<AddressShopAdapter.
     private String TAG = "AddressShopAdapter";
     private List<UAddress> addressList;
     private Context context;
-    private String selectedAddressId; // Lưu trữ ID của địa chỉ được chọn
+    private String selectedAddressId; // ID of default address
+    private String manuallySelectedAddressId; // ID check by user
 
     public AddressShopAdapter(List<UAddress> addressList) {
         this.addressList = addressList;
 
-        // Tìm địa chỉ mặc định ban đầu khi Adapter được khởi tạo
+        // Find the default address ID
         for (UAddress address : addressList) {
             if (address.isDefault()) {
                 selectedAddressId = address.getAddressId();
+                Log.d(TAG, "Default selectedAddressId initialized to: " + selectedAddressId);
                 break;
             }
         }
@@ -57,63 +59,70 @@ public class AddressShopAdapter extends RecyclerView.Adapter<AddressShopAdapter.
     @Override
     public void onBindViewHolder(@NonNull AddressViewHolder holder, int position) {
         UAddress address = addressList.get(position);
+
+        // Information for each address
         holder.tvNamePhone.setText(address.getFullName() + " - " + address.getPhone());
         holder.tvAddress.setText(address.getWard() + " - " + address.getDistrict() + " - " + address.getCity());
-        holder.tvSupport.setText("Pickup not supported");
-//        holder.ivCheck.setVisibility(address.isDefault() ? View.VISIBLE : View.GONE);
-        // Kiểm tra nếu đây là địa chỉ mặc định được chọn
-        if (selectedAddressId == null) {
-            holder.ivCheck.setVisibility(address.isDefault() ? View.VISIBLE : View.INVISIBLE);
+        holder.tvSupport.setText("");
+
+        Log.d(TAG, "onBindViewHolder - selectedAddressId: " + selectedAddressId + ", manuallySelectedAddressId: " + manuallySelectedAddressId);
+        Log.d(TAG, "Current address ID: " + address.getAddressId() + ", isDefault: " + address.isDefault());
+
+        holder.switchDefault.setOnCheckedChangeListener(null);
+        holder.switchDefault.setChecked(address.isDefault());
+        holder.tvDefaultTag.setVisibility(address.isDefault() ? View.VISIBLE : View.GONE);
+
+        // Check checked - ivCheck
+        boolean isChecked = manuallySelectedAddressId != null
+                ? address.getAddressId().equals(manuallySelectedAddressId)
+                : address.getAddressId().equals(selectedAddressId);
+
+        if (address.isDefault() && manuallySelectedAddressId == null) {
+            holder.ivCheck.setVisibility(View.VISIBLE);
+            Log.d(TAG, "Setting ivCheck visible for default address ID: " + address.getAddressId());
         } else {
-            holder.ivCheck.setVisibility(address.getAddressId().equals(selectedAddressId) ? View.VISIBLE : View.INVISIBLE);
+            holder.ivCheck.setVisibility(isChecked ? View.VISIBLE : View.INVISIBLE);
+            Log.d(TAG, "Setting ivCheck " + (isChecked ? "visible" : "invisible") + " for address ID: " + address.getAddressId());
         }
-        holder.switchDefault.setChecked(address.isDefault() ? true : false);
 
-
-        holder.switchDefault.setOnCheckedChangeListener(null); // Bỏ lắng nghe sự thay đổi trước đó
-        holder.switchDefault.setChecked(address.isDefault()); // Đặt trạng thái của Switch theo thuộc tính của Address
-
-        holder.switchDefault.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                // Nếu Switch được chuyển sang Checked, đặt trạng thái mặc định cho Address này
-                for (UAddress addr : addressList) {
-                    addr.setDefault(addr.getAddressId().equals(address.getAddressId())); // Chỉ đặt là mặc định cho Address hiện tại
-                }
-                notifyDataSetChanged(); // Cập nhật lại giao diện để chỉ một Switch được Checked
-
-                // Gọi hàm cập nhật Firebase
-                updateDefaultAddressOnFirebase(address);
-            } else {
-                address.setDefault(false); // Nếu bỏ chọn Switch, đặt mặc định thành false
+        // Do Not accept if change the default to NOT DEFAULT
+        holder.switchDefault.setOnCheckedChangeListener((buttonView, isChecked1) -> {
+            if (isChecked1 && !address.isDefault()) {
+                Log.d(TAG, "Switch toggled ON for address ID: " + address.getAddressId());
+                setDefaultAddress(address);
+            } else if (!isChecked1 && address.isDefault()) {
+                Log.d(TAG, "Attempt to turn off default switch for address ID: " + address.getAddressId() + " - resetting switch to ON.");
+                holder.switchDefault.setChecked(true);
             }
         });
 
-
-        holder.tvDefaultTag.setVisibility(address.isDefault() ? View.VISIBLE : View.GONE);
-
-
-
-        // Event click to select address
+        // Update manuallySelectedAddressId when an item is clicked
         holder.itemView.setOnClickListener(v -> {
-            selectedAddressId = address.getAddressId(); // Cập nhật ID của địa chỉ được chọn
-            notifyDataSetChanged(); // Thông báo cập nhật dữ liệu để hiển thị lại
+            manuallySelectedAddressId = address.getAddressId(); // save the manually selected address ID
+            Log.d(TAG, "Item clicked - manuallySelectedAddressId set to: " + manuallySelectedAddressId);
+            notifyDataSetChanged(); // Cập nhật lại giao diện RecyclerView
         });
-
-        // Event click edit address
-        holder.btnEditAddress.setOnClickListener(v -> {
-
-        });
-        // Event click set Default
-        holder.switchDefault.setOnClickListener(v -> {
-
-        });
-
-
     }
+
+    // Set the default address
+    private void setDefaultAddress(UAddress selectedAddress) {
+        selectedAddressId = selectedAddress.getAddressId();
+        Log.d(TAG, "Setting default address - selectedAddressId updated to: " + selectedAddressId);
+
+        // Do not clear the manuallySelectedAddressId when setting the default address
+        for (UAddress addr : addressList) {
+            addr.setDefault(addr.getAddressId().equals(selectedAddressId));
+        }
+        notifyDataSetChanged();
+
+        // Update in Firebase
+        updateDefaultAddressOnFirebase(selectedAddress);
+    }
+
     private void updateDefaultAddressOnFirebase(UAddress selectedAddress) {
         DatabaseReference addressRef = FirebaseDatabase.getInstance().getReference("addresses");
 
-        // Tìm tất cả địa chỉ của User "Inventory" và cập nhật thuộc tính default
+        // Find All Address and update default
         addressRef.orderByChild("userId").equalTo("Inventory").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -122,6 +131,7 @@ public class AddressShopAdapter extends RecyclerView.Adapter<AddressShopAdapter.
                     if (address != null) {
                         boolean isSelectedAddress = address.getAddressId().equals(selectedAddress.getAddressId());
                         snapshot.getRef().child("default").setValue(isSelectedAddress);
+                        Log.d(TAG, "Firebase update - Address ID: " + address.getAddressId() + ", isDefault set to: " + isSelectedAddress);
                     }
                 }
             }
@@ -132,6 +142,7 @@ public class AddressShopAdapter extends RecyclerView.Adapter<AddressShopAdapter.
             }
         });
     }
+
     @Override
     public int getItemCount() {
         return addressList.size();
@@ -141,7 +152,6 @@ public class AddressShopAdapter extends RecyclerView.Adapter<AddressShopAdapter.
         TextView tvNamePhone, tvAddress, tvSupport, tvDefaultTag, btnEditAddress;
         ImageView ivCheck;
         Switch switchDefault;
-
 
         public AddressViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -28,17 +28,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapter.FeedbackHolder> {
+public class UserFeedBackListAdapter extends RecyclerView.Adapter<UserFeedBackListAdapter.FeedbackHolder> {
 
     List<FeedBack> feedBackItems;
     List<User> userItems;
     User user;
     Context context;
-    int role;
+    String role = "a";
 
-    public FeedBackListAdapter(List<FeedBack> feedBackItems, List<User> userItems, User user) {
+    public UserFeedBackListAdapter(List<FeedBack> feedBackItems, User user) {
         this.feedBackItems = feedBackItems;
-        this.userItems = userItems;
         this.user = user;
     }
 
@@ -52,25 +51,18 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull FeedbackHolder holder, int position) {
-        role = user.getRoleId();
         FeedBack feedback = feedBackItems.get(position);
 
-        User fbUser;
-        if (!userItems.isEmpty()){
-            fbUser = getUser(feedback.getUserId());
-        } else {
-            fbUser = user;
-        }
 
             // Display elements of feedback
-            if (fbUser.getAvatar() != null && !fbUser.getAvatar().isEmpty()) {
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
                 holder.imv_feedback_user_avatar.setVisibility(View.VISIBLE);
                 Glide.with(context)
-                        .load(fbUser.getAvatar())
+                        .load(user.getAvatar())
                         .placeholder(R.drawable.icon) // Optional placeholder image
                         .into(holder.imv_feedback_user_avatar);
             }
-            holder.tv_feedback_user_name.setText(fbUser.getFullName());
+            holder.tv_feedback_user_name.setText(user.getFullName());
             holder.tv_feedback_content.setText(feedback.getContent());
             holder.tv_feedback_created_at.setText(feedback.getCreatedAt().replace("T", " "));
             holder.rtb_feedback_rating.setRating(feedback.getRating());
@@ -84,64 +76,62 @@ public class FeedBackListAdapter extends RecyclerView.Adapter<FeedBackListAdapte
                         .into(holder.imv_feedback_image);
             }
 
-        // Add options to the spinner
-        List<String> options = new ArrayList<>();
-        options.add("Select Action:");
-        if (role != 1) {
-            options.add("Ban");
-            options.add("Unban");
-        } else {
+
             // Check if the current user matches the feedback user and if feedback is not marked as deleted
             if (feedback.getUserId().equals(user.getId())) {
+                // Add options to the spinner
+                List<String> options = new ArrayList<>();
+                options.add("Select Action:");
                     options.add("Edit");
                     options.add("Delete");
+
+                // Set up spinner
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                holder.sp_feedback.setAdapter(spinnerAdapter);
+
+                // Handle spinner item selection
+                holder.sp_feedback.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        String selectedAction = (String) parentView.getItemAtPosition(position);
+                        switch (selectedAction) {
+                            case "Edit":
+                                updateFeedback(feedback);
+                                break;
+                            case "Delete":
+                                deleteFeedback(feedback);
+                                break;
+                            case "Ban":
+                                deleteFeedback(feedback);
+                                break;
+                            case "Unban":
+                                unbanFeedback(feedback);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                        // No action needed
+                    }
+                });
             } else {
                 // Hide spinner if conditions are not met
                 holder.sp_feedback.setVisibility(View.GONE);
             }
-        }
 
-        // Set up spinner
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, options);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        holder.sp_feedback.setAdapter(spinnerAdapter);
-
-        // Handle spinner item selection
-        holder.sp_feedback.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                String selectedAction = (String) parentView.getItemAtPosition(position);
-                switch (selectedAction) {
-                    case "Edit":
-                        updateFeedback(feedback);
-                        break;
-                    case "Delete":
-                    case "Ban":
-                        deleteFeedback(feedback);
-                        break;
-                    case "Unban":
-                        unbanFeedback(feedback);
-                        break;
-                    default:
-                        break;
-                }
+            if (role != null && feedback.isDeleted()){
+                holder.itemView.setAlpha(0.5f);
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // No action needed
-            }
-        });
-
-        if (role != 1 && feedback.isDeleted()) {
-            holder.itemView.setAlpha(0.5f);
-        }
     }
 
     public User getUser(String userId) {
-        for (User userData : userItems) {
-            if (userData.getId().equals(userId)) {
-                return userData;
+        for (User user : userItems) {
+            if (user.getId().equals(userId)) {
+                return user;
             }
         }
         return null;

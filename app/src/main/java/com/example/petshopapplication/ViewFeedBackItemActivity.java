@@ -1,5 +1,6 @@
 package com.example.petshopapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,9 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.FeedBackListAdapter;
+import com.example.petshopapplication.Adapter.UserFeedBackListAdapter;
 import com.example.petshopapplication.databinding.ActivityListFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +33,9 @@ public class ViewFeedBackItemActivity extends AppCompatActivity {
     private ActivityListFeedbackBinding binding;  // ViewBinding reference
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
-    private FeedBackListAdapter feedbackAdapter;
+    private UserFeedBackListAdapter feedbackAdapter;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser user;
     private List<FeedBack> feedbackList;
     private String userId;
     private String orderId;
@@ -48,6 +54,17 @@ public class ViewFeedBackItemActivity extends AppCompatActivity {
         // Set up RecyclerView
         binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(this));
         binding.btnBack.setOnClickListener(v -> finish());
+
+        binding.btnHomeLogout.setOnClickListener(v -> {
+            firebaseAuth.signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        });
+
+        //get current user
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        userId = user.getUid();
 
         feedbackList = new ArrayList<>();
         binding.rcvFeedback.setAdapter(feedbackAdapter);
@@ -142,7 +159,7 @@ public class ViewFeedBackItemActivity extends AppCompatActivity {
                             binding.rbFeedbackAverageRating.setVisibility(View.GONE);
                             binding.tvFeedbackRatingValue.setVisibility(View.GONE);
                             binding.tvFeedbackTitle.setText("My Feedbacks");
-                            feedbackAdapter = new FeedBackListAdapter(feedbackItems, user);
+                            feedbackAdapter = new UserFeedBackListAdapter(feedbackItems, user);
                             binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(ViewFeedBackItemActivity.this, RecyclerView.VERTICAL, true));
                             binding.rcvFeedback.setAdapter(feedbackAdapter);
                         }
@@ -159,10 +176,9 @@ public class ViewFeedBackItemActivity extends AppCompatActivity {
 
     private void getIntend() {
         orderId = getIntent().getStringExtra("orderId");
-        userId = getIntent().getStringExtra("userId");
 
-        if (orderId == null || userId == null) {
-            Log.e("AddFeedbackActivity", "Null. Please pass a valid order ID.");
+        if (orderId == null) {
+            Log.e("ViewFeedBackItemActivity", "Null. Please pass a valid order ID.");
             // Hiển thị thông báo lỗi hoặc kết thúc activity nếu cần
             finish();
         }

@@ -70,14 +70,13 @@ public class AllOrdersTablayoutFragment extends Fragment {
     private void initOrdersInventory() {
         Log.d(TAG, "Start - load orders from Firebase");
 
-        Query query = reference; // Sử dụng query với điều kiện lọc isDeleted là false
+        Query query = reference;
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
                 Log.d(TAG, "Start - onDataChange");
-                orderItems.clear(); // Xóa dữ liệu cũ
+                orderItems.clear();
 
-                // Kiểm tra xem snapshot có dữ liệu hay không
                 if (snapshot.exists()) {
                     Log.d(TAG, "Data found in Firebase");
 
@@ -90,9 +89,8 @@ public class AllOrdersTablayoutFragment extends Fragment {
                             Log.e(TAG, "Order data is null for snapshot: " + dataSnapshot.getKey());
                         }
                     }
-
                     Log.d(TAG, "Total orders retrieved: " + orderItems.size());
-                    adapter.notifyDataSetChanged(); // Cập nhật RecyclerView với dữ liệu mới
+                    adapter.notifyDataSetChanged();
 
                 } else {
                     Log.d(TAG, "No data found in Firebase");
@@ -129,9 +127,8 @@ public class AllOrdersTablayoutFragment extends Fragment {
             @Override
             public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
                 Log.d(TAG, "Start - onDataChange");
-                orderItems.clear(); // Clear old data
+                orderItems.clear();
 
-                // Check if snapshot has data
                 if (snapshot.exists()) {
                     Log.d(TAG, "Data found in Firebase");
 
@@ -144,9 +141,8 @@ public class AllOrdersTablayoutFragment extends Fragment {
                             Log.e(TAG, "Order data is null for snapshot: " + dataSnapshot.getKey());
                         }
                     }
-
                     Log.d(TAG, "Total orders retrieved: " + orderItems.size());
-                    adapter.notifyDataSetChanged(); // Update RecyclerView with new data
+                    adapter.notifyDataSetChanged();
 
                 } else {
                     Log.d(TAG, "No data found in Firebase for user ID: " + userId);

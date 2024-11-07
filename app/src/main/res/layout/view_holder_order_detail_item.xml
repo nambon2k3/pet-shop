@@ -6,7 +6,7 @@
     android:orientation="horizontal"
     android:padding="8dp">
 
-    <!-- Ảnh sản phẩm -->
+    <!-- Product Img -->
     <ImageView
         android:id="@+id/imv_product_image_detail"
         android:layout_width="60dp"
@@ -21,7 +21,7 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <!-- Tên sản phẩm -->
+        <!-- Name -->
         <TextView
             android:id="@+id/txt_product_name_detail"
             android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <!-- Phân loại sản phẩm -->
+            <!-- Detail -->
             <TextView
                 android:id="@+id/txt_product_detail_detail"
                 android:layout_width="0dp"
@@ -46,7 +46,7 @@
                 android:textColor="@android:color/darker_gray"
                 android:textSize="12sp" />
 
-            <!-- Số lượng sản phẩm -->
+            <!-- Quantity -->
             <TextView
                 android:id="@+id/txt_quantity_detail"
                 android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <!-- Giá sản phẩm -->
+        <!-- Price -->
 
         <LinearLayout
             android:layout_width="match_parent"

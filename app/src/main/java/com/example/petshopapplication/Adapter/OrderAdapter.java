@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.petshopapplication.API.FirebaseDataCallback;
+import com.example.petshopapplication.API.OrderHistoryCallback;
 import com.example.petshopapplication.AddFeedbackActivity;
 import com.example.petshopapplication.OrderTrackingActivity;
 import com.example.petshopapplication.PrepareOrderActivity;
@@ -26,6 +28,7 @@ import com.example.petshopapplication.R;
 import com.example.petshopapplication.ViewDetailOrderActivity;
 import com.example.petshopapplication.ViewFeedBackItemActivity;
 import com.example.petshopapplication.model.FeedBack;
+import com.example.petshopapplication.model.History;
 import com.example.petshopapplication.model.Order;
 import com.example.petshopapplication.model.OrderDetail;
 import com.example.petshopapplication.utils.Validate;
@@ -48,7 +51,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
     private List<OrderDetail> orderDetailsList;
     private Context context;
 
-    // Constructor nhận danh sách các đơn hàng
     public OrderAdapter(List<Order> orderList, boolean btnRate, String orderStatus, boolean isInventory) {
         this.orderList = orderList;
         this.btnRate = btnRate;
@@ -68,10 +70,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
     public void onBindViewHolder(@NonNull OrderHolder holder, int position) {
         Order order = orderList.get(position);
 
-        // Set trạng thái và tổng giá trị đơn hàng
+        // Set status order
         holder.txt_status.setText(order.getStatus());
 
-        // Tính tổng số sản phẩm (quantity) trong order
+        // Calculate total products in order
         int totalQuantity = 0;
         List<OrderDetail> orderDetailsList = order.getOrderDetails();
         if (orderDetailsList != null && !orderDetailsList.isEmpty()) {
@@ -80,7 +82,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             }
             Log.d("OrderAdapter", "Order details size for Order ID " + order.getId() + ": " + orderDetailsList.size());
 
-            // Thiết lập RecyclerView cho orderDetails
+            // Recycle view for Order Detail
             OrderDetailAdapter orderDetailAdapter = new OrderDetailAdapter(orderDetailsList);
             holder.rcv_order_details.setLayoutManager(new LinearLayoutManager(context));
             holder.rcv_order_details.setAdapter(orderDetailAdapter);
@@ -88,25 +90,23 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             Log.d("OrderAdapter", "No order details found for Order ID " + order.getId());
         }
 
-        // Set tổng số sản phẩm và tổng giá trị của đơn hàng
+        // Set total products
         if (totalQuantity > 1) {
             holder.txt_total_price_title.setText("x" + totalQuantity + " products");
         } else {
             holder.txt_total_price_title.setText("x" + totalQuantity + " product");
         }
-
-        // Gọi phương thức loadPaymentAmount để lấy và hiển thị tổng giá trị thanh toán
+        // Set total price get in node payments
         loadPaymentAmount(order.getPaymentId(), holder.txt_total_price);
-//        holder.txt_total_price.setText(String.format("Total: %s", Validate.formatVND(order.getTotalAmount())));
 
-        // Hiển thị hoặc ẩn nút feedback
+        // Feedback button
         if (!btnRate)
             holder.btn_feedback.setVisibility(View.GONE);
 
-        // Kiểm tra trạng thái đơn hàng và thiết lập trạng thái nút
+        // Check shipping status and show shipping status
         if ("Shipping".equals(orderStatus) || orderStatus.equals("Delivered")) {
             holder.txt_shipping_status.setVisibility(View.VISIBLE);
-            holder.txt_shipping_status.setText("Shipping Status: In Transit");
+            holder.txt_shipping_status.setText("Shipping Status");
 
         } else if ("Delivered".equals(orderStatus)) {
             holder.txt_shipping_status.setVisibility(View.GONE);
@@ -117,7 +117,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             holder.line2.setVisibility(View.GONE);
         }
 
-        // Kiểm tra trạng thái isInventory để hiển thị các nút phù hợp
+        // Check isInventory
         if (isInventory) {
             holder.btn_prepare_order.setVisibility(View.VISIBLE);
             holder.btn_cancel_order.setVisibility(View.VISIBLE);
@@ -130,7 +130,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
                 holder.btn_view_order_detail.setVisibility(View.VISIBLE);
                 if (orderStatus.equals("Shipping") || orderStatus.equals("Delivered")) {
                     holder.txt_shipping_status.setVisibility(View.VISIBLE);
-                    holder.txt_shipping_status.setText("Shipping Status: In Transit");
+                    holder.txt_shipping_status.setText("Shipping Status");
 
                     if (orderStatus.equals("Delivered")) {
                         holder.line2.setVisibility(View.VISIBLE);
@@ -147,13 +147,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
                     holder.btn_view_order_detail.setVisibility(View.VISIBLE);
                     holder.txt_shipping_status.setVisibility(View.VISIBLE);
                     holder.line2.setVisibility(View.VISIBLE);
-                    holder.txt_shipping_status.setText("Shipping Status: In Transit");
+                    holder.txt_shipping_status.setText("Shipping Status");
                 } else if (order.getStatus().equals("Delivered")) {
                     holder.btn_cancel_order.setVisibility(View.GONE);
                     holder.btn_prepare_order.setVisibility(View.GONE);
                     holder.btn_view_order_detail.setVisibility(View.VISIBLE);
                     holder.txt_shipping_status.setVisibility(View.VISIBLE);
-                    holder.txt_shipping_status.setText("Shipping Status: In Transit");
+                    holder.txt_shipping_status.setText("Shipping Status");
                     holder.line2.setVisibility(View.VISIBLE);
                 } else {
                     holder.btn_view_order_detail.setVisibility(View.GONE);
@@ -161,7 +161,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             } else {
                 holder.btn_view_order_detail.setVisibility(View.GONE);
             }
-            // User
+        // User
         } else {
             holder.btn_prepare_order.setVisibility(View.GONE);
             holder.btn_cancel_order.setVisibility(View.GONE);
@@ -170,26 +170,36 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             if (orderStatus.equals("Delivered")) {
                 holder.btn_feedback.setVisibility(View.VISIBLE);
             } else if ("Shipping".equals(orderStatus)) {
-                // Check if status = Shipment Completed (*****)
+
                 holder.btn_confirm_received.setVisibility(View.VISIBLE);
+                holder.btn_feedback.setVisibility(View.GONE);
+
+                Log.d(TAG, "Order + " + order.getId() + ": " + order.toString());
+
+                // Get History list from Firebase
+                loadOrderHistory(order.getId(), (historyList, isFinalStatus905) -> {
+                    if (isFinalStatus905) {
+                        Log.d(TAG, "Final status là 905 - Hiển thị nút 'Received'");
+                        holder.btn_confirm_received.setVisibility(View.VISIBLE);
+                    } else {
+                        Log.d(TAG, "Final status không phải là 905 - Ẩn nút 'Received'");
+                        holder.btn_confirm_received.setVisibility(View.GONE);
+                    }
+                });
             }
         }
 
         holder.btn_prepare_order.setOnClickListener(v -> {
             Context context = holder.itemView.getContext();
             Intent intent = new Intent(context, PrepareOrderActivity.class);
-
             intent.putExtra("order_id", order.getId());
-
             context.startActivity(intent);
         });
 
         holder.btn_view_order_detail.setOnClickListener(v -> {
             Context context = holder.itemView.getContext();
             Intent intent = new Intent(context, ViewDetailOrderActivity.class);
-
             intent.putExtra("order_id", order.getId());
-
             context.startActivity(intent);
         });
 
@@ -210,13 +220,29 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
                     .setTitle("Confirm received order")
                     .setMessage("Are you sure you received this order?")
                     .setPositiveButton("Yes", (dialog, which) -> {
-                        // Cancel order
-//                        cancelOrder(order.getId());
-                        Log.d(TAG, "Delivered Order ID: " + order.getId() + "| Order Total: " + order.getTotalAmount());
+                        DatabaseReference orderRef = FirebaseDatabase.getInstance()
+                                .getReference("orders")
+                                .child(order.getId());
+
+                        // Update order status to Delivered
+                        orderRef.child("status").setValue("Delivered")
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d(TAG, "Order status updated to Delivered for Order ID: " + order.getId());
+
+                                    // Delete the delivered order in Shipping Tab layout
+                                    int position1 = holder.getAdapterPosition();
+                                    if (position1 != RecyclerView.NO_POSITION) {
+                                        orderList.remove(position1);
+                                        notifyItemRemoved(position1);
+                                        notifyItemRangeChanged(position1, orderList.size());
+                                    }
+                                })
+                                .addOnFailureListener(e -> Log.e(TAG, "Failed to update order status: " + e.getMessage()));
                     })
                     .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                     .show();
         });
+
 
         holder.txt_shipping_status.setOnClickListener(v -> {
             Context context = holder.itemView.getContext();
@@ -240,8 +266,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
             // Successfully updated status in Firebase
             Log.d(TAG, "Order canceled successfully.");
 
-            // Remove the order from the local list
-//            orderList.removeIf(order -> order.getId().equals(orderId));
+            // method to update quantity, deliveringQuantity
 
             // Notify the adapter to update the RecyclerView
             notifyDataSetChanged();
@@ -252,6 +277,48 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
         });
     }
 
+    private void loadOrderHistory(String orderId, OrderHistoryCallback callback) {
+        List<History> historyList = new ArrayList<>();
+        Log.d(TAG, "Start - load history");
+        DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("orders")
+                .child(orderId).child("history");
+
+        orderRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@lombok.NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange: bắt đầu lấy dữ liệu từ Firebase");
+                historyList.clear();
+
+                Log.d(TAG, "DataSnapshot: " + dataSnapshot.toString());
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, "Reading child: " + snapshot.getKey() + ", Value: " + snapshot.getValue());
+
+                    History history = snapshot.getValue(History.class);
+                    if (history != null) {
+                        Log.d(TAG, "Parsed History object: " + history.toString());
+                        historyList.add(history);
+                    } else {
+                        Log.e(TAG, "Lỗi: Không thể parse đối tượng History từ Firebase cho key: " + snapshot.getKey());
+                    }
+                }
+
+                Log.d(TAG, "notifyDataSetChanged called - Total items: " + historyList.size());
+
+                // Check if final history.status = 905
+                boolean checkFinalStatus = !historyList.isEmpty() && historyList.get(historyList.size() - 1).getStatus() == 905;
+
+                // Call callback
+                callback.onHistoryLoaded(historyList, checkFinalStatus);
+            }
+
+            @Override
+            public void onCancelled(@lombok.NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Failed to load order history: " + databaseError.getMessage());
+                callback.onHistoryLoaded(new ArrayList<>(), false); // Trả về danh sách rỗng và false nếu có lỗi
+            }
+        });
+        Log.d(TAG, "End - load history");
+    }
 
     @Override
     public int getItemCount() {
@@ -315,7 +382,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
 
             @SuppressLint("ResourceType")
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {feedbackButton.setBackgroundColor(Color.RED);
+                feedbackButton.setText("Rate");
+                feedbackButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(context, AddFeedbackActivity.class);
+                    intent.putExtra("orderId", orderId);
+                    context.startActivity(intent);
+                });
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
                     if (snapshot.exists() && !feedback.isDeleted()) {
@@ -324,16 +397,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
                         feedbackButton.setOnClickListener(v -> {
                             Intent intent = new Intent(context, ViewFeedBackItemActivity.class);
                             intent.putExtra("orderId", orderId);
-                            intent.putExtra("userId", userId);
-                            context.startActivity(intent);
-                        });
-                    } else {
-                        feedbackButton.setBackgroundColor(Color.RED);
-                        feedbackButton.setText("Rate");
-                        feedbackButton.setOnClickListener(v -> {
-                            Intent intent = new Intent(context, AddFeedbackActivity.class);
-                            intent.putExtra("orderId", orderId);
-                            intent.putExtra("userId", userId);
                             context.startActivity(intent);
                         });
                     }
@@ -342,7 +405,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý lỗi truy vấn nếu cần
+
             }
         });
     }

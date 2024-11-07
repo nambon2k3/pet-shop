@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -153,6 +154,7 @@ public class PrepareOrderActivity extends AppCompatActivity {
             }
         });
     }
+
     private void loadShopAddressFromFirebase() {
         DatabaseReference addressRef = FirebaseDatabase.getInstance().getReference("addresses");
         addressRef.orderByChild("userId").equalTo("Inventory").addValueEventListener(new ValueEventListener() {
@@ -225,7 +227,9 @@ public class PrepareOrderActivity extends AppCompatActivity {
                             binding.tvAddressDetail.setText(addressDetail);
 
                             binding.tvShipmentBrand.setText(order.getCarrierName());
-                            binding.tvTotalPrice.setText(String.format("Total: %s", Validate.formatVND(order.getTotalAmount())));
+//                            binding.tvTotalPrice.setText(String.format("Total: %s", Validate.formatVND(order.getTotalAmount())));
+                            loadPaymentAmount(order.getPaymentId(), binding.tvTotalPrice);
+
                             // Tính tổng số sản phẩm trong order
                             int totalQuantity = 0;
                             List<OrderDetail> orderDetails = order.getOrderDetails();
@@ -235,16 +239,15 @@ public class PrepareOrderActivity extends AppCompatActivity {
                                 }
                             }
 
-                            // Cập nhật TextView cho tổng số sản phẩm
+                            // Update total product count
                             binding.tvProductCount.setText("Total: x" + totalQuantity + " products");
 
-                            // Cập nhật danh sách chi tiết sản phẩm
+                            // Update order details
                             orderDetailList.clear();
                             orderDetailList.addAll(order.getOrderDetails());
                         } else {
                             Log.e(TAG, "Order data is null for snapshot: " + dataSnapshot.getKey());
                         }
-
                     }
 
                     Log.e(TAG, "orderDetailList ngay sau: " + orderDetailList.toString());
@@ -295,40 +298,13 @@ public class PrepareOrderActivity extends AppCompatActivity {
                 .show();
     }
 
-    // Phương thức để tiếp tục xác nhận đơn hàng sau khi người dùng xác nhận Inventory Confirm
+    // Method to proceed with the order confirmation
     private void proceedWithOrderConfirmation() {
         if (isInventoryConfirm) {
             // Create order API request to Goship
             loadOrderDetailsAndCreateOrder(orderId);
         }
     }
-
-    // Phương thức lấy thông tin Order từ Firebase và gọi API tạo đơn hàng theo thời gian thực
-//    private void loadOrderDetailsAndCreateOrder(String orderId) {
-//        DatabaseReference orderReference = database.getReference("orders");
-//        orderReference.orderByChild("id").equalTo(orderId).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.exists()) {
-//                    for (DataSnapshot orderSnapshot : snapshot.getChildren()) {
-//                        Order order = orderSnapshot.getValue(Order.class);
-//                        if (order != null) {
-//                            // Tìm kiếm thông tin người nhận từ node Users dựa vào userId trong Order
-//                            loadUserDetailsByUserId(order.getUserId(), order);
-//                        }
-//                    }
-//                } else {
-//                    Log.e(TAG, "No order data found for orderId: " + orderId);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.e(TAG, "Failed to load order data: " + error.getMessage());
-//                showDialog("Failed!", "Failed to load order data. Please try again.");
-//            }
-//        });
-//    }
 
     private void loadOrderDetailsAndCreateOrder(String orderId) {
         DatabaseReference orderReference = database.getReference("orders");
@@ -355,9 +331,7 @@ public class PrepareOrderActivity extends AppCompatActivity {
         });
     }
 
-
-
-    // Phương thức để tải thông tin người dùng từ node Users theo userId sử dụng orderByChild và equalTo
+    // load user details from Firebase based on userId
     private void loadUserDetailsByUserId(String userId, Order order) {
         DatabaseReference userReference = database.getReference("users");
         userReference.orderByChild("id").equalTo(userId).addValueEventListener(new ValueEventListener() {
@@ -369,7 +343,7 @@ public class PrepareOrderActivity extends AppCompatActivity {
                         String toPhone = userSnapshot.child("phoneNumber").getValue(String.class);
 //                        String toStreet = userSnapshot.child("address").getValue(String.class);
                         String toStreet = order.getWard() + " - " + order.getDistrict() + " - " + order.getCity();
-                        // Tìm kiếm thông tin sản phẩm từ node Products dựa vào productId
+                        // Search product by productId
                         loadProductDetailsByProductId(toName, toPhone, toStreet, order);
                     }
                 } else {
@@ -385,7 +359,7 @@ public class PrepareOrderActivity extends AppCompatActivity {
     }
 
 
-    // Phương thức để tải thông tin sản phẩm từ node Products theo productId sử dụng orderByChild và equalTo
+    // load product details from Firebase based on productId
     private void loadProductDetailsByProductId(String toName, String toPhone, String toStreet, Order order) {
         loadTotalDimension(order, (weight, width, height, length) -> {
             Log.d(TAG, "loadProductDetailsByProductId: weight=" + weight + ", width=" + width + ", height=" + height + ", length=" + length);
@@ -396,7 +370,7 @@ public class PrepareOrderActivity extends AppCompatActivity {
     }
 
 
-    // Phương thức để tải thông tin thanh toán từ node Payments theo paymentId sử dụng orderByChild và equalTo
+    // load payment details from Firebase based on paymentId
     private void loadPaymentDetailsByPaymentId(String paymentId, String toName, String toPhone, String toStreet,
                                                int weight, int width, int height, int length, Order order) {
         DatabaseReference paymentReference = database.getReference("payments");
@@ -413,7 +387,7 @@ public class PrepareOrderActivity extends AppCompatActivity {
                             Log.d(TAG, "Total amount get in payment: " + totalAmount);
                         }
 
-                        // Gọi API tạo đơn hàng với thông tin từ Order, User, Product, và Payment
+                        // Call API to create Order by Order, User, Product, và Payment
                         String rate = order.getRateId();
                         String metadata = "Hàng dễ vỡ, vui lòng nhẹ tay.";
 
@@ -434,7 +408,7 @@ public class PrepareOrderActivity extends AppCompatActivity {
         });
     }
 
-    // Phương thức tạo đơn hàng bằng API và xử lý phản hồi trực tiếp
+    // Method create Order API and response
     private void createOrder(String rate, String fromName, String fromPhone, String fromStreet, String fromWard,
                              String fromDistrict, String fromCity, String toName, String toPhone,
                              String toStreet, String toWard, String toDistrict, String toCity,
@@ -443,22 +417,20 @@ public class PrepareOrderActivity extends AppCompatActivity {
 
         GoshipAPI api = RetrofitClient.getRetrofitInstance().create(GoshipAPI.class);
 
-        // Tạo các đối tượng Address và Parcel cho API
         AddressCO addressFrom = new AddressCO(fromName, fromPhone, fromStreet, fromWard, fromDistrict, fromCity);
         AddressCO addressTo = new AddressCO(toName, toPhone, toStreet, toWard, toDistrict, toCity);
         ParcelCO parcel = new ParcelCO(String.valueOf(cod), String.valueOf(weight), String.valueOf(width),
                 String.valueOf(height), String.valueOf(length), metadata);
 
-        // Tạo đối tượng Shipment và CreateOrderRequest
         ShipmentCO shipment = new ShipmentCO(rate, addressFrom, addressTo, parcel);
         CreateOrderRequest createOrderRequest = new CreateOrderRequest(shipment);
 
-        // Gọi API tạo đơn hàng
+        // Call API to create Order
         Call<CreateOrderResponse> call = api.createOrder("application/json", "application/json", AUTH_TOKEN, createOrderRequest);
         call.enqueue(new Callback<CreateOrderResponse>() {
             @Override
             public void onResponse(Call<CreateOrderResponse> call, Response<CreateOrderResponse> response) {
-                // Log thông tin về response
+
                 Log.d(TAG, "API Response Code: " + response.code());
                 Log.d(TAG, "API Response Message: " + response.message());
 
@@ -470,17 +442,15 @@ public class PrepareOrderActivity extends AppCompatActivity {
                         Log.d(TAG, "Order Tracking Number: " + createOrderResponse.getTrackingNumber());
                         Log.d(TAG, "Order Carrier: " + createOrderResponse.getCarrier());
 
-                        // Cập nhật trạng thái của order trong Firebase
+                        // Update status of Order => Shipping
                         updateOrderStatus(orderId, "Shipping", createOrderResponse.getId());
 
-                        // Gọi đến phương thức updateOrderHistory với trạng thái ban đầu
                         ListOrderManageActivity.updateOrderHistory(orderId, 900, null, "Đơn mới", "Đơn đã lưu chưa được gửi đi");
                     } else {
                         Log.e(TAG, "CreateOrderResponse is null");
                         showDialog("Failed!", "There was an issue confirming this order. Please try again.");
                     }
                 } else {
-                    // Log chi tiết về lỗi nếu có
                     try {
                         String errorBody = response.errorBody() != null ? response.errorBody().string() : "null";
                         Log.e(TAG, "Request failed - Response Body: " + errorBody);
@@ -503,22 +473,22 @@ public class PrepareOrderActivity extends AppCompatActivity {
     private void updateOrderStatus(String orderId, String newStatus, String shipmentId) {
         DatabaseReference orderReference = database.getReference("orders").child(orderId);
 
-        // Cập nhật cả status và shipmentId trong Firebase
+        // Update status & shipmentId
         orderReference.child("status").setValue(newStatus)
                 .addOnCompleteListener(taskStatus -> {
                     if (taskStatus.isSuccessful()) {
-                        // Cập nhật shipmentId sau khi cập nhật status thành công
+                        // status -> shipmentID
                         orderReference.child("shipmentId").setValue(shipmentId)
                                 .addOnCompleteListener(taskShipmentId -> {
                                     if (taskShipmentId.isSuccessful()) {
                                         Log.d(TAG, "Order status and shipmentId updated to: " + newStatus + ", " + shipmentId);
 
-                                        // Tạo AlertDialog để hiển thị thông báo và chuyển đổi Activity sau khi bấm OK
+                                        // Create dialog to show success
                                         new AlertDialog.Builder(PrepareOrderActivity.this)
                                                 .setTitle("Success!")
                                                 .setMessage("This order has been prepared successfully.")
                                                 .setPositiveButton("OK", (dialog, which) -> {
-                                                    // Chuyển sang CreateOrderSuccessActivity khi bấm OK
+                                                    // Next to success page if OK
                                                     Intent intent = new Intent(PrepareOrderActivity.this, CreateOrderSuccessActivity.class);
                                                     intent.putExtra("successOrderId", shipmentId);
                                                     startActivity(intent);
@@ -536,7 +506,7 @@ public class PrepareOrderActivity extends AppCompatActivity {
                 });
     }
 
-    // Phương thức hiển thị dialog khi cập nhật thất bại
+    // Display Dialog for failure
     private void showFailureDialog() {
         new AlertDialog.Builder(PrepareOrderActivity.this)
                 .setTitle("Failed!")
@@ -621,5 +591,27 @@ public class PrepareOrderActivity extends AppCompatActivity {
         Log.d(TAG, "End - loadTotalDimension");
     }
 
+    private void loadPaymentAmount(String paymentId, TextView txtTotalPrice) {
+        DatabaseReference paymentReference = FirebaseDatabase.getInstance().getReference("payments").child(paymentId);
+        paymentReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Double totalAmount = snapshot.child("amount").getValue(Double.class);
+                    if (totalAmount != null) {
+                        txtTotalPrice.setText(String.format("Total: %s", Validate.formatVND(totalAmount)));
+                    } else {
+                        Log.e(TAG, "Total amount is null for paymentId: " + paymentId);
+                    }
+                } else {
+                    Log.e(TAG, "No payment data found for paymentId: " + paymentId);
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Failed to load payment amount: " + error.getMessage());
+            }
+        });
+    }
 }

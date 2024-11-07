@@ -71,26 +71,33 @@ public class ChangeShopAddressActivity extends AppCompatActivity {
         });
 
         binding.btnSave.setOnClickListener(v -> {
-            Intent intent = new Intent(this, PrepareOrderActivity.class);
-            intent.putExtra("order_id", orderId);
-            intent.putExtra("selected_id", addressShopAdapter.getSelectedAddressId());
-            startActivity(intent);
+            String selectedAddressId = addressShopAdapter.getManuallySelectedAddressId(); // Lấy ID của địa chỉ được chọn
 
-//            saveSelectedAddressAsSelected();
+            if (selectedAddressId != null) {
+                Log.d(TAG, "selectedAddressId to PrepareActivity: " + selectedAddressId);
+                Intent intent = new Intent(this, PrepareOrderActivity.class);
+                intent.putExtra("order_id", orderId);
+                intent.putExtra("selected_id", selectedAddressId); // Truyền `selected_id`
+                startActivity(intent);
+            } else {
+                Log.d(TAG, "No address selected. Please select an address.");
+                // Hiển thị thông báo nếu không có địa chỉ nào được
+                Intent intent = new Intent(this, PrepareOrderActivity.class);
+                intent.putExtra("order_id", orderId);
+                intent.putExtra("selected_id", selectedAddressId); // Truyền `selected_id`
+                startActivity(intent);
+            }
         });
 
 
     }
 
     private void saveSelectedAddressAsSelected() {
-        String selectedAddressId = addressShopAdapter.getSelectedAddressId();
+        String selectedAddressId = addressShopAdapter.getManuallySelectedAddressId();
         if (selectedAddressId != null) {
             for (UAddress address : addressList) {
                 if (address.getAddressId().equals(selectedAddressId)) {
                     Log.d(TAG, "Address id : " + address.getAddressId() + " will be update");
-
-                    // thay đổi giá trị trong PrepareOrderActivity:
-
                     break;
                 }
             }
@@ -142,8 +149,6 @@ public class ChangeShopAddressActivity extends AppCompatActivity {
                     }
                 }
 
-                // Xử lý kết quả sau khi lấy dữ liệu (vd: hiển thị danh sách trong RecyclerView)
-                // updateUIWithAddresses(addresses);
                 Log.d(TAG, "Addresses for Inventory: " + addresses.toString());
                 addressShopAdapter.notifyDataSetChanged();
 
