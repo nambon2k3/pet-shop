@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.petshopapplication.databinding.ActivityAddFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.utils.Validate;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +37,8 @@ public class AddFeedbackActivity extends AppCompatActivity {
     private Uri selectedImageUri; // To store the selected image URI
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser user;
     private String userId;
     private String orderId;
 
@@ -49,10 +53,21 @@ public class AddFeedbackActivity extends AppCompatActivity {
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
 
+        //get current user
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        userId = user.getUid();
+
         // Handle image selection
         binding.btnFeedbackPick.setOnClickListener(view -> chooseImage());
 
         binding.btnBack.setOnClickListener(v -> finish());
+
+        binding.btnHomeLogout.setOnClickListener(v -> {
+            firebaseAuth.signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        });
 
         getIntend();
 
@@ -140,7 +155,7 @@ public class AddFeedbackActivity extends AppCompatActivity {
                     for (DataSnapshot orderSnapshot : snapshot.getChildren()) {
                         DataSnapshot orderDetailsSnapshot = orderSnapshot.child("orderDetails");
 
-                        // Duyệt qua từng mục trong orderDetails
+                        // orderDetails
                         for (DataSnapshot detailSnapshot : orderDetailsSnapshot.getChildren()) {
                             String productId = detailSnapshot.child("productId").getValue(String.class);
                             if (productId != null) {
@@ -166,9 +181,8 @@ public class AddFeedbackActivity extends AppCompatActivity {
 
     private void getIntend() {
         orderId = getIntent().getStringExtra("orderId");
-        userId = getIntent().getStringExtra("userId");
 
-        if (orderId == null || userId == null) {
+        if (orderId == null) {
             Log.e("AddFeedbackActivity", "Null. Please pass a valid order ID.");
             // Hiển thị thông báo lỗi hoặc kết thúc activity nếu cần
             finish();

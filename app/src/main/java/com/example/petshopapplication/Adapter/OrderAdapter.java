@@ -382,7 +382,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
 
             @SuppressLint("ResourceType")
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {feedbackButton.setBackgroundColor(Color.RED);
+                feedbackButton.setText("Rate");
+                feedbackButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(context, AddFeedbackActivity.class);
+                    intent.putExtra("orderId", orderId);
+                    context.startActivity(intent);
+                });
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     FeedBack feedback = dataSnapshot.getValue(FeedBack.class);
                     if (snapshot.exists() && !feedback.isDeleted()) {
@@ -391,16 +397,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderHolder>
                         feedbackButton.setOnClickListener(v -> {
                             Intent intent = new Intent(context, ViewFeedBackItemActivity.class);
                             intent.putExtra("orderId", orderId);
-                            intent.putExtra("userId", userId);
-                            context.startActivity(intent);
-                        });
-                    } else {
-                        feedbackButton.setBackgroundColor(Color.RED);
-                        feedbackButton.setText("Rate");
-                        feedbackButton.setOnClickListener(v -> {
-                            Intent intent = new Intent(context, AddFeedbackActivity.class);
-                            intent.putExtra("orderId", orderId);
-                            intent.putExtra("userId", userId);
                             context.startActivity(intent);
                         });
                     }

@@ -17,11 +17,15 @@
         tools:replace="android:theme"
         tools:targetApi="31">
         <activity
+            android:name=".UserPanel"
+            android:exported="false" />
+        <activity
             android:name=".StatisticByRevenueActivity"
             android:exported="false" />
         <activity
             android:name=".OrderTrackingActivity"
-            android:exported="false" /> <!-- <activity -->
+            android:exported="false" />
+        <!-- <activity -->
         <!-- android:name=".UserProfileActivity" -->
         <!-- android:exported="false" /> -->
         <activity
@@ -63,9 +67,9 @@
         <activity
             android:name=".PrepareOrderActivity"
             android:exported="false" />
-        <activity
-            android:name=".ListOrderManageActivity"
-            android:exported="false" />
+         <activity
+         android:name=".ListOrderManageActivity"
+         android:exported="false" />
         <activity
             android:name=".ListOrderActivity"
             android:exported="false" />

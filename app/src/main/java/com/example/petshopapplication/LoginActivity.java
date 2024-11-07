@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-//        Intent intent1 = new Intent(LoginActivity.this, ViewAdminDashBoardActivity.class);
+//        Intent intent1 = new Intent(LoginActivity.this, CartActivity.class);
 //        startActivity(intent1);
         //Binding views
         edt_email = findViewById(R.id.edt_login_email);
@@ -135,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                     User user = ds.getValue(User.class);
                     if(user.getRoleId() == ROLE_USER) {
                         //User is authenticated, go to home activity
-                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, ViewAdminDashBoardActivity.class);
                         startActivity(intent);
                     } else if (user.getRoleId() == ROLE_INVENTORY) {
                         //Inventory is authenticated, go to List Order Manage Activity
