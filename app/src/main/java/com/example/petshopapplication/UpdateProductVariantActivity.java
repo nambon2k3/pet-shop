@@ -29,6 +29,7 @@ import com.example.petshopapplication.Adapter.ItemModel;
 import com.example.petshopapplication.Adapter.ManageSizeAdapter;
 import com.example.petshopapplication.Adapter.VariantAdapter;
 import com.example.petshopapplication.databinding.ActivityAddProductVariantBinding;
+import com.example.petshopapplication.databinding.ActivityUpdateProductVariantBinding;
 import com.example.petshopapplication.databinding.PopUpAddVariantDimnesionBinding;
 import com.example.petshopapplication.databinding.PopUpAddVariantSizeColorBinding;
 import com.example.petshopapplication.model.Color;
@@ -65,7 +66,7 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
 {
     Dialog dialog_dimension;
     Button btnShowAddSize;
-    ActivityAddProductVariantBinding binding;
+    ActivityUpdateProductVariantBinding binding;
     PopUpAddVariantSizeColorBinding binding2;
     FirebaseDatabase database;
     private Uri selectedImageUri; // To store the selected image URI
@@ -85,7 +86,7 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_update_product_variant);
 
-        binding = ActivityAddProductVariantBinding.inflate(getLayoutInflater());
+        binding = ActivityUpdateProductVariantBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         binding.imvGoBack.setOnClickListener(new View.OnClickListener() {
@@ -160,6 +161,11 @@ public class UpdateProductVariantActivity extends AppCompatActivity implements  
                     updates.put("isDeleted", true); // Hoặc false tùy theo yêu cầu
                     productRef.child(oldProductId).updateChildren(updates);
 
+                    // Navigate to AdminManageProductFragment
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_admin_manage_product, new AdminManageProductFragment())
+                            .addToBackStack(null)
+                            .commit();
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to submit product.", Toast.LENGTH_SHORT).show());
 

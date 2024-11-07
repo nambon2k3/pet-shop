@@ -103,9 +103,9 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
         }
         database = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
-
-
          model = (Product) getIntent().getSerializableExtra("product");
+        System.out.println(ObjectPrinter.print(model));
+
         if(model == null)
         {
            finish();
@@ -115,7 +115,6 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
         binding.addPvDimension.setOnClickListener(view -> showAddDimension());
         binding.addPvButton.setOnClickListener(view->addVariant());
         initVariants();
-        finish();
     }
     Product model;
     private void addVariant()
@@ -144,13 +143,19 @@ public class AddProductVariantActivity extends AppCompatActivity implements  Man
         String feedbackId = "product-" + productRef.push().getKey(); // Generate a unique ID
         model.setId(feedbackId);
 
-        productRef.child(feedbackId).setValue(model)
-                .addOnSuccessListener(aVoid -> Toast.makeText(this, "Product submitted successfully!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(this, "Failed to submit product.", Toast.LENGTH_SHORT).show());
 
-        Intent intent = new Intent(this, SeedingActivity.class);
-        intent.putExtra("productId", model.getId());
-        startActivity(intent);
+        productRef.child(feedbackId).setValue(model)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Product submitted successfully!", Toast.LENGTH_SHORT).show();
+
+                    // Navigate to AdminManageProductFragment
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new AdminManageProductFragment())
+                            .addToBackStack(null)
+                            .commit();
+                })
+
+                .addOnFailureListener(e -> Toast.makeText(this, "Failed to submit product.", Toast.LENGTH_SHORT).show());
     }
     private void initVariants()
     {
