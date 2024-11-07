@@ -16,9 +16,9 @@ import lombok.ToString;
 @Builder
 @ToString
 public class OrderDetail {
-    private String productId; // ID của sản phẩm
-    private String variantId; // ID variant đã chọn
-    private String colorId;   // ID color đã chọn
-    private int quantity;     // Số lượng sản phẩm
-    private double purchased;     // Giá cho sản phẩm đã chọn
+    private String productId;
+    private String variantId;
+    private String colorId;
+    private int quantity;
+    private double purchased;
 }
