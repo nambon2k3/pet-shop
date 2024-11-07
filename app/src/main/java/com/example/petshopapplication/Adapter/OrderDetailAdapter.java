@@ -47,28 +47,6 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         return new OrderDetailHolder(view);
     }
 
-    // Chạy được:
-//    @Override
-//    public void onBindViewHolder(@NonNull OrderDetailHolder holder, int position) {
-//        OrderDetail orderDetail = orderDetailList.get(position);
-//        Log.d("ProcessingTablayoutFragment", "Binding item at position " + position);
-//        // Set product name and quantity (tạm thời dùng dữ liệu giả)
-//        holder.txt_product_name.setText("Product " + orderDetail.getProductId());
-//        holder.txt_quantity.setText("x" + orderDetail.getQuantity());
-//
-//        // Set original price and discounted price (if any)
-////        holder.tv_old_price.setText(String.format("đ%.0f", orderDetail.getPurchased() + 20000));
-//        holder.tv_old_price.setText(Validate.formatVND(orderDetail.getPurchased()));
-//        holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-//        holder.txt_price.setText(Validate.formatVND(orderDetail.getPurchased()));
-//
-//        // Load product image (replace imageUrl with actual URL if available)
-////        String imageUrl = "https://via.placeholder.com/150";
-//        String imageUrl = "https://firebasestorage.googleapis.com/v0/b/pet-shop-4a349.appspot.com/o/pet-food-1.jpg?alt=media&token=badd23c5-9108-45f5-af2e-82a6556f8629";
-//        Glide.with(context).load(imageUrl).into(holder.imv_product_image);
-//    }
-
-
     @Override
     public void onBindViewHolder(@NonNull OrderDetailHolder holder, int position) {
         OrderDetail orderDetail = orderDetailList.get(position);
@@ -103,15 +81,15 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
                                     List<Color> colors = variants.get(i).getListColor();
 
                                     if (sizeModel != null && colors != null && !colors.isEmpty()) {
-                                        // Trường hợp có cả kích thước và màu sắc
+                                        // Have both size & color
                                         for (Color colorItem : colors) {
                                             if (colorItem.getId().equals(orderDetail.getColorId())) {
                                                 holder.txt_product_detail.setText(sizeModel.getName() + " - " + colorItem.getName());
-                                                break; // Thoát vòng lặp khi tìm thấy màu sắc phù hợp
+                                                break;
                                             }
                                         }
                                     } else if (sizeModel == null && colors != null && !colors.isEmpty()) {
-                                        // Trường hợp chỉ có màu sắc, không có kích thước
+                                        // Have Color, not Size
                                         for (Color colorItem : colors) {
                                             if (colorItem.getId().equals(orderDetail.getColorId())) {
                                                 holder.txt_product_detail.setText(colorItem.getName());
@@ -119,18 +97,16 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
                                             }
                                         }
                                     } else if (sizeModel != null && (colors == null || colors.isEmpty())) {
-                                        // Trường hợp chỉ có kích thước, không có màu sắc
+                                        // Have Size, not Color
                                         holder.txt_product_detail.setText(sizeModel.getName());
                                     } else {
-                                        // Trường hợp không có kích thước và không có màu sắc
+                                        // No Size, No Color
                                         holder.txt_product_detail.setText("");
                                     }
-
                                     break;
                                 }
                             }
                             holder.tv_old_price.setText(formattedOldPrice);
-//                            holder.txt_product_detail.setText("");
                             Log.d("OrderDetailAdapter", "Product: " + product.toString());
                             Log.d("OrderDetailAdapter", "Old Price: " + formattedOldPrice);
 
@@ -157,8 +133,6 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
 
         holder.tv_old_price.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
         holder.txt_price.setText(formattedPrice);
-
-//        Log.d("OrderDetailAdapter", "Old Price: " + formattedOldPrice + ", Discounted Price: " + formattedPrice);
     }
 
 

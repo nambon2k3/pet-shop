@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.OrderHistoryAdapter;
+import com.example.petshopapplication.Adapter.TimelineDecoration;
 import com.example.petshopapplication.databinding.ActivityOrderTrackingBinding;
 import com.example.petshopapplication.model.History;
 import com.google.firebase.database.DataSnapshot;
@@ -42,22 +43,24 @@ public class OrderTrackingActivity extends AppCompatActivity {
 
         orderId = getIntent().getStringExtra("order_id");
 
-        // Khởi tạo RecyclerView
         recyclerViewOrderHistory = findViewById(R.id.recyclerViewOrderHistory);
         recyclerViewOrderHistory.setLayoutManager(new LinearLayoutManager(this));
         historyList = new ArrayList<>();
         orderHistoryAdapter = new OrderHistoryAdapter(this, historyList);
         recyclerViewOrderHistory.setAdapter(orderHistoryAdapter);
 
-        // Gọi hàm để lấy dữ liệu lịch sử từ Firebase
+        // Add decoration to the RecyclerView
+        recyclerViewOrderHistory.addItemDecoration(new TimelineDecoration(this));
+
+        // Get order history from Firebase
         loadOrderHistory(orderId);
 
-//        generateFakeOrderHistoryData();
-
-
+        binding.ivBack.setOnClickListener(v -> {
+            finish();
+        });
     }
 
-    // Hàm tạo dữ liệu giả cho lịch sử đơn hàng
+    // fake data
     private void generateFakeOrderHistoryData() {
         historyList.clear();
         historyList.add(new History(900, "Đơn đã được đặt", "Đơn mới", "Đơn hàng đã được tạo thành công", "04/10/2024 14:00"));

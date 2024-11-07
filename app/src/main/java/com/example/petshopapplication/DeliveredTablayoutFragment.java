@@ -59,9 +59,51 @@ public class DeliveredTablayoutFragment extends Fragment {
 
         database = FirebaseDatabase.getInstance();
         reference = database.getReference("orders");
-        initOrdersProcessing();
+        if (isInventory) {
+            initOrdersProcessingInventory();
+        } else {
+            initOrdersProcessing();
+        }
         return view;
     }
+    private void initOrdersProcessingInventory() {
+        Log.d(TAG, "Start - load orders from Firebase");
+
+        Query query = reference;
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "Start - onDataChange");
+                orderItems.clear();
+
+                if (snapshot.exists()) {
+                    Log.d(TAG, "Data found in Firebase");
+
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Order order = dataSnapshot.getValue(Order.class);
+                        if (order != null && "Delivered".equals(order.getStatus())) {
+                            Log.d(TAG, "Order ID: " + order.getId() + ", Status: " + order.getStatus());
+                            orderItems.add(order);
+                        } else {
+                            Log.e(TAG, "Order data is null for snapshot: " + dataSnapshot.getKey());
+                        }
+                    }
+                    Log.d(TAG, "Total orders retrieved: " + orderItems.size());
+                    adapter.notifyDataSetChanged();
+
+                } else {
+                    Log.d(TAG, "No data found in Firebase");
+                }
+            }
+
+            @Override
+            public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+                Log.e(TAG, "Failed to load orders: " + error.getMessage());
+            }
+        });
+        Log.d(TAG, "End - load orders from Firebase");
+    }
+
 
     private void initOrdersProcessing() {
         Log.d(TAG, "Start - load processing orders from Firebase");

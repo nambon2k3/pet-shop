@@ -9,7 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.petshopapplication.R;
 import com.example.petshopapplication.model.History;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapter.ViewHolder> {
     private final List<History> historyList;
@@ -30,8 +34,20 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         History history = historyList.get(position);
-        holder.tvDate.setText(history.getUpdatedAt());
-        holder.tvStatus.setText(history.getStatusText());
+        // Format `updatedAt`: "dd/MM/yyyy HH:mm" => "dd 'Th'MM - yyyy" + "HH:mm"
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+            Date date = inputFormat.parse(history.getUpdatedAt());
+
+            SimpleDateFormat dayFormat = new SimpleDateFormat("dd 'Th'MM - yyyy", Locale.getDefault());
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+            String formattedDate = dayFormat.format(date) + "\n" + timeFormat.format(date);
+            holder.tvDate.setText(formattedDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+            holder.tvDate.setText(history.getUpdatedAt());
+        }        holder.tvStatus.setText(history.getStatusText());
         holder.tvDetail.setText(history.getStatusDesc());
     }
 
