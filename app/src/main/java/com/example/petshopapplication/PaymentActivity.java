@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -99,7 +98,7 @@ public class PaymentActivity extends AppCompatActivity implements RateAdapter.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.payment);
+        setContentView(R.layout.activity_payment);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();

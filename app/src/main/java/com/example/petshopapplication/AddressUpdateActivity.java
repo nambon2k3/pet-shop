@@ -48,7 +48,7 @@ public class AddressUpdateActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.address_update);
+        setContentView(R.layout.activity_address_update);
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();

@@ -39,7 +39,7 @@ public class AddressSelectionActivity extends AppCompatActivity implements Addre
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.address_manage);
+        setContentView(R.layout.activity_address_manage);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();

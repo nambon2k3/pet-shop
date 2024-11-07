@@ -59,7 +59,7 @@ public class AddressAddActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.address_add);
+        setContentView(R.layout.activity_address_add);
 
         // Khởi tạo Firebase Database và reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
