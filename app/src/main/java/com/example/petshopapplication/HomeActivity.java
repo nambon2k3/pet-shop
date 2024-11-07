@@ -20,6 +20,7 @@ import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.Product;
 import com.example.petshopapplication.model.User;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,6 +50,10 @@ public class HomeActivity extends AppCompatActivity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //welcome name
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        String userId = user.getUid();
 
         database = FirebaseDatabase.getInstance();
         //initNewProduct();
@@ -105,7 +110,6 @@ public class HomeActivity extends AppCompatActivity {
                     binding.rcvNewProduct.setAdapter(productAdapter);
                     binding.prgHomeNewProduct.setVisibility(View.INVISIBLE);
                 }
-
             }
 
             @Override
@@ -166,8 +170,8 @@ public class HomeActivity extends AppCompatActivity {
                             binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(HomeActivity.this, RecyclerView.VERTICAL, true));
                             binding.rcvFeedback.setAdapter(feedbackAdapter);
 
-                            binding.btnHomeUserProfile.setOnClickListener(v -> {
-                                Intent intent = new Intent(HomeActivity.this, ListUserFeedbackActivity.class);
+                            binding.btnHomeUserPanel.setOnClickListener(v -> {
+                                Intent intent = new Intent(HomeActivity.this, UserPanel.class);
                                 intent.putExtra("userId", userItems.get(0).getId());
                                 startActivity(intent);
                             });

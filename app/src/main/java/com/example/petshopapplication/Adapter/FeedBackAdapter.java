@@ -58,7 +58,6 @@ public class FeedBackAdapter extends RecyclerView.Adapter<FeedBackAdapter.Feedba
     }
 
     public User getUser(String userId) {
-        userId = "Ko9B1selclMHLfa2PBZxSrYL2qG3";
         for (User user : userItems) {
             if (user.getId().equals(userId)) {
                 return user;

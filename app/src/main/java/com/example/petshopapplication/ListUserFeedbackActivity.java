@@ -1,6 +1,7 @@
 package com.example.petshopapplication;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,9 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petshopapplication.Adapter.FeedBackListAdapter;
+import com.example.petshopapplication.Adapter.UserFeedBackListAdapter;
 import com.example.petshopapplication.databinding.ActivityListFeedbackBinding;
 import com.example.petshopapplication.model.FeedBack;
 import com.example.petshopapplication.model.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,10 +32,12 @@ import java.util.List;
 public class ListUserFeedbackActivity extends AppCompatActivity {
 
     private ActivityListFeedbackBinding binding;  // ViewBinding reference
-    private FeedBackListAdapter feedbackAdapter;
+    private UserFeedBackListAdapter feedbackAdapter;
     private List<FeedBack> feedbackList;
     private DatabaseReference databaseReference;
     private FirebaseDatabase database;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser user;
     String userId;
 
     @Override
@@ -44,6 +50,11 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
         // Set up RecyclerView
         binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(this));
 
+        //get userId
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        userId = user.getUid();
+
         // Set title for feedback list
         binding.tvFeedbackTitle.setText("My Feedbacks");
         binding.tvFeedbackRatingValue.setVisibility(View.GONE);
@@ -54,12 +65,17 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
         binding.rcvFeedback.setAdapter(feedbackAdapter);
         binding.btnBack.setOnClickListener(v -> finish());
 
+        binding.btnHomeLogout.setOnClickListener(v -> {
+            firebaseAuth.signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        });
+
         // Firebase Realtime Database reference
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference(getString(R.string.tbl_feedback_name));
 
         // Fetch feedbacks from Firebase
-        getIntend();
         fetchFeedbacks();
     }
 
@@ -90,7 +106,7 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
             //Reference to the user table
             databaseReference = database.getReference(getString(R.string.tbl_user_name));
             //Get user data by user Id in feed back
-            Query query = databaseReference.orderByChild("id").equalTo(feedBack.getUserId());
+            Query query = databaseReference.orderByChild("id").equalTo(userId);
             query.addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
@@ -102,7 +118,7 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
                             user = dataSnapshot.getValue(User.class);
                         }
                         if (user != null) {
-                            feedbackAdapter = new FeedBackListAdapter(feedbackItems, user);
+                            feedbackAdapter = new UserFeedBackListAdapter(feedbackItems, user);
                             binding.rcvFeedback.setLayoutManager(new LinearLayoutManager(ListUserFeedbackActivity.this, RecyclerView.VERTICAL, true));
                             binding.rcvFeedback.setAdapter(feedbackAdapter);
                         }
@@ -114,16 +130,6 @@ public class ListUserFeedbackActivity extends AppCompatActivity {
 
                 }
             });
-        }
-    }
-
-    private void getIntend() {
-        userId = getIntent().getStringExtra("userId");
-
-        if (userId == null) {
-            Log.e("ListUserFeedbackActivity", "Null. Please pass a valid order ID.");
-            // Hiển thị thông báo lỗi hoặc kết thúc activity nếu cần
-            finish();
         }
     }
 }

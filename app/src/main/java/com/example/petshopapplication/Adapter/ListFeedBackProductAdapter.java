@@ -1,5 +1,6 @@
 package com.example.petshopapplication.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
@@ -75,11 +76,14 @@ public class ListFeedBackProductAdapter extends RecyclerView.Adapter<ListFeedBac
                 .into(holder.imv_product_image);
 
         holder.itemView.setOnClickListener(v -> {
-            // Open product detail activity with product id
             Intent intent = new Intent(context, ListFeedbackActivity.class);
             intent.putExtra("productId", product.getId());
             context.startActivity(intent);
+
+            //delete
+            ((Activity) context).setIntent(new Intent());
         });
+
         fetchFeedback(product, holder);
     }
 
@@ -90,17 +94,6 @@ public class ListFeedBackProductAdapter extends RecyclerView.Adapter<ListFeedBac
             }
         }
         return null;  // Return null if category not found
-    }
-
-
-
-    public Category getCategory(String categoryId) {
-        for (Category category : categoryItems) {
-            if (category.getId().equals(categoryId)) {
-                return category;
-            }
-        }
-        return null;
     }
 
     private void fetchFeedback(Product product, @NonNull ProductHolder holder) {

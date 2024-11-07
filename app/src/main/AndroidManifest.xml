@@ -17,7 +17,7 @@
         tools:replace="android:theme"
         tools:targetApi="31">
         <activity
-            android:name=".OrderTrackingActivity"
+            android:name=".UserPanel"
             android:exported="false" />
         <!-- <activity -->
         <!-- android:name=".UserProfileActivity" -->
@@ -61,9 +61,9 @@
         <activity
             android:name=".PrepareOrderActivity"
             android:exported="false" />
-         <activity
-         android:name=".ListOrderManageActivity"
-         android:exported="false" />
+        <activity
+            android:name=".ListOrderManageActivity"
+            android:exported="false" />
         <activity
             android:name=".ListOrderActivity"
             android:exported="false" />
