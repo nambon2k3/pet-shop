@@ -54,7 +54,6 @@ public class AddShopAddressActivity extends AppCompatActivity {
     private Switch defaultAddressSwitch;
     private EditText phoneEditText;
 
-    // Khai báo biến addressesRef
     private DatabaseReference addressesRef;
 
     @Override
@@ -63,13 +62,11 @@ public class AddShopAddressActivity extends AppCompatActivity {
         binding = ActivityAddShopAddressBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Khởi tạo Firebase Database và reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         addressesRef = database.getReference("addresses");
 
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
 
-        // Find views by ID
         citySelectButton = binding.citySelectButton;
         districtSelectButton = binding.districtSelectButton;
         wardSelectButton = binding.wardSelectButton;
@@ -78,7 +75,6 @@ public class AddShopAddressActivity extends AppCompatActivity {
         defaultAddressSwitch = binding.defaultAddressSwitch;
         Button completeButton = binding.completeButton;
 
-        // Set button click listeners
         citySelectButton.setOnClickListener(v -> loadCities());
         districtSelectButton.setOnClickListener(v -> loadDistricts(selectedCityId));
         wardSelectButton.setOnClickListener(v -> loadWards(selectedDistrictId));
@@ -221,26 +217,26 @@ public class AddShopAddressActivity extends AppCompatActivity {
                 .show();
     }
     private boolean validateInput(String fullName, String phone) {
-        // Xác thực tên
+        // Name
         if (fullName.isEmpty()) {
             Toast.makeText(this, "Tên không được để trống", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        // Xác thực số điện thoại
+        // Phone
         if (phone.isEmpty()) {
             Toast.makeText(this, "Số điện thoại không được để trống", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        // Kiểm tra định dạng số điện thoại (có thể điều chỉnh theo yêu cầu)
-        String phonePattern = "^[0-9]{10,15}$"; // Định dạng cho số điện thoại có từ 10 đến 15 chữ số
+        // Check phone format
+        String phonePattern = "^[0-9]{10,15}$";
         if (!phone.matches(phonePattern)) {
             Toast.makeText(this, "Số điện thoại không hợp lệ. Vui lòng nhập lại.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        return true; // Nếu tất cả các điều kiện xác thực đều hợp lệ
+        return true;
     }
 
 
@@ -251,7 +247,7 @@ public class AddShopAddressActivity extends AppCompatActivity {
         String phone = phoneEditText.getText().toString().trim();
 
         if (!validateInput(fullName, phone)) {
-            return; // Nếu không hợp lệ, dừng lại
+            return; // Not validate => Stop
         }
 
         if (fullName.isEmpty() || phone.isEmpty() || selectedCityId == null || selectedDistrictId == null || selectedWardId == 0) {
@@ -262,7 +258,7 @@ public class AddShopAddressActivity extends AppCompatActivity {
         boolean isDefault = defaultAddressSwitch.isChecked();
         String addressId = UUID.randomUUID().toString(); // Tạo ID ngẫu nhiên
 
-        // Tạo một đối tượng địa chỉ mới
+        // Create new address
         UAddress newAddress = new UAddress(
                 addressId,
                 fullName,
@@ -277,20 +273,20 @@ public class AddShopAddressActivity extends AppCompatActivity {
                 "Inventory"
         );
 
-        // Nếu địa chỉ mới được đánh dấu là mặc định, kiểm tra địa chỉ mặc định hiện tại
+        // If it's a default address, check for existing default addresses
         if (isDefault) {
-            // Truy vấn để tìm địa chỉ mặc định hiện tại
+            // Find the current default address
             addressesRef.orderByChild("default").equalTo(true)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            boolean existingDefaultFound = false; // Cờ để kiểm tra xem đã tìm thấy địa chỉ mặc định hay chưa
+                            boolean existingDefaultFound = false; // Check if an existing default address is found
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 UAddress existingAddress = snapshot.getValue(UAddress.class);
                                 if (existingAddress != null && existingAddress.getUserId().equals("Inventory")) {
-                                    // Ghi log khi tìm thấy địa chỉ mặc định
+                                    // Found an existing default address
                                     Log.d(TAG, "Found existing default address: " + existingAddress.getAddressId());
-                                    // Cập nhật địa chỉ hiện tại thành không phải mặc định
+                                    // Update the existing default address to non-default
                                     snapshot.getRef().child("default").setValue(false)
                                             .addOnCompleteListener(updateTask -> {
                                                 if (updateTask.isSuccessful()) {
@@ -299,8 +295,8 @@ public class AddShopAddressActivity extends AppCompatActivity {
                                                     Log.e(TAG, "Failed to update existing default address: " + updateTask.getException().getMessage());
                                                 }
                                             });
-                                    existingDefaultFound = true; // Đánh dấu là đã tìm thấy địa chỉ mặc định
-                                    break; // Thoát vòng lặp sau khi cập nhật địa chỉ mặc định đầu tiên
+                                    existingDefaultFound = true; // mark as found
+                                    break;
                                 }
                             }
                             // Lưu địa chỉ mới sau khi cập nhật địa chỉ cũ
@@ -313,19 +309,17 @@ public class AddShopAddressActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            // Nếu không phải địa chỉ mặc định, lưu địa chỉ bình thường
             saveNewAddress(newAddress);
         }
     }
 
     private void saveNewAddress(UAddress newAddress) {
-        // Lưu địa chỉ vào Firebase
         addressesRef.child(newAddress.getAddressId()).setValue(newAddress)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(this, "Địa chỉ đã được lưu!", Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK); // Trả kết quả thành công về AddressSelectionActivity
-                        finish(); // Kết thúc Activity
+                        setResult(RESULT_OK);
+                        finish();
                     } else {
                         Log.e(TAG, "Failed to save address: " + task.getException().getMessage());
                         Toast.makeText(this, "Lỗi khi lưu địa chỉ", Toast.LENGTH_SHORT).show();

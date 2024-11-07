@@ -91,7 +91,7 @@ public class ShipmentSearchResponse {
         private int height;
         private int length;
         private int weight;
-        private int cweight;
+        private double cweight;
         private String metadata;
 
         @SerializedName("cod_amount")

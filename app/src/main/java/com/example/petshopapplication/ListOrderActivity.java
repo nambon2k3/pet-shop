@@ -89,53 +89,14 @@ public class ListOrderActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         initTablayouts();
-//        initOrder();
 
-
-        // Set up RecyclerView
-//        binding .recyclerViewOrders.setLayoutManager(new LinearLayoutManager(this));
-//        orderList = new ArrayList<>();
-//        orderAdapter = new OrderAdapter(orderList);
-//        binding.recyclerViewOrders.setAdapter(orderAdapter);
-//
-//        // Load orders from Firebase
-
+        // Load orders from Firebase
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
         if (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-            // Mạng sẵn sàng cho kết nối
+            // Internet connection available
             Log.e(TAG, "Internet connection available.");
             Log.d(TAG, "Start load city:");
-//        loadOrders();
-//            initCategory();
-//            initOrders();
-//            loadCities();
-
-            // START - Create Order
-//            String rate = "MTFfMjFfMTk0OA==";
-//            String fromName = "New Order";
-//            String fromPhone = "1111111111";
-//            String fromStreet = "102 Thái Thịnh";
-//            String fromWard = "113";
-//            String fromDistrict = "100900";
-//            String fromCity = "100000";
-//            String toName = "Lai Dao";
-//            String toPhone = "0909876543";
-//            String toStreet = "51 Lê Đại Hành";
-//            String toWard = "79";
-//            String toDistrict = "100200";
-//            String toCity = "100000";
-//            int cod = 500000;
-//            int weight = 220;
-//            int width = 15;
-//            int height = 15;
-//            int length = 15;
-//            String metadata = "Hàng dễ vỡ, vui lòng nhẹ tay. (new)";
-//
-//            createOrder(rate, fromName, fromPhone, fromStreet, fromWard, fromDistrict, fromCity,
-//                    toName, toPhone, toStreet, toWard, toDistrict, toCity, cod, weight, width, height, length, metadata);
-
-            // END - End Order
 
             Log.d(TAG, "End load city:");
         } else {
@@ -413,26 +374,8 @@ public class ListOrderActivity extends AppCompatActivity {
 
     }
 
-
     private void initOrder() {
-//        reference = database.getReference(getString(R.string.tbl_order_name));
-//        //Display progress bar
-//        binding.prgListOrder.setVisibility(View.VISIBLE);
-//        List<Order> orderItems = new ArrayList<>();
-//        orderItems.add(new Order());
-//        orderItems.add(new Order());
-//        orderItems.add(new Order());
-//        orderItems.add(new Order());
-//        orderItems.add(new Order());
-//        orderItems.add(new Order());
-//        orderItems.add(new Order());
-//        orderItems.add(new Order());
-//        orderItems.add(new Order());
-//
-//        orderAdapter = new OrderAdapter(orderItems);
-//        binding.rcvOrders.setLayoutManager(new LinearLayoutManager(ListOrderActivity.this, LinearLayoutManager.VERTICAL, false));
-//        binding.rcvOrders.setAdapter(orderAdapter);
-//        binding.prgListOrder.setVisibility(View.INVISIBLE);
+
     }
 
     private List<Order> orderItems;
@@ -538,7 +481,6 @@ public class ListOrderActivity extends AppCompatActivity {
         Log.d(TAG, "End - load category from Firebase");
 
     }
-
 
     private void initOrders() {
         Log.d(TAG, "Start - load orders from Firebase");

@@ -34,7 +34,7 @@ public class CreateOrderSuccessActivity extends AppCompatActivity {
         binding = ActivityCreateOrderSuccessBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Ẩn nội dung của layout cho đến khi dữ liệu API được tải hoàn toàn
+        // Hide until data is loaded
         binding.getRoot().setVisibility(View.GONE);
 
         AUTH_TOKEN = "Bearer " + getResources().getString(R.string.goship_api_token);
@@ -42,6 +42,7 @@ public class CreateOrderSuccessActivity extends AppCompatActivity {
         successOrderId = getIntent().getStringExtra("successOrderId");
         Log.d(TAG, "Success Order ID: " + successOrderId);
 
+        binding.tvShipmentCode.setText(successOrderId);
         binding.tvShipmentCode.setText(successOrderId);
 
         searchShipment(successOrderId);
@@ -59,11 +60,11 @@ public class CreateOrderSuccessActivity extends AppCompatActivity {
     }
 
 
-    // Phương thức gọi API searchShipment
+    // Call API searchShipment
     private void searchShipment(String code) {
         GoshipAPI api = RetrofitClient.getRetrofitInstance().create(GoshipAPI.class);
 
-        // Gọi API với mã vận chuyển (code)
+        // Put (code)
         Call<ShipmentSearchResponse> call = api.searchShipment(
                 "application/json",
                 "application/json",
@@ -71,13 +72,13 @@ public class CreateOrderSuccessActivity extends AppCompatActivity {
                 code
         );
 
-        // Xử lý phản hồi từ API
+        // Response from API
         call.enqueue(new Callback<ShipmentSearchResponse>() {
             @Override
             public void onResponse(Call<ShipmentSearchResponse> call, Response<ShipmentSearchResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ShipmentSearchResponse shipmentResponse = response.body();
-                    // Xử lý dữ liệu từ shipmentResponse ở đây
+
                     Log.d(TAG, "Shipment found: " + shipmentResponse.getData().get(0).getId());
 
                     binding.tvShipmentTitle.setText(shipmentResponse.getData().get(0).getCarrierName() + " - Shipment Code");
@@ -98,14 +99,12 @@ public class CreateOrderSuccessActivity extends AppCompatActivity {
                     binding.addressTo.setText(addtoStr);
 
                     String shipmentStatus;
-                    binding.orderStatus.setText("DANG LƯU TRỮ");
+                    binding.orderStatus.setText("Chờ đơn vị vận chuyển đến lấy hàng");
 
 
-                    // Hiển thị giao diện sau khi dữ liệu đã tải xong
+                    // Display the data in the UI
                     binding.getRoot().setVisibility(View.VISIBLE);
 
-
-                    // Thực hiện các hành động khác với dữ liệu từ shipmentResponse nếu cần
                 } else {
                     Log.e(TAG, "Không tìm thấy thông tin vận chuyển, mã lỗi: " + response.code());
                 }

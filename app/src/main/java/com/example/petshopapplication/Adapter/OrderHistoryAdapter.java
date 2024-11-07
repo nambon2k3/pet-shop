@@ -34,13 +34,11 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         History history = historyList.get(position);
-        // Định dạng lại `updatedAt` từ "dd/MM/yyyy HH:mm" thành hai dòng như Shopee
+        // Format `updatedAt`: "dd/MM/yyyy HH:mm" => "dd 'Th'MM - yyyy" + "HH:mm"
         try {
-            // Chuyển đổi `updatedAt` từ chuỗi thành `Date`
             SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
             Date date = inputFormat.parse(history.getUpdatedAt());
 
-            // Định dạng thành hai dòng với định dạng mong muốn
             SimpleDateFormat dayFormat = new SimpleDateFormat("dd 'Th'MM - yyyy", Locale.getDefault());
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
@@ -48,7 +46,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             holder.tvDate.setText(formattedDate);
         } catch (Exception e) {
             e.printStackTrace();
-            holder.tvDate.setText(history.getUpdatedAt()); // Hiển thị trực tiếp nếu có lỗi
+            holder.tvDate.setText(history.getUpdatedAt());
         }        holder.tvStatus.setText(history.getStatusText());
         holder.tvDetail.setText(history.getStatusDesc());
     }

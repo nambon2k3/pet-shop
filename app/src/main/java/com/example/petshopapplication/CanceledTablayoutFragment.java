@@ -73,7 +73,7 @@ public class CanceledTablayoutFragment extends Fragment {
         String userId = currentUser.getUid();
         Log.d(TAG, "Loading processing orders for user ID: " + userId);
 
-        // Get all orders of current user - status = "processing"
+        // Get all orders of current user - status = "canceled"
         Query query = reference.orderByChild("userId").equalTo(userId);
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -87,14 +87,14 @@ public class CanceledTablayoutFragment extends Fragment {
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Order order = dataSnapshot.getValue(Order.class);
-                        if (order != null && "Canceled".equals(order.getStatus())) { // Filter orders with status "Processing"
+                        if (order != null && "Canceled".equals(order.getStatus())) { // Filter orders with status "Canceled"
                             Log.d(TAG, "Order ID: " + order.getId() + ", Status: " + order.getStatus());
                             orderItems.add(order);
                         }
                     }
 
                     Log.d(TAG, "Total processing orders retrieved: " + orderItems.size());
-                    adapter.notifyDataSetChanged(); // Update RecyclerView with new data
+                    adapter.notifyDataSetChanged();
 
                 } else {
                     Log.d(TAG, "No processing data found in Firebase for user ID: " + userId);

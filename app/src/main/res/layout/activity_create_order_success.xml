@@ -10,8 +10,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_marginTop="24dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -23,10 +24,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="0dp"
             android:text="Success detail"
+            android:textColor="#333333"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#333333" />
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Carrier Logo and Tracking Number -->
@@ -117,7 +119,7 @@
         android:id="@+id/orderStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="R1 Urban"
+        android:text="Chờ đơn vị vận chuyển đến lấy hàng"
         android:textColor="#333333"
         android:paddingBottom="2dp" />
 

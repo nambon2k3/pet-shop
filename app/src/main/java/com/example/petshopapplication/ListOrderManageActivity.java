@@ -45,6 +45,14 @@ public class ListOrderManageActivity extends AppCompatActivity {
 
         tabTitles = getResources().getStringArray(R.array.tab_order_manage_inventory_titles);
         initTablayouts();
+
+        // FAKE REQUEST to DEMO History status:
+//        updateOrderHistory("006ffbb9-f893-40e3-9a3b-970b9754c03a", 901, "Đơn hàng đang chờ lấy hàng", "Chờ lấy hàng", "Chờ HVC điều phối đơn cho bưu tá");
+//        updateOrderHistory("006ffbb9-f893-40e3-9a3b-970b9754c03a", 903, "Bưu tá đã nhận hàng từ shop", "Đã lấy hàng", "Bưu tá đã nhận hàng từ shop");
+//        updateOrderHistory("006ffbb9-f893-40e3-9a3b-970b9754c03a", 904, "Hàng đang trên đường đi giao", "Giao hàng", "Hàng đang được đi giao cho khách");
+//        updateOrderHistory("006ffbb9-f893-40e3-9a3b-970b9754c03a", 905, "Đơn hàng đã giao thành công", "Giao thành công", "Đã giao hàng cho khách thành công");
+
+//        updateOrderHistory("", 905, "", "", "");
 //        searchShipment("GSL7KJRM96");
     }
 

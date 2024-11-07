@@ -43,29 +43,24 @@ public class OrderTrackingActivity extends AppCompatActivity {
 
         orderId = getIntent().getStringExtra("order_id");
 
-        // Khởi tạo RecyclerView
         recyclerViewOrderHistory = findViewById(R.id.recyclerViewOrderHistory);
         recyclerViewOrderHistory.setLayoutManager(new LinearLayoutManager(this));
         historyList = new ArrayList<>();
         orderHistoryAdapter = new OrderHistoryAdapter(this, historyList);
         recyclerViewOrderHistory.setAdapter(orderHistoryAdapter);
 
-        // Thêm TimelineDecoration cho RecyclerView
+        // Add decoration to the RecyclerView
         recyclerViewOrderHistory.addItemDecoration(new TimelineDecoration(this));
 
-        // Gọi hàm để lấy dữ liệu lịch sử từ Firebase
+        // Get order history from Firebase
         loadOrderHistory(orderId);
 
         binding.ivBack.setOnClickListener(v -> {
             finish();
         });
-
-//        generateFakeOrderHistoryData();
-
-
     }
 
-    // Hàm tạo dữ liệu giả cho lịch sử đơn hàng
+    // fake data
     private void generateFakeOrderHistoryData() {
         historyList.clear();
         historyList.add(new History(900, "Đơn đã được đặt", "Đơn mới", "Đơn hàng đã được tạo thành công", "04/10/2024 14:00"));
