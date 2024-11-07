@@ -269,12 +269,11 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
             }
         });
 
-
-
     }
 
     public void reloadCartList(){
         cartList.clear();
         initCart(user.getUid());
     }
+
 }
